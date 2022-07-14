@@ -1,3 +1,4 @@
+control
 jupyterlab
 matplotlib
 numpy
