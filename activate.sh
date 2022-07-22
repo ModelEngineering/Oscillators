@@ -1,0 +1,1 @@
+source osc/bin/activate
