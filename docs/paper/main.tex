@@ -1,0 +1,164 @@
+\NeedsTeXFormat{LaTeX2e}[1995/12/01]
+\documentclass[11pt]{elsarticle}
+
+% Load packages
+\usepackage{listings}
+\usepackage{natbib}
+\usepackage{url}  % Formatting web addresses
+\usepackage{multicol}   %Columns
+\usepackage{subcaption}
+%\usepackage[utf8]{inputenc} %unicode support
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usetikzlibrary{arrows,arrows.meta,plotmarks}
+\usetikzlibrary{matrix}
+\usepgflibrary{shapes}
+\usetikzlibrary{decorations.pathmorphing}
+\usetikzlibrary{calc}
+\urlstyle{rm}
+\usepackage{courier}
+\usepackage{soul}
+
+\definecolor{mygreen}{rgb}{0,0.6,0}
+\definecolor{mygray}{rgb}{0.5,0.5,0.5}
+\definecolor{mymauve}{rgb}{0.58,0,0.82}
+\definecolor{anti-flashwhite}{rgb}{0.95, 0.95, 0.96}
+\definecolor{aliceblue}{rgb}{0.94, 0.97, 1.0}
+\definecolor{sg-comment}{RGB}{255,127,80}
+
+\lstset{
+         basicstyle=\footnotesize\ttfamily,
+         numberstyle=\tiny,
+         numbersep=5pt,
+         tabsize=2,
+         extendedchars=true,
+         breaklines=true,
+         keywordstyle=\color{red},
+         stringstyle=\color{white}\ttfamily,
+         showspaces=false,
+         showtabs=false,
+         xleftmargin=17pt,
+         framexleftmargin=17pt,
+         framexrightmargin=5pt,
+         framexbottommargin=4pt,
+         stringstyle=\color{mymauve},
+         showstringspaces=false
+ }
+
+% \lstset{ %
+%   backgroundcolor=\color{aliceblue},   % choose the background color
+%   basicstyle=\ttfamily\small, % size of fonts used for the code
+%   breaklines=true,                 % automatic line breaking only at whitespace
+%   captionpos=b,                    % sets the caption-position to bottom
+%   commentstyle=\color{mygreen},    % comment style
+%   escapeinside={\%*}{*)},          % if you want to add LaTeX within your code
+%   keywordstyle=\color{blue},       % keyword style
+%   stringstyle=\color{mymauve},     % string literal style
+%   showstringspaces=false
+% }
+
+\newcommand{\bN}{\mathbf N}
+\newcommand{\bJ}{\mathbf J}
+\newcommand{\bv}{\mathbf v}
+\newcommand{\bx}{\mathbf x}
+\newcommand{\bk}{\mathbf k}
+\newcommand{\bLo}{\mathbf L_0}
+\newcommand{\bNo}{\mathbf N_0}
+\newcommand{\bNr}{\mathbf N_R}
+\newcommand{\bNIC}{\mathbf N_{IC}}
+\newcommand{\bNDC}{\mathbf N_{DC}}
+\newcommand{\bJM}{\mathbf J_M}
+\newcommand{\bJC}{\mathbf J_C}
+\newcommand{\bK}{\mathbf K}
+\newcommand{\bKo}{\mathbf K_0}
+\newcommand{\bI}{\mathbf I}
+\newcommand{\bZero}{\mathbf 0}
+\newcommand{\bL}{\mathbf L}
+\newcommand{\bGamma}{\mathbf \Gamma}
+\newcommand{\bT}{\mathbf T}
+\newcommand{\bQ}{\mathbf Q}
+\newcommand{\bR}{\mathbf R}
+\newcommand{\bU}{\mathbf U}
+\newcommand{\bve}{\textbf{e}}
+
+\setlength{\parskip}{1em}
+\setlength{\parindent}{0em}
+
+% Begin ...
+\begin{document}
+
+\title{A Mathematical Framework for Building Oscillators in Reaction Networks}
+
+\author[UWBIOE]{Joseph L. Hellerstein}
+\ead{jlheller@uw.edu}
+
+
+\address[UWBIOE]{eScience Institute, University of Washington, Allen School of Computer Science, Seattle, WA, USA, 98195}
+
+\begin{abstract} 
+Abstract
+\end{abstract}
+
+\begin{keyword}
+Simulation \sep SBML \sep Software \sep Systems Biology
+\end{keyword}
+
+\maketitle
+
+\section*{Introduction}
+\begin{enumerate}
+\item Importance of oscillators in biology: circadian rhythms, filters, ... Indicate characteristics of importance: frequency, amplitude, phase. Controlling separately is tunable.
+\item Models of biological oscillators. Number of species. Rate laws.
+   \begin{enumerate}
+       \item validation
+       \item requirements of oscillation (sufficiently non-linear)
+       \item insights into tunable
+   \end{enumerate}
+\item Requirements of theoretical oscillator: biological credibility
+\begin{enumerate}
+    \item Non-negative concentrations
+    \item Credible kinetics
+\end{enumerate}
+\item Summary of contribution
+\begin{enumerate}
+    \item Oscillatory reaction network with linear rate laws. ODEs are a system of linear differential equations. Counter example to claim that the reaction network must be "sufficiently non-linear".
+    \item Closed form solution for the time domain behavior of the 2 species linear oscillatory network. Since linear network, initial conditions matter. There are no limit cycles.
+    \item The closed form solution provides a mathematical framework that provides insights into tuning non-linear oscillators. Changing amplitude while keeping frequency constant. Phase shifts.
+\end{enumerate}
+
+\end{enumerate}
+
+\section*{Methods}
+\begin{enumerate}
+    \item Jacobian for 2 species, two reactions, mass action
+    \item Requirements for sustained oscillation: $T = 0$, $D > 0$
+    \item $T> 0$: self catalyzing
+    \item $D > 0$: inhibition through degradation. Requires care on operating region.
+    \item Solution to homogeneous system. Issue -- need an offset. Calculating solution vectors using imaginary and real parts of eigenvectors.
+    \item Particular solution.
+    \item Full solution. Requires trig equality.
+\end{enumerate}
+
+\section*{Results}
+\begin{enumerate}
+    \item Validation of the solution via simulations
+    \item What parts of the oscillator can be removed if unconcerned about certain elements of control like amplitude and phase?
+    \item Interpretations
+    \begin{enumerate}
+        \item Must have $u_1, u_2$ be non-zero in order to get an offset so that there are non-zero values for the two species.
+        \item Large frequency ($\alpha$) approximation
+        \item Large $\delta$ approximation
+    \end{enumerate}
+    \item Robustness
+\end{enumerate}
+
+\section*{Conclusions}
+
+
+\section*{References}
+
+\bibliographystyle{elsarticle-harv.bst}  % Style BST file
+\bibliography{references}     % Bibliography file (usually '*.bib' )
+
+\end{document}
