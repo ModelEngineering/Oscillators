@@ -8,6 +8,9 @@ osc/
 
 # C extensions
 *.so
+*.aux
+*.dvi
+*DS_Store*
 
 # Distribution / packaging
 .Python
