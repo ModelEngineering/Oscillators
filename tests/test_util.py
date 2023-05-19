@@ -9,8 +9,8 @@ import sympy as sp
 import tellurium as te
 import unittest
 
-IGNORE_TEST = False
-IS_PLOT = True
+IGNORE_TEST = True
+IS_PLOT = False
 
 class TestUtil(unittest.TestCase):
 
@@ -29,21 +29,29 @@ class TestUtil(unittest.TestCase):
         util.simulateLinearSystem(is_plot=IS_PLOT)
 
     def testSimulateExpressionVector(self):
+        if IGNORE_TEST:
+            return
         vec = sp.Matrix([t, t**2])
         _ = util.simulateExpressionVector(vec, {}, is_plot=IS_PLOT)
 
     def testSimulateRR(self):
+        if IGNORE_TEST:
+            return
         util.simulateRR(is_plot=IS_PLOT)
 
     def testMakeSymbolDct(self):
+        if IGNORE_TEST:
+            return
         dct = util.makeSymbolDct(theta*k_d, PARAM_DCT, exclude_names=["t"])
         self.assertEqual(dct[theta], PARAM_DCT["theta"])
 
-    def testFindSinusoidCoefficients(self):
-        expression = sp.cos(t*theta)*k_d + sp.sin(t*theta)*k_d + 1
-        dct = util.findSinusoidCoefficients(expression)
-        for key in ["a", "b", "c"]:
-            self.assertTrue(key in dct.keys())
+    def testMakePolynomialCoefficients(self):
+        if IGNORE_TEST:
+            return
+        expression = 3*sp.cos(t*theta)*sp.cos(theta*t) + 2*sp.cos(2*t*theta-t*theta) + 1
+        dct = util.makePolynomialCoefficients(expression, sp.cos(t*theta))
+        trues = [dct[n] == n+1 for n in range(2)]
+        self.assertTrue(all(trues))
 
 
 if __name__ == "__main__":

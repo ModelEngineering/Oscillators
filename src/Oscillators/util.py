@@ -2,7 +2,7 @@ from src.Oscillators.model import MODEL, PARAM_DCT
 from src.Oscillators import t, theta, k_d, k1, k2, k3, k4, k5, k6
 
 import tellurium as te
-import sympy
+import sympy as sp
 from sympy import init_printing
 import matplotlib.pyplot as plt
 import numpy as np
@@ -46,8 +46,8 @@ def simulateExpression(sym, dct, times=TIMES, is_plot=True):
 
     Parameters
     ----------
-    sym: sympy.Symbol
-    t: sympy.Symbol
+    sym: sp.Symbol
+    t: sp.Symbol
     dct: dict (substitutions)
 
     Returns
@@ -63,7 +63,7 @@ def simulateExpression(sym, dct, times=TIMES, is_plot=True):
     t = time_syms[0]
     # Simulation of ivp_solution
     new_sym = sym.subs(dct)
-    vals = [float(sympy.simplify(new_sym.subs(t, v))) for v in times]
+    vals = [float(sp.simplify(new_sym.subs(t, v))) for v in times]
     if is_plot:
         plt.plot(times, vals)
     return vals
@@ -75,7 +75,7 @@ def simulateExpressionVector(vec, dct, end_time=round(TIMES[-1]), is_plot=True):
 
     Parameters
     ----------
-    sym: sympy.Symbol
+    sym: sp.Symbol
     dct: dict (substitutions)
     """
     times = makeTimes(end_time=end_time)
@@ -128,7 +128,7 @@ def findSinusoidCoefficients(expression):
     Finds the coefficients of the sinusoids.
 
     Args:
-        expression: sympy.expression
+        expression: sp.expression
     Assumes:
         The symbols t, theta are defined symbols
     Returns:
@@ -143,14 +143,14 @@ def findSinusoidCoefficients(expression):
         """
         Creates a dictionary that has the coefficients of the term
         """
-        tt = sympy.Symbol("tt")
+        tt = sp.Symbol("tt")
         new_expr = expr.subs({term: tt})
-        collected = sympy.Poly(new_expr, tt).as_expr()
+        collected = sp.Poly(new_expr, tt).as_expr()
         i, d = collected.as_independent(tt, as_Add=True)
-        rv = dict(i.as_independent(tt, as_Mul=True)[::-1] for i in sympy.Add.make_args(d))
+        rv = dict(i.as_independent(tt, as_Mul=True)[::-1] for i in sp.Add.make_args(d))
         if i:
             assert 1 not in rv
-            rv.update({sympy.S.One: i})
+            rv.update({sp.S.One: i})
         rv[0] = rv[1].as_expr()
         del rv[1]
         rv[1] = rv[tt].as_expr()
@@ -158,8 +158,8 @@ def findSinusoidCoefficients(expression):
         return rv
     #
     # Make the sine dictionary
-    sin_dct = makeDct(expression, sympy.sin(t*theta))
-    cosine_dct = makeDct(sin_dct[0], sympy.cos(t*theta))
+    sin_dct = makeDct(expression, sp.sin(t*theta))
+    cosine_dct = makeDct(sin_dct[0], sp.cos(t*theta))
     # Create the result
     result_dct = dict(cosine_dct)
     result_dct[A] = result_dct[1].as_expr()
@@ -168,3 +168,29 @@ def findSinusoidCoefficients(expression):
     result_dct[C] = result_dct[0].as_expr()
     del result_dct[0]
     return result_dct
+
+def makePolynomialCoefficients(expression, term):
+    """
+    Creates a dictionary with the polynomial coefficients of the term.
+
+    Args:
+        expression: sp.Expression
+        term: sp.Expression or sp.Symbol
+
+    Returns:
+        dict
+            key: int (power of term)
+            value: sp.Expression
+    """
+    tt = sp.Symbol("tt")
+    new_expr = expression.subs({term: tt})
+    collected = sp.Poly(new_expr, tt).as_expr()
+    i, d = collected.as_independent(tt, as_Add=True)
+    rv = dict(i.as_independent(tt, as_Mul=True)[::-1] for i in sp.Add.make_args(d))
+    if i:
+        assert 1 not in rv
+        rv.update({sp.S.One: i})
+    dct = {}
+    for key in range(len(rv.keys())):
+        dct[key] = rv[tt**(key)]
+    return dct
