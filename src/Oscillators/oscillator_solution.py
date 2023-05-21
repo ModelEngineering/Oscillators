@@ -108,7 +108,7 @@ class OscillatorSolution(object):
         return result_dct
 
     # FXIME: Handle phase offset 
-    def simulate(self, expression=None, param_dct=mdl.PARAM_DCT, end_time=20, **kwargs):
+    def simulate(self, expression=None, param_dct=mdl.PARAM_DCT, end_time=5, **kwargs):
         """
         Simulates an expression over time.
 
@@ -135,10 +135,4 @@ class OscillatorSolution(object):
         else:
             vector_func = expression.subs(symbol_dct)
             df = util.simulateExpressionVector(vector_func, param_dct, end_time=end_time, **kwargs)
-            if False:
-                p1 = sympy.plotting.plot(vector_func[0], xlim=[0, 10], line_color="red", show=False)
-                p2 = sympy.plotting.plot(vector_func[1], xlim=[0, 10], line_color="blue", show=False)
-                p1.append(p2[0])
-                p1.show()
-        util.plotDF(df, **kwargs)
         return df
