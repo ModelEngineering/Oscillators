@@ -1,18 +1,37 @@
 '''Tests for util.py'''
 
 from src.Oscillators import k_d, t, theta
-from src.Oscillators.model import MODEL, PARAM_DCT 
+from src.Oscillators.model import PARAM_DCT 
 from src.Oscillators import util
-from src.Oscillators.util import TIMES, MODEL
+from src.Oscillators.util import TIMES
 
+import os
+import pandas as pd
 import sympy as sp
-import tellurium as te
 import unittest
 
-IGNORE_TEST = True
-IS_PLOT = False
+IGNORE_TEST = False
+IS_PLOT = True
+TEST_DIR = os.path.dirname(os.path.abspath(__file__)) # This directory
+TEST_FILE = os.path.join(TEST_DIR, "test_util.pdf")
+REMOVE_FILES = [TEST_FILE] 
+
 
 class TestUtil(unittest.TestCase):
+
+    def setUp(self):
+        self.remove()
+
+    def tearDown(self):
+        self.remove()
+
+    def testPlotDF(self):
+        if IGNORE_TEST:
+            return
+        data = range(len(TIMES))
+        df = pd.DataFrame({"A": data, "B": data}, index=TIMES)
+        util.plotDF(df, is_plot=IS_PLOT, output_path=TEST_FILE)
+        self.assertTrue(os.path.isfile(TEST_FILE))
 
     def testMakeTimes(self):
         if IGNORE_TEST:
@@ -23,10 +42,18 @@ class TestUtil(unittest.TestCase):
         self.assertEqual(times[0], 0)
         self.assertEqual(times[-1], 5) 
 
+    def remove(self):
+        for path in REMOVE_FILES:
+            if os.path.exists(path):
+                os.remove(path)
+
     def testSimulateLinearSystem(self):
         if IGNORE_TEST:
             return
-        util.simulateLinearSystem(is_plot=IS_PLOT)
+        df = util.simulateLinearSystem(is_plot=IS_PLOT, output_path=TEST_FILE)
+        self.assertTrue(isinstance(df, pd.DataFrame))
+        self.assertGreater(len(df), 0)
+        self.assertTrue(all([col in df.columns for col in ["S1", "S2"]]))
 
     def testSimulateExpressionVector(self):
         if IGNORE_TEST:
@@ -52,7 +79,6 @@ class TestUtil(unittest.TestCase):
         dct = util.makePolynomialCoefficients(expression, sp.cos(t*theta))
         trues = [dct[n] == n+1 for n in range(2)]
         self.assertTrue(all(trues))
-
 
 if __name__ == "__main__":
     unittest.main()

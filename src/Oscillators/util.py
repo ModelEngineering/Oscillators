@@ -1,5 +1,5 @@
 from src.Oscillators.model import MODEL, PARAM_DCT 
-from src.Oscillators import t, theta, k_d, k1, k2, k3, k4, k5, k6
+from src.Oscillators import t, theta
 
 import tellurium as te
 import sympy as sp
@@ -17,38 +17,75 @@ def makeTimes(start_time=0, end_time=5.0, point_density=20):
 
 TIMES = makeTimes()
 
-def simulateLinearSystem(A=None, B=None, end_time=20, is_plot=True):
+def plotDF(df, is_plot=True, output_path=None, title="", xlabel="time", ylabel="value", xlim=None, ylim=None):
+    """Plots the dataframe
+
+    Args:
+        df: pd.DataFrame
+            index: time
+            columns: column_names
+        is_plot (bool, optional): _description_. Defaults to True.
+        output_path (str, optional): path to the output file
+    """
+    ax = df.plot()
+    plt.legend(df.columns, loc="upper left")
+    ax.set_xlabel(xlabel)
+    ax.set_ylabel(ylabel)
+    ax.set_title(title)
+    if xlim is not None:
+        ax.set_xlim(xlim)
+    if ylim is not None:
+        ax.set_ylim(ylim)
+    if output_path is not None:
+        ax.figure.savefig(output_path)
+
+def simulateLinearSystem(A=None, B=None, end_time=20, column_names=None, **kwargs):
     """
     Simulates the linear system specified by A and B
+
+    Args:
+        A, B: matrices of the linear system
+        end_time: float (end time of simulation)
+        column_names: list-str (names of the columns)
+        kwargs: dict (arguments to plotDF)
+
+    Returns:
+        pd.DataFrame
+            key: time
+            columns: column_names
     """
+    if column_names is None:
+        column_names = ["S1", "S2"]
     if A is None:
-        A = np.array([ [PARAM_DCT["k1"] - PARAM_DCT["k2"], PARAM_DCT["k4"]],
-                           [PARAM_DCT["k2"] - PARAM_DCT["k3"], - PARAM_DCT["k4"] ] ])
+        A = np.array([ [PARAM_DCT["k2"], PARAM_DCT["k2"]],
+                           [-PARAM_DCT["k2"] - PARAM_DCT["k_d"], - PARAM_DCT["k2"] ] ])
     if B is None:
         B = np.eye(2)
     C = np.eye(2)
     D = 0*np.eye(2)
     sys = control.StateSpace(A, B, C, D)
-    sys = control.LinearIOSystem(sys, inputs=["S1", "S2"], outputs=["S1", "S2"])
+    sys = control.LinearIOSystem(sys, inputs=column_names, outputs=column_names)
     X0 = [1, 10]
     times = makeTimes(end_time=end_time)
     response = control.input_output_response(sys, T=times, X0=X0)
-    plt.plot(response.t, response.y[0])
-    plt.plot(response.t, response.y[1])
-    plt.legend(["S1", "S2"], loc="upper left")
-    if not is_plot:
-        plt.close()
+    dct = {"time": response.t}
+    for idx, name in enumerate(column_names):
+        dct[name] = response.y[idx]
+    df = pd.DataFrame(dct)
+    df = df.set_index("time")
+    plotDF(df, **kwargs)
+    return df
 
-def simulateExpression(sym, dct, times=TIMES, is_plot=True):
+def simulateExpression(sym, dct, times=TIMES, **kwargs):
     """
     Simulates a symbol that is a function of time.
     The time symbol must be "t".
 
-    Parameters
-    ----------
-    sym: sp.Symbol
-    t: sp.Symbol
-    dct: dict (substitutions)
+    Args:
+        sym: sp.Symbol
+        t: sp.Symbol
+        dct: dict (substitutions)
+        kwargs: dict (arguments to plotDF)
 
     Returns
     -------
@@ -64,11 +101,12 @@ def simulateExpression(sym, dct, times=TIMES, is_plot=True):
     # Simulation of ivp_solution
     new_sym = sym.subs(dct)
     vals = [float(sp.simplify(new_sym.subs(t, v))) for v in times]
-    if is_plot:
-        plt.plot(times, vals)
+    df = pd.DataFrame({"time": times, "value": vals})
+    df = df.set_index("time")
+    plotDF(df, **kwargs)
     return vals
 
-def simulateExpressionVector(vec, dct, end_time=round(TIMES[-1]), is_plot=True):
+def simulateExpressionVector(vec, dct, end_time=round(TIMES[-1]), column_names=None, **kwargs):
     """
     Simulates a 2-d vector symbol that is a function of time.
     The time symbol must be "t".
@@ -77,16 +115,22 @@ def simulateExpressionVector(vec, dct, end_time=round(TIMES[-1]), is_plot=True):
     ----------
     sym: sp.Symbol
     dct: dict (substitutions)
+
+    Returns
+    -------
+    pd.DataFrame
+        key: time
     """
+    if column_names is None:
+        column_names = ["S1", "S2"]
     times = makeTimes(end_time=end_time)
     s1_vals = simulateExpression(vec[0], dct, times=times)
     s2_vals = simulateExpression(vec[1], dct, times=times)
+    df = pd.DataFrame({"time": times, column_names[0]: s1_vals, column_names[1]: s2_vals})
+    df = df.set_index("time")
     #
-    plt.plot(times, s1_vals)
-    plt.plot(times, s2_vals)
-    _ = plt.legend(["S1", "S2"])
-    if not is_plot:
-        plt.close()
+    plotDF(df, **kwargs)
+    return df
 
 def simulateRR(dct={}, is_plot=True):
     """
