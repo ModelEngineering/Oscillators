@@ -1,7 +1,7 @@
 control
 jupyterlab
 matplotlib
-nosetests
+nose2
 numpy
 pandas
 sympy

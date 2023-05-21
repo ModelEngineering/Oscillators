@@ -30,7 +30,10 @@ class OscillatorSolution(object):
         # The fundamental matrix
         self.fund_mat = sp.Matrix([ [vecs[0][0], vecs[1][0]], [vecs[0][1], vecs[1][1]]])
         # The following are calculated by solve
+        self.homogeneous_x_vec = None # Homogeneous solution
+        self.particular_x_vec = None # Particular solution
         self.raw_x_vec = None # Initial time domain solution
+        self.factor_dcts = None # Dictionaries of the sinusoid coefficients
         self.factored_x_vec = None # Time domain solution factored into sinusoids
         self.x_vec = None # Solution structured as a sine with a phase shift
 
@@ -44,32 +47,33 @@ class OscillatorSolution(object):
             sp.Matrix: matrix solution for the differential equation
         """
         # Calculate the homogeneous solution
-        xhh = self.fund_mat*sp.Matrix([[c1], [c2]])
+        self.homogeneous_x_vec = self.fund_mat*sp.Matrix([[c1], [c2]])
         xpp_1 = eval(xp_1)
         xpp_2 = eval(xp_2)
-        xp_saved = sp.Matrix([[xpp_1], [xpp_2]])
+        self.particular_x_vec = sp.Matrix([[xpp_1], [xpp_2]])
         if is_check:
             # Calculate the particular solution
             rhs = sp.simplify(self.fund_mat.inv()*self.u_vec)
             rhs = sp.integrate(rhs, t)
             xp = sp.simplify(self.fund_mat*rhs)
-            if not xp == xp_saved:
+            if not xp == self.particular_x_vec:
                 raise RuntimeError("Saved and calculated particular solutions do not match!")
         # Solve for the constants in terms of the initial conditions
-        self.raw_x_vec = xhh + xp_saved
+        self.raw_x_vec = self.homogeneous_x_vec + self.particular_x_vec
         cdct = sp.solve(self.raw_x_vec.subs(t, 0) - sp.Matrix([ [x1_0], [x2_0]]), [c1, c2])
+        self.raw_x_vec = self.raw_x_vec.subs(cdct)
         # Factor the solution into polynomials of sine and cosine
         factored_x_vec = []
-        factor_dcts = []
+        self.factor_dcts = []
         for xterm in self.raw_x_vec:
             dct = self._findSinusoidCoefficients(xterm)
-            factor_dcts.append(dct)
+            self.factor_dcts.append(dct)
             factored_term = dct[A]*sp.cos(t*theta) + dct[B]*sp.sin(t*theta) + dct[C]
             factored_x_vec.append(factored_term)
         self.factored_x_vec = sp.Matrix(factored_x_vec)
         # Create a solution in terms of only sine
         x_terms = []
-        for dct in factor_dcts:
+        for dct in self.factor_dcts:
             amplitude = sp.simplify(sp.sqrt(dct[A]**2 + dct[B]**2))
             phase = sp.simplify(sp.atan(dct[A]/dct[B]))
             x_term = amplitude*sp.sin(t*theta + phase) + dct[C]
@@ -102,7 +106,8 @@ class OscillatorSolution(object):
         result_dct[C] = result_dct[0].as_expr()
         del result_dct[0]
         return result_dct
-    
+
+    # FXIME: Handle phase offset 
     def simulate(self, expression=None, param_dct=mdl.PARAM_DCT, end_time=20, **kwargs):
         """
         Simulates an expression over time.

@@ -38,6 +38,8 @@ def plotDF(df, is_plot=True, output_path=None, title="", xlabel="time", ylabel="
         ax.set_ylim(ylim)
     if output_path is not None:
         ax.figure.savefig(output_path)
+    if is_plot:
+        plt.show()
 
 def simulateLinearSystem(A=None, B=None, end_time=20, column_names=None, **kwargs):
     """
