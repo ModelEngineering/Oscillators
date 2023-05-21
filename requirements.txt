@@ -1,7 +1,9 @@
 control
 jupyterlab
 matplotlib
+nosetests
 numpy
 pandas
+sympy
 tellurium
 sympy

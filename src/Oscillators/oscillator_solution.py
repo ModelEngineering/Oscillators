@@ -91,26 +91,7 @@ class OscillatorSolution(object):
                 key: "a" (coefficient of cosine), "b" (coefficient of sine), "c" (constant coefficient)
                 value: expression
         """
-        
-        def makeDct(expr, term):
-            """
-            Creates a dictionary that has the coefficients of the term
-            """
-            tt = sp.Symbol("tt")
-            new_expr = expr.subs({term: tt})
-            collected = sp.Poly(new_expr, tt).as_expr()
-            i, d = collected.as_independent(tt, as_Add=True)
-            rv = dict(i.as_independent(tt, as_Mul=True)[::-1] for i in sp.Add.make_args(d))
-            if i:
-                assert 1 not in rv
-                rv.update({sp.S.One: i})
-            rv[0] = rv[1].as_expr()
-            del rv[1]
-            rv[1] = rv[tt].as_expr()
-            del rv[tt]
-            return rv
-        #
-        # Make the sine dictionary
+        # Construct dictionaries for the sinusoid terms
         sin_dct = util.makePolynomialCoefficients(expression, sp.sin(t*theta))
         cosine_dct = util.makePolynomialCoefficients(sin_dct[0], sp.cos(t*theta))
         # Create the result
