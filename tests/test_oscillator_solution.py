@@ -35,7 +35,7 @@ class TestOscillatorSolution(unittest.TestCase):
     def testSolve(self):
         if IGNORE_TEST:
             return
-        self.soln.solve(is_check=False)
+        self.soln.solve(is_check=True)
         self.assertEqual(self.soln.x_vec.shape, (2, 1))
 
     def testFindSinusoidCoefficients(self):
