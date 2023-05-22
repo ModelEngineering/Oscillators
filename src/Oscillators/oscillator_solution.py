@@ -35,6 +35,11 @@ class OscillatorSolution(object):
         self.raw_x_vec = None # Initial time domain solution
         self.factor_dcts = None # Dictionaries of the sinusoid coefficients
         self.factored_x_vec = None # Time domain solution factored into sinusoids
+        import pdb; pdb.set_trace()
+        self.theta = sp.sqrt(k2*k_d)
+        self.alphas = None # Amplitudes of the sinusoids
+        self.phis = None # Phases of the sinusoids 
+        self.omegas = None # Oscillation offsets
         self.x_vec = None # Solution structured as a sine with a phase shift
 
     def solve(self, is_check=False):
@@ -63,8 +68,8 @@ class OscillatorSolution(object):
         cdct = sp.solve(self.raw_x_vec.subs(t, 0) - sp.Matrix([ [x1_0], [x2_0]]), [c1, c2])
         self.raw_x_vec = self.raw_x_vec.subs(cdct)
         # Factor the solution into polynomials of sine and cosine
-        factored_x_vec = []
         self.factor_dcts = []
+        factored_x_vec = []
         for xterm in self.raw_x_vec:
             dct = self._findSinusoidCoefficients(xterm)
             self.factor_dcts.append(dct)
@@ -73,11 +78,17 @@ class OscillatorSolution(object):
         self.factored_x_vec = sp.Matrix(factored_x_vec)
         # Create a solution in terms of only sine
         x_terms = []
+        self.alphas = []
+        self.phis = []
+        self.omegas = []
         for dct in self.factor_dcts:
             amplitude = sp.simplify(sp.sqrt(dct[A]**2 + dct[B]**2))
             phase = sp.simplify(sp.atan(dct[A]/dct[B]))
             x_term = amplitude*sp.sin(t*theta + phase) + dct[C]
             x_terms.append(x_term)
+            self.alphas.append(amplitude)
+            self.phis.append(phase)
+            self.omegas.append(dct[C])
         self.x_vec = sp.simplify(sp.Matrix(x_terms))
         return self.x_vec
 

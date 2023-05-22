@@ -64,7 +64,9 @@ class TestUtil(unittest.TestCase):
     def testSimulateRR(self):
         if IGNORE_TEST:
             return
-        util.simulateRR(is_plot=IS_PLOT)
+        df = util.simulateRR(is_plot=IS_PLOT, output_path=TEST_FILE)
+        self.assertTrue(isinstance(df, pd.DataFrame))
+        self.assertGreater(len(df), 0)
 
     def testMakeSymbolDct(self):
         if IGNORE_TEST:

@@ -134,23 +134,31 @@ def simulateExpressionVector(vec, dct, end_time=round(TIMES[-1]), column_names=N
     plotDF(df, **kwargs)
     return df
 
-def simulateRR(dct={}, is_plot=True):
+def simulateRR(param_dct={}, end_time=5, **kwargs):
     """
     Simulates the model with parameter updates as indicated.
+
+    Args:
+        param_dct: dict (parameter updates)
+        end_time: float (end time of simulation)
+    Returns:
+        pd.DataFrame
     """
     rr = te.loada(MODEL)
     for key, value in PARAM_DCT.items():
         if key in rr.keys():
             rr[key] = value
-    for key, value in dct.items():
+    for key, value in param_dct.items():
         if key in rr.keys():
             rr[key] = value
-    data = rr.simulate(0, 5, 1000)
-    for col in data.colnames[1:]:
-        plt.plot(data[:, 0], data[col])
-    plt.legend(data.colnames[1:])
-    if not is_plot:
-        plt.close()
+    num_point = 10*end_time
+    data = rr.simulate(0, end_time, num_point)
+    dct = {n: data[n] for n in data.colnames}
+    df = pd.DataFrame(dct)
+    df = df.set_index("time")
+    df = df.rename(columns={s: s[1:-1] for s in df.columns})
+    plotDF(df, **kwargs)
+    return df
 
 def makeSymbolDct(expression, name_dct, exclude_names=None):
     """

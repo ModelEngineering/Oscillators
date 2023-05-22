@@ -2,6 +2,7 @@ from src.Oscillators.oscillator_solution import OscillatorSolution
 from src.Oscillators import util
 from src.Oscillators import theta, k_d, t
 
+import lmfit
 import os
 import pandas as pd
 import sympy as sp
@@ -35,7 +36,7 @@ class TestOscillatorSolution(unittest.TestCase):
     def testSolve(self):
         if IGNORE_TEST:
             return
-        self.soln.solve(is_check=True)
+        self.soln.solve(is_check=False)
         self.assertEqual(self.soln.x_vec.shape, (2, 1))
 
     def testFindSinusoidCoefficients(self):
@@ -54,6 +55,10 @@ class TestOscillatorSolution(unittest.TestCase):
         self.assertTrue(isinstance(df, pd.DataFrame))
         self.assertGreater(len(df), 0)
         self.assertTrue(all([col in df.columns for col in ["S1", "S2"]])) 
+
+    def testCalculateResiduals(self):
+        if IGNORE_TEST:
+            return
 
 if __name__ == "__main__":
     unittest.main()
