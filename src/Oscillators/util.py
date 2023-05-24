@@ -1,4 +1,5 @@
-from src.Oscillators.model import MODEL, PARAM_DCT 
+from src.Oscillators.constants import PARAM_DCT
+from src.Oscillators.model import MODEL
 from src.Oscillators import t, theta
 
 import tellurium as te
@@ -27,6 +28,8 @@ def plotDF(df, is_plot=True, output_path=None, title="", xlabel="time", ylabel="
         is_plot (bool, optional): _description_. Defaults to True.
         output_path (str, optional): path to the output file
     """
+    if not is_plot and output_path is None:
+        return
     ax = df.plot()
     plt.legend(df.columns, loc="upper left")
     ax.set_xlabel(xlabel)
@@ -126,8 +129,8 @@ def simulateExpressionVector(vec, dct, end_time=round(TIMES[-1]), column_names=N
     if column_names is None:
         column_names = ["S1", "S2"]
     times = makeTimes(end_time=end_time)
-    s1_vals = simulateExpression(vec[0], dct, times=times)
-    s2_vals = simulateExpression(vec[1], dct, times=times)
+    s1_vals = simulateExpression(vec[0], dct, times=times, is_plot=False)
+    s2_vals = simulateExpression(vec[1], dct, times=times, is_plot=False)
     df = pd.DataFrame({"time": times, column_names[0]: s1_vals, column_names[1]: s2_vals})
     df = df.set_index("time")
     #
@@ -151,7 +154,7 @@ def simulateRR(param_dct={}, end_time=5, **kwargs):
     for key, value in param_dct.items():
         if key in rr.keys():
             rr[key] = value
-    num_point = 10*end_time
+    num_point = int(10*end_time)
     data = rr.simulate(0, end_time, num_point)
     dct = {n: data[n] for n in data.colnames}
     df = pd.DataFrame(dct)

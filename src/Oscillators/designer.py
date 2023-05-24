@@ -1,3 +1,8 @@
+"""
+Finds parameters of the network that give desired oscillating characteristics to S1 and
+both S1 and S2 are feasible trajectories (non-negative concentrations).
+"""
+
 from src.Oscillators import util
 
 import lmfit
@@ -5,28 +10,27 @@ import numpy as np
 import pandas as pd
 
 
-class OscillatorDesigner(object):
+class Designer(object):
 
-    LESS_THAN_ZERO_MULTIPLIER = 1e6
+    LESS_THAN_ZERO_MULTIPLIER = 2
 
-    def __init__(self, theta, alphas, phis, omegas, num_point=100):
+    def __init__(self, theta, alpha, phi, omega, end_time=5):
         """
         Args:
             theta: float (frequency in radians)
-            alphas: (float, float) (amplitude of the sinusoids)
-            phis (_type_): _description_
-            omegas (_type_): _description_
+            alpha: float (amplitude of the sinusoids)
+            phi: float (phase of the sinusoids)
+            omega: float (offset of the sinusoids)
             num_point (int, optional): (number of points in a sinusoid series). Defaults to 100.
         """
         self.theta = theta
-        self.alphas = alphas
-        self.phis = phis
-        self.omegas = omegas
-        self.num_point = num_point
+        self.alpha = alpha
+        self.phi = phi
+        self.omega = omega
+        self.end_time = end_time
+        self.num_point = 10*end_time
         #
-        self.end_time = num_point/self.theta
-        self.times = np.linspace(0, self.end_time, num_point)
-        self.names = ["k2", "k4", "k6", "k_d", "x1_0", "x2_0"]
+        self.times = np.linspace(0, self.end_time, self.num_point)
         # Reaction network parameters
         self.k1 = None
         self.k2 = None
@@ -37,8 +41,9 @@ class OscillatorDesigner(object):
         self.x1_0 = None
         self.x2_0 = None
         self.k_d = None
+        self.x1 = None
         # Reference sinusoids
-        self.x_refs = np.array([alphas[n]*np.sin(self.times*self.theta + self.phis[n]) + self.omegas[n] for n in [0, 1]])
+        self.x1_ref = self.alpha*np.sin(self.times*self.theta + self.phi) + self.omega
 
     def find(self):
         """
@@ -52,16 +57,6 @@ class OscillatorDesigner(object):
         parameters.add("x2_0", value=1.0, min=0.1)
         #
         self.minimizer = lmfit.minimize(self.calculateResiduals, parameters, method="leastsq")
-        # Set the results
-        self.k1 = 1 # Aribratry choice
-        self.k2 = self.minimizer.params["k2"].value
-        self.k4 = self.minimizer.params["k4"].value
-        self.k6 = self.minimizer.params["k6"].value
-        self.x1_0 = self.minimizer.params["x1_0"].value
-        self.x2_0 = self.minimizer.params["x2_0"].value
-        self.k_d = self._calculateKd(self.k2)
-        self.k3 = self.k1 + self.k2
-        self.k5 = self.k3 + self.k_d
         return self.minimizer
 
     @staticmethod
@@ -77,8 +72,12 @@ class OscillatorDesigner(object):
 
     def calculateResiduals(self, params):
         """
-        Calculates the results for the parameters.
-        Parameters are: k2, k4 k6, x1_0, x2_0
+        Calculates the results for the parameters. x1 residuals are calculated w.r.t. the reference.
+        x2 residuals are calculated w.r.t. 0.
+
+        Args:
+            params: lmfit.Parameters 
+                k2, k4 k6, x1_0, x2_0
         """
         k2 = params["k2"].value
         k4 = params["k4"].value
@@ -99,10 +98,10 @@ class OscillatorDesigner(object):
         amp = np.sqrt(amp_1 + amp_2)/denom
         numr_phi = k2**2*k4 - k2**2*k6 + k2*k4*k_d + k2*theta**2*x1_0 - k6*theta**2 + k_d*theta**2*x1_0
         denom_phi = theta*(k2**2*x1_0 + k2**2*x2_0 - k2*k4 + k2*k_d*x1_0 - k4*k_d + theta**2*x2_0)
-        phase_offset = self._calculatePhaseOffset(self.phis[0])
+        phase_offset = self._calculatePhaseOffset(self.phi)
         phi = np.arctan(numr_phi/denom_phi) + phase_offset
         #
-        x1 = amp*np.sin(self.times*theta + phi) + omega
+        self.x1 = amp*np.sin(self.times*theta + phi) + omega
         ####
         # x2
         ####
@@ -114,12 +113,31 @@ class OscillatorDesigner(object):
         #
         phi = np.arctan((k2*k4 - k2*k6 + k4*k_d - theta**2*x2_0)/(theta*(k2*x1_0 + k2*x2_0 - k6 + k_d*x1_0)))
         phase_offset = self._calculatePhaseOffset(phi)
-        phi = theta + phase_offset
+        phi = phi + phase_offset
+        phi = phi + np.pi
         x2 = amp*np.sin(self.times*theta + phi) + omega
+        x2_residuals = -1*(np.sign(x2)-1)*x2*self.LESS_THAN_ZERO_MULTIPLIER/2
         # Calculate the residuals
-        residual_arr = self.x_refs[0] - x1
-        residual_arr = np.concatenate((residual_arr, self.x_refs[1] - x2))
+        residual_arr = self.x1_ref - self.x1
+        residual_arr = np.concatenate([residual_arr, x2_residuals])
+        # Updates the parameters
+        self.k1 = 1 # Aribratry choice
+        self.k2 = k2
+        self.k_d = k_d
+        self.k3 = self.k1 + k2
+        self.k4 = k4
+        self.k5 = self.k3 + k_d
+        self.k6 = k6
+        self.x1_0 = x1_0
+        self.x2_0 = x2_0
+        #
         return residual_arr
+
+    @property 
+    def params(self):
+        return {"k1": self.k1, "k2": self.k2, "k3": self.k3, "k4": self.k4, "k5": self.k5, "k6": self.k6,
+                "S1": self.x1_0, "S2": self.x2_0}
+
     
     def simulate(self, **kwargs):
         """
@@ -133,8 +151,5 @@ class OscillatorDesigner(object):
         if self.k2 is None:
             raise ValueError("Must call find() before calling simulate()")
         #
-        dct = {"k1": self.k1, "k2": self.k2, "k3": self.k3, "k4": self.k4, "k5": self.k5, "k6": self.k6,
-                "S1": self.x1_0, "S2": self.x2_0}
-        import pdb; pdb.set_trace()
-        df = util.simulateRR(param_dct=dct, **kwargs)
+        df = util.simulateRR(param_dct=self.params, **kwargs)
         return df

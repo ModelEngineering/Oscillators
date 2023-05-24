@@ -1,7 +1,7 @@
 '''Tests for util.py'''
 
 from src.Oscillators import k_d, t, theta
-from src.Oscillators.model import PARAM_DCT 
+from src.Oscillators.constants import PARAM_DCT 
 from src.Oscillators import util
 from src.Oscillators.util import TIMES
 

@@ -4,7 +4,7 @@ from src.Oscillators import c1, c2, t, \
       alpha, omega, theta, k2, k4, k6, k_d, x1, x1_0, x2, x2_0, I
 from src.Oscillators.static_expressions import xp_1, xp_2
 from src.Oscillators import util
-import src.Oscillators.model as mdl
+import src.Oscillators.constants as cn
 
 import tellurium as te
 import sympy as sp
@@ -18,7 +18,7 @@ B = "b"
 C = "c"
 
 
-class OscillatorSolution(object):
+class Solver(object):
 
     # This class derivces the time domain solution
 
@@ -35,7 +35,6 @@ class OscillatorSolution(object):
         self.raw_x_vec = None # Initial time domain solution
         self.factor_dcts = None # Dictionaries of the sinusoid coefficients
         self.factored_x_vec = None # Time domain solution factored into sinusoids
-        import pdb; pdb.set_trace()
         self.theta = sp.sqrt(k2*k_d)
         self.alphas = None # Amplitudes of the sinusoids
         self.phis = None # Phases of the sinusoids 
@@ -84,6 +83,7 @@ class OscillatorSolution(object):
         for dct in self.factor_dcts:
             amplitude = sp.simplify(sp.sqrt(dct[A]**2 + dct[B]**2))
             phase = sp.simplify(sp.atan(dct[A]/dct[B]))
+            phase = sp.Piecewise((phase, dct[B] >= 0), (phase + sp.pi, dct[B] < 0))
             x_term = amplitude*sp.sin(t*theta + phase) + dct[C]
             x_terms.append(x_term)
             self.alphas.append(amplitude)
@@ -119,7 +119,7 @@ class OscillatorSolution(object):
         return result_dct
 
     # FXIME: Handle phase offset 
-    def simulate(self, expression=None, param_dct=mdl.PARAM_DCT, end_time=5, **kwargs):
+    def simulate(self, expression=None, param_dct=cn.PARAM_DCT, end_time=5, **kwargs):
         """
         Simulates an expression over time.
 
@@ -140,7 +140,7 @@ class OscillatorSolution(object):
                 raise ValueError("expression is None and self.x_vec is None")   
             expression = self.x_vec
         symbol_dct = util.makeSymbolDct(expression, param_dct)
-        if "Matrix" in str(type(expression)):
+        if expression == self.A_mat:
             mat = self.A_mat.subs(symbol_dct)
             df = util.simulateLinearSystem(A=mat, end_time=end_time, column_names=["S1", "S2"], **kwargs)
         else:

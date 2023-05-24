@@ -1,4 +1,4 @@
-from src.Oscillators.oscillator_solution import OscillatorSolution
+from src.Oscillators.solver import Solver
 from src.Oscillators import util
 from src.Oscillators import theta, k_d, t
 
@@ -17,7 +17,7 @@ REMOVE_FILES = [TEST_FILE]
 class TestOscillatorSolution(unittest.TestCase):
 
     def setUp(self):
-        self.soln = OscillatorSolution()
+        self.soln = Solver()
         self.remove()
 
     def tearDown(self):
