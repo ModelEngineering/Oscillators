@@ -9,7 +9,7 @@ import pandas as pd
 import unittest
 
 IGNORE_TEST = False
-IS_PLOT = False
+IS_PLOT = True
 END_TIME = 5
 
 class TestOscillatorDesigner(unittest.TestCase):
@@ -48,7 +48,7 @@ class TestOscillatorDesigner(unittest.TestCase):
             return
         _ = self.designer.find()
         if IS_PLOT:
-            df = self.designer.simulate(is_plot=False, end_time=END_TIME)
+            df = self.designer.simulate(is_plot=False)
             df["ref_x1"] = self.designer.x1_ref
             x1_ref = self.designer.alpha*np.sin(self.designer.times*self.designer.theta + self.designer.phi) + self.designer.omega
             length = len(x1_ref)
@@ -58,6 +58,34 @@ class TestOscillatorDesigner(unittest.TestCase):
             df["S1"] = df["S1"] + np.random.normal(0, UPPER, length)
             util.plotDF(df, is_plot=IS_PLOT, output_path="testFind.pdf")
         self.assertTrue(self.designer.minimizer.success)
+
+    def testParameterToStr(self):
+        if IGNORE_TEST:
+            return
+        stg = self.designer._parameterToStr("theta")
+        self.assertTrue(isinstance(stg, str))
+
+
+    def testPlotFit(self):
+        if IGNORE_TEST:
+            return
+        designer = Designer(theta=2*np.pi, alpha=20, phi=-1,
+                                omega=20, end_time=5)
+        designer.find()
+        if IS_PLOT:
+            designer.plotFit(output_path="testPlotFit.pdf")
+
+    def testPlotManyFits(self):
+        if IGNORE_TEST:
+            return
+        self.designer.plotManyFits(output_path="testPlotManyFigs.pdf")
+
+    def testEvaluate(self):
+        if IGNORE_TEST:
+            return
+        evaluation = self.designer.evaluate()
+        self.assertTrue(evaluation.is_feasible)
+        self.assertTrue(isinstance(evaluation.alphadev, float))
 
 
 if __name__ == "__main__":

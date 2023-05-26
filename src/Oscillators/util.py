@@ -137,7 +137,7 @@ def simulateExpressionVector(vec, dct, end_time=round(TIMES[-1]), column_names=N
     plotDF(df, **kwargs)
     return df
 
-def simulateRR(param_dct={}, end_time=5, **kwargs):
+def simulateRR(param_dct={}, end_time=5, num_point=None, **kwargs):
     """
     Simulates the model with parameter updates as indicated.
 
@@ -154,7 +154,8 @@ def simulateRR(param_dct={}, end_time=5, **kwargs):
     for key, value in param_dct.items():
         if key in rr.keys():
             rr[key] = value
-    num_point = int(10*end_time)
+    if num_point is None:
+        num_point = int(10*end_time)
     data = rr.simulate(0, end_time, num_point)
     dct = {n: data[n] for n in data.colnames}
     df = pd.DataFrame(dct)
@@ -179,6 +180,20 @@ def makeSymbolDct(expression, name_dct, exclude_names=None):
         dct[sym] = name_dct[sym.name]
     #
     return dct
+
+def getSubstitutedExpression(expression, name_dct, **kwargs):
+    """Substitutes the symbols in the expression with the values in the dictionary.
+
+    Args:
+        expression: sp.Expression
+        name_dct: dict (key: str, value: float)
+        kwargs: optional arguments to makeSymbolDct
+    """
+    symbol_dct = makeSymbolDct(expression, name_dct, **kwargs)
+    result = expression.subs(symbol_dct)
+    if len(result.free_symbols) == 0:
+        result = float(result)
+    return result
 
 def findSinusoidCoefficients(expression):
     """

@@ -1,6 +1,6 @@
 '''Tests for util.py'''
 
-from src.Oscillators import k_d, t, theta
+from src.Oscillators import k_d, t, theta, k2
 from src.Oscillators.constants import PARAM_DCT 
 from src.Oscillators import util
 from src.Oscillators.util import TIMES
@@ -11,7 +11,7 @@ import sympy as sp
 import unittest
 
 IGNORE_TEST = False
-IS_PLOT = True
+IS_PLOT = False
 TEST_DIR = os.path.dirname(os.path.abspath(__file__)) # This directory
 TEST_FILE = os.path.join(TEST_DIR, "test_util.pdf")
 REMOVE_FILES = [TEST_FILE] 
@@ -81,6 +81,19 @@ class TestUtil(unittest.TestCase):
         dct = util.makePolynomialCoefficients(expression, sp.cos(t*theta))
         trues = [dct[n] == n+1 for n in range(2)]
         self.assertTrue(all(trues))
+
+    def testGetSubstitutedExpression(self):
+        if IGNORE_TEST:
+            return
+        dct = {"theta": 2, "k2":4.0}
+        expression = 2*theta*k2
+        result = util.getSubstitutedExpression(expression, dct)
+        self.assertEqual(result, 16)
+        self.assertTrue(isinstance(result, float))
+        #
+        expression = 2*theta*k2*k_d
+        result = util.getSubstitutedExpression(expression, dct)
+        self.assertTrue("sympy" in str(type(result)))
 
 if __name__ == "__main__":
     unittest.main()

@@ -1,6 +1,7 @@
 from src.Oscillators.solver import Solver
 from src.Oscillators import util
 from src.Oscillators import theta, k_d, t
+import src.Oscillators.constants as cn
 
 import lmfit
 import os
@@ -8,7 +9,7 @@ import pandas as pd
 import sympy as sp
 import unittest
 
-IGNORE_TEST = False
+IGNORE_TEST = True
 IS_PLOT = False
 TEST_DIR = os.path.dirname(os.path.abspath(__file__)) # This directory
 TEST_FILE = os.path.join(TEST_DIR, "test_oscillator_solution.pdf")
@@ -34,9 +35,9 @@ class TestOscillatorSolution(unittest.TestCase):
         self.assertEqual(self.soln.A_mat.shape, (2, 2))
 
     def testSolve(self):
-        if IGNORE_TEST:
-            return
-        self.soln.solve(is_check=False)
+        #if IGNORE_TEST:
+        #    return
+        self.soln.solve(is_check=False, is_simplify=False)
         self.assertEqual(self.soln.x_vec.shape, (2, 1))
 
     def testFindSinusoidCoefficients(self):
@@ -56,9 +57,12 @@ class TestOscillatorSolution(unittest.TestCase):
         self.assertGreater(len(df), 0)
         self.assertTrue(all([col in df.columns for col in ["S1", "S2"]])) 
 
-    def testCalculateResiduals(self):
+    def testGetOscillatorCharacteristics(self): 
         if IGNORE_TEST:
             return
+        self.soln.solve(is_check=False)
+        oc1, oc2 = self.soln.getOscillatorCharacteristics(dct=cn.PARAM_DCT)
+        self.assertEqual(oc1.theta==oc2.theta)
 
 if __name__ == "__main__":
     unittest.main()

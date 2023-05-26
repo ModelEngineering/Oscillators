@@ -1,21 +1,27 @@
 '''Constructs a closed form solution to the ODE for the Oscillator'''
 
 from src.Oscillators import c1, c2, t, \
-      alpha, omega, theta, k2, k4, k6, k_d, x1, x1_0, x2, x2_0, I
+      theta, k2, k4, k6, k_d, x1_0, x2_0, I
 from src.Oscillators.static_expressions import xp_1, xp_2
 from src.Oscillators import util
 import src.Oscillators.constants as cn
 
+import collections
 import tellurium as te
 import sympy as sp
 from sympy import init_printing
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+import time
+
 
 A = "a"
 B = "b"
 C = "c"
+
+OscillatorCharacteristics = collections.namedtuple("OscillatorCharacteristics", "theta alpha phi omega")
+
 
 
 class Solver(object):
@@ -41,12 +47,34 @@ class Solver(object):
         self.omegas = None # Oscillation offsets
         self.x_vec = None # Solution structured as a sine with a phase shift
 
-    def solve(self, is_check=False):
+    def getOscillatorCharacteristics(self, dct=None):
+        """Returns a substituted value.
+
+        Args:
+            dct: dict (key: name, value: float)
+
+        Returns:
+            OscillatorCharacteristics (x1)
+            OscillatorCharacteristics (x2)
+        """
+        if dct is None:
+            dct = {}
+        def get(idx):
+            return OscillatorCharacteristics(
+                theta=util.getSubstitutedExpression(self.theta, dct),
+                alpha=util.getSubstitutedExpression(self.alphas[idx], dct),
+                phi=util.getSubstitutedExpression(self.phis[idx], dct),
+                omega=util.getSubstitutedExpression(self.omegas[idx], dct)
+            )
+        return get(0), get(1)
+
+    def solve(self, is_check=False, is_simplify=False):
         """
         Constructs the time domain solution.
 
         Args:
             is_check (bool, optional): check the saved solution. Defaults to False.
+            is_simplify: simplify the final solution (time consuming)
         Returns:
             sp.Matrix: matrix solution for the differential equation
         """
@@ -89,7 +117,9 @@ class Solver(object):
             self.alphas.append(amplitude)
             self.phis.append(phase)
             self.omegas.append(dct[C])
-        self.x_vec = sp.simplify(sp.Matrix(x_terms))
+        self.x_vec = sp.Matrix(x_terms)
+        if is_simplify:
+            self.x_vec = sp.simplify(self.x_vec)
         return self.x_vec
 
     @staticmethod
