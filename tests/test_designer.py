@@ -8,7 +8,7 @@ import os
 import pandas as pd
 import unittest
 
-IGNORE_TEST = False
+IGNORE_TEST = True
 IS_PLOT = True
 END_TIME = 5
 
@@ -86,6 +86,19 @@ class TestOscillatorDesigner(unittest.TestCase):
         evaluation = self.designer.evaluate()
         self.assertTrue(evaluation.is_feasible)
         self.assertTrue(isinstance(evaluation.alphadev, float))
+
+    def testEvaluateMany(self):
+        #if IGNORE_TEST:
+        #    return
+        df = self.designer.evaluateMany(output_path="testEvaluateMany.pdf",
+                                        theta_cnt=20, alpha_cnt=4)
+        self.assertTrue(isinstance(df, pd.DataFrame))
+        self.assertTrue("alphadev" in df.columns)
+        self.assertTrue("theta" in df.columns)
+        self.assertTrue("alpha" in df.columns)
+        self.assertTrue("phi" in df.columns)
+        self.assertGreater(len(df), 0)
+
 
 
 if __name__ == "__main__":

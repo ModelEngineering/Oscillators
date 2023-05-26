@@ -5,6 +5,7 @@ matplotlib
 nose2
 numpy
 pandas
+seaborn
 sympy
 tellurium
 sympy

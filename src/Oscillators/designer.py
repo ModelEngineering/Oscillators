@@ -14,7 +14,9 @@ import collections
 import matplotlib.pyplot as plt
 import lmfit
 import numpy as np
+import os
 import pandas as pd
+import seaborn as sns
 
 
 INITIAL_SSQ = 1e8
@@ -183,7 +185,7 @@ class Designer(object):
         if self.k2 is not None:
             self.k3 = self.k1 + self.k2
         self.k4 = dct["k4"]
-        if self.k3 is not None:
+        if self.k_d is not None:
             self.k5 = self.k3 + self.k_d
         self.k6 = dct["k6"]
         self.x1_0 = dct["x1_0"]
@@ -290,6 +292,10 @@ class Designer(object):
         """
         if self.k2 is None:
             self.find()
+        # Check if success
+        if self.ssq == INITIAL_SSQ:
+            return Evaluation(is_feasible=False, alphadev=None, phidev=None)
+        # Completed the optimization
         oc, _ = SOLVER.getOscillatorCharacteristics(dct=self.params)
         x_vec = util.getSubstitutedExpression(SOLVER.x_vec, self.params) 
         x1_vec, x2_vec = x_vec[0], x_vec[1]
@@ -297,6 +303,69 @@ class Designer(object):
         x2_arr = np.array([x2_vec.subs({t: v}) for v in self.times])
         arr = np.concatenate([x1_arr, x2_arr])
         is_feasible = all(arr >= -1e6)
-        alphadev = (1 - oc.alpha/self.alpha)/2
+        alphadev = 1 - oc.alpha/self.alpha
         phidev = self.phi - oc.phi
         return Evaluation(is_feasible=is_feasible, alphadev=alphadev, phidev=phidev)
+    
+    @classmethod
+    def evaluateMany(cls, theta_cnt=3, alpha_cnt=2, phi_cnt=2, output_path=None, is_plot=True):
+        """Evaluates the accuracy of the designer over a range of parameters
+        using alpha=omega.
+
+        Args:
+            output_path: str
+            is_plot: bool
+
+        Returns:
+            pd.DataFrame
+                columns: theta, alpha, phi, is_feasible, alphadev, phidev
+        """
+        local_names = ["theta", "alpha", "phi"]
+        evaluation_names = ["is_feasible", "alphadev", "phidev"]
+        names = list(local_names)
+        names.extend(evaluation_names)
+        thetas = np.round(2*np.pi*np.linspace(0.01, 100, theta_cnt), 2)
+        alphas = np.round(np.linspace(0.1, 10, alpha_cnt), 2)
+        phis = np.round(np.linspace(0, np.pi, phi_cnt), 2)
+        result_dct = {n: [] for n in names}
+        for theta in thetas:
+            for alpha in alphas:
+                for phi in phis:
+                    designer = Designer(theta, alpha, phi, alpha)
+                    evaluation = designer.evaluate()
+                    for name in local_names:
+                        stmt = "result_dct['%s'].append(%s)" % (name, name)
+                        exec(stmt)
+                    for name in evaluation_names:
+                        stmt = "result_dct['%s'].append(evaluation.%s)" % (name, name)
+                        exec(stmt)
+        df = pd.DataFrame(result_dct)
+        #
+        if is_plot:
+            new_df = df[df["phi"] == 0]
+            plot_df = pd.pivot_table(new_df, values='is_feasible', index='alpha', columns='theta')
+            plot_df = plot_df.sort_index(ascending=False)
+            ax = sns.heatmap(plot_df, cmap="YlGnBu", vmin=0, vmax=1, linewidths=1.0)
+            ax.set_ylabel(r'$\alpha$')
+            ax.set_xlabel(r'$\theta$')
+            if output_path is not None:
+                feasible_path = cls.addPathSuffix(output_path, "_feasible")
+                ax.figure.savefig(feasible_path)
+            # Amplitude deviations
+            new_df = df[df["is_feasible"] == True]
+            plot_df = pd.pivot_table(new_df, values='alphadev', index='alpha', columns='theta')
+            plot_df = plot_df.sort_index(ascending=False)
+            ax = sns.heatmap(plot_df, cmap="YlGnBu", vmin=0, vmax=1, linewidths=1.0)
+            ax.set_ylabel(r'$\alpha$')
+            ax.set_xlabel(r'$\theta$')
+            if output_path is not None:
+                alpha_path = cls.addPathSuffix(output_path, "_alphadev")
+                ax.figure.savefig(alpha_path)
+            #
+            plt.show()
+        return df
+    
+    @staticmethod
+    def addPathSuffix(path, suffix):
+        parts = os.path.splitext(path)
+        return parts[0] + suffix + parts[1]
