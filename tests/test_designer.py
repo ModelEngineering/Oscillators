@@ -11,12 +11,23 @@ import unittest
 IGNORE_TEST = True
 IS_PLOT = True
 END_TIME = 5
+CSV_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "test_designer.csv")
+REMOVE_FILES = [CSV_PATH]
 
 class TestOscillatorDesigner(unittest.TestCase):
 
     def setUp(self):
+        self.remove()
         one_hertz = 2*np.pi
         self.designer = Designer(theta=one_hertz, alpha=3, phi=0, omega=5, end_time=END_TIME)
+
+    def tearDown(self):
+        self.remove()
+
+    def remove(self):
+        for path in REMOVE_FILES:
+            if os.path.exists(path):
+                os.remove(path)
 
     def testConstructor(self):
         if IGNORE_TEST:
@@ -87,18 +98,28 @@ class TestOscillatorDesigner(unittest.TestCase):
         self.assertTrue(evaluation.is_feasible)
         self.assertTrue(isinstance(evaluation.alphadev, float))
 
-    def testEvaluateMany(self):
-        #if IGNORE_TEST:
-        #    return
-        df = self.designer.evaluateMany(output_path="testEvaluateMany.pdf",
-                                        theta_cnt=20, alpha_cnt=4)
+    def testMakeEvaluationData(self):
+        if IGNORE_TEST:
+            return
+        df = self.designer.makeEvaluationData(
+              thetas=[0.1, 1.0],
+              alphas=[0.1, 10.0], phis=[0, np.pi],
+                            csv_path=CSV_PATH)
         self.assertTrue(isinstance(df, pd.DataFrame))
         self.assertTrue("alphadev" in df.columns)
         self.assertTrue("theta" in df.columns)
         self.assertTrue("alpha" in df.columns)
         self.assertTrue("phi" in df.columns)
         self.assertGreater(len(df), 0)
+        self.assertTrue(os.path.exists(CSV_PATH))
 
+    def testPlotEvaluationData(self):
+        #if IGNORE_TEST:
+        #    return
+        self.designer.plotEvaluationData("feasibledev", plot_path="testPlotEvaluationData_feas.pdf")
+        self.designer.plotEvaluationData("alphadev", plot_path="testPlotEvaluationData_alpha.pdf", vmin=-4, vmax=4)
+        self.designer.plotEvaluationData("phidev", plot_path="testPlotEvaluationData_phi.pdf")
+        import pdb; pdb.set_trace()
 
 
 if __name__ == "__main__":

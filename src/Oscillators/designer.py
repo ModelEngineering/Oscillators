@@ -12,6 +12,7 @@ from src.Oscillators.solver import Solver
 
 import collections
 import matplotlib.pyplot as plt
+from matplotlib.gridspec import GridSpec
 import lmfit
 import numpy as np
 import os
@@ -20,20 +21,22 @@ import seaborn as sns
 
 
 INITIAL_SSQ = 1e8
-MIN_VALUE = 0
-MAX_VALUE = 1000
+MIN_VALUE = 0  # Minimum value for the parameters
+MAX_VALUE = 1e5  # Maximum value for the parameters
 MAX_RESIDUAL = 1e6
 SOLVER = Solver()
 SOLVER.solve()
+CSV_PATH = os.path.join(os.path.dirname(__file__), "evaluation_data.csv")
+PLOT_PATH = os.path.join(os.path.dirname(__file__), "evaluation_data.pdf")
 
-Evaluation = collections.namedtuple("Evaluation", "is_feasible, alphadev, phidev")
+Evaluation = collections.namedtuple("Evaluation", "feasibledev, alphadev, phidev, k2, k_d, k4, k6, x1_0, x2_0")
 
 
 class Designer(object):
 
     LESS_THAN_ZERO_MULTIPLIER = 2
 
-    def __init__(self, theta, alpha, phi, omega, end_time=5):
+    def __init__(self, theta, alpha, phi, omega, end_time=10):
         """
         Args:
             theta: float (frequency in radians)
@@ -294,7 +297,7 @@ class Designer(object):
             self.find()
         # Check if success
         if self.ssq == INITIAL_SSQ:
-            return Evaluation(is_feasible=False, alphadev=None, phidev=None)
+            return Evaluation(feasibledev=False, alphadev=None, phidev=None)
         # Completed the optimization
         oc, _ = SOLVER.getOscillatorCharacteristics(dct=self.params)
         x_vec = util.getSubstitutedExpression(SOLVER.x_vec, self.params) 
@@ -302,15 +305,93 @@ class Designer(object):
         x1_arr = np.array([float(x1_vec.subs({t: v})) for v in self.times])
         x2_arr = np.array([x2_vec.subs({t: v}) for v in self.times])
         arr = np.concatenate([x1_arr, x2_arr])
-        is_feasible = all(arr >= -1e6)
-        alphadev = 1 - oc.alpha/self.alpha
+        feasibledev = sum(arr < -1e6)/len(arr)
+        alphadev = oc.alpha/self.alpha - 1
         phidev = self.phi - oc.phi
-        return Evaluation(is_feasible=is_feasible, alphadev=alphadev, phidev=phidev)
+        sign = np.sign(phidev)
+        phidev = sign*(sign*100*phidev % int(200*np.pi))/100.0
+        phidev = phidev/2*np.pi
+        return Evaluation(feasibledev=feasibledev, alphadev=alphadev, phidev=phidev,
+                          k2=self.k2, k_d=self.k_d, k4=self.k4, k6=self.k6, x1_0=self.x1_0, x2_0=self.x2_0)
     
     @classmethod
-    def evaluateMany(cls, theta_cnt=3, alpha_cnt=2, phi_cnt=2, output_path=None, is_plot=True):
-        """Evaluates the accuracy of the designer over a range of parameters
-        using alpha=omega.
+    def plotEvaluationData(cls, value_name, csv_path=CSV_PATH, is_plot=True,
+                           plot_path=PLOT_PATH, title=None, vmin=0, vmax=1):
+        """Plots previously constructed evaluation data.
+        Plots 4 heatmaps, one per phase. A heatmap as x = frequency, y=amplitude
+
+        Args:
+            value_name: str ("feasibledev", "ampdev", "phidev")
+            csv_path: str
+            output_path: str
+            is_plot: bool
+            plot_path: str (pdf file for plot)
+            vmin: float (minimum on colobar)
+            vmax: float (maximum on colobar)
+        """
+        df = pd.read_csv(csv_path)
+        df = df.round(decimals=1)
+        nrow = 2
+        ncol = 2
+        fig = plt.figure()
+        grid_size = 8
+        space = 2  # space between visual elements
+        psize = 8  # size of a side of a plot
+        bsize = 2  # size of a side of a colorbar
+        width = 2*space + ncol*psize + bsize
+        length = space + nrow*psize
+        gs = GridSpec(length, width, figure=fig)
+        plot_starts = [0, psize + space]
+        plot_ends = [psize, 2*psize+ space]
+        cbar_start = 2*(psize+space)
+        cbar_end = cbar_start + 1
+        #
+        icol = 0
+        irow = 0
+        phis = df["phi"].unique()
+        # Iterate across the plots
+        for idx, phi in enumerate(phis):
+            ax = fig.add_subplot(gs[plot_starts[irow]:plot_ends[irow], plot_starts[icol]:plot_ends[icol]])
+            new_df = df[df["phi"] == phi]
+            if (irow == nrow-1) and (icol == ncol - 1):
+                cbar_ax = fig.add_subplot(gs[:, cbar_start:cbar_end])
+                cbar=True
+            else:
+                cbar_ax = None
+                cbar=False
+            plot_df = pd.pivot_table(new_df, values=value_name, index='alpha', columns='theta')
+            plot_df = plot_df.sort_index(ascending=False)
+            g = sns.heatmap(plot_df, cmap="seismic", vmin=vmin, vmax=vmax, linewidths=1.0, annot=True, ax=ax, cbar=cbar, cbar_ax=cbar_ax,
+                            annot_kws={"fontsize":6}, cbar_kws={'label': 'error fraction'})
+            g.set_xticklabels(g.get_xticklabels(), rotation = 30, fontsize = 8)
+            g.set_yticklabels(g.get_yticklabels(), rotation = 0, fontsize = 8)
+            ax.set_ylabel(r'$\alpha$')
+            ax.set_title(r'$\phi$ = {}'.format(np.round(phi, 2)))
+            icol += 1
+            if irow == nrow - 1:
+                is_xaxis = True
+            else:
+                is_xaxis = False
+            if not is_xaxis:
+                ax.set_xticklabels([])
+                ax.set_xlabel("")
+            else:
+                ax.set_xlabel(r'$\theta$')
+            if icol == ncol:
+                icol = 0
+                irow += 1 
+        #
+        if plot_path is not None:
+            fig.savefig(plot_path)
+        if is_plot:
+            plt.show()
+    
+    @classmethod
+    def makeEvaluationData(cls, thetas=[0.1, 0.5, 1.0, 5.0, 10.0, 20.0, 50.0, 100.0],
+                            alphas=[0.1, 0.5, 1.0, 2.0, 5.0, 10.0], phis=[0, 0.5*np.pi, np.pi, 1.5*np.pi],
+                            csv_path=CSV_PATH, is_report=True):
+        """
+        Creates a CSV file with evaluation data using alpha=omega.
 
         Args:
             output_path: str
@@ -318,16 +399,19 @@ class Designer(object):
 
         Returns:
             pd.DataFrame
-                columns: theta, alpha, phi, is_feasible, alphadev, phidev
+                columns: theta, alpha, phi, feasibledev, alphadev, phidev, k2, k_d, k4, k6, x1_0, x2_0
         """
+        num_rows = len(thetas)*len(alphas)*len(phis)
+        #
         local_names = ["theta", "alpha", "phi"]
-        evaluation_names = ["is_feasible", "alphadev", "phidev"]
+        evaluation_names = ["feasibledev", "alphadev", "phidev"]
+        designer_names = ["k2", "k_d", "k4", "k6", "x1_0", "x2_0"]
         names = list(local_names)
         names.extend(evaluation_names)
-        thetas = np.round(2*np.pi*np.linspace(0.01, 100, theta_cnt), 2)
-        alphas = np.round(np.linspace(0.1, 10, alpha_cnt), 2)
-        phis = np.round(np.linspace(0, np.pi, phi_cnt), 2)
+        names.extend(designer_names)
         result_dct = {n: [] for n in names}
+        count = 0
+        percent = 0
         for theta in thetas:
             for alpha in alphas:
                 for phi in phis:
@@ -339,33 +423,24 @@ class Designer(object):
                     for name in evaluation_names:
                         stmt = "result_dct['%s'].append(evaluation.%s)" % (name, name)
                         exec(stmt)
+                    for name in designer_names:
+                        stmt = "result_dct['%s'].append(designer.%s)" % (name, name)
+                        exec(stmt)
+                    count += 1
+                    if is_report:
+                        new_percent = (100*count)//num_rows
+                        if new_percent > percent:
+                            percent = new_percent
+                            msg = "Completed %d%%" % percent
+                            print(msg)
         df = pd.DataFrame(result_dct)
-        #
-        if is_plot:
-            new_df = df[df["phi"] == 0]
-            plot_df = pd.pivot_table(new_df, values='is_feasible', index='alpha', columns='theta')
-            plot_df = plot_df.sort_index(ascending=False)
-            ax = sns.heatmap(plot_df, cmap="YlGnBu", vmin=0, vmax=1, linewidths=1.0)
-            ax.set_ylabel(r'$\alpha$')
-            ax.set_xlabel(r'$\theta$')
-            if output_path is not None:
-                feasible_path = cls.addPathSuffix(output_path, "_feasible")
-                ax.figure.savefig(feasible_path)
-            # Amplitude deviations
-            new_df = df[df["is_feasible"] == True]
-            plot_df = pd.pivot_table(new_df, values='alphadev', index='alpha', columns='theta')
-            plot_df = plot_df.sort_index(ascending=False)
-            ax = sns.heatmap(plot_df, cmap="YlGnBu", vmin=0, vmax=1, linewidths=1.0)
-            ax.set_ylabel(r'$\alpha$')
-            ax.set_xlabel(r'$\theta$')
-            if output_path is not None:
-                alpha_path = cls.addPathSuffix(output_path, "_alphadev")
-                ax.figure.savefig(alpha_path)
-            #
-            plt.show()
+        df.to_csv(csv_path, index=False)
         return df
     
     @staticmethod
     def addPathSuffix(path, suffix):
         parts = os.path.splitext(path)
         return parts[0] + suffix + parts[1]
+    
+if __name__ == "__main__":
+    Designer.makeEvaluationData()
