@@ -8,11 +8,13 @@ import os
 import pandas as pd
 import unittest
 
-IGNORE_TEST = True
+IGNORE_TEST = False
 IS_PLOT = True
 END_TIME = 5
-CSV_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "test_designer.csv")
-REMOVE_FILES = [CSV_PATH]
+EVALUATION_CSV = os.path.join(os.path.dirname(os.path.abspath(__file__)), "test_designer.csv")
+# FIXME: Use TEST_EVALUATION_DATA
+TEST_EVALUATION_CSV = os.path.join(os.path.dirname(os.path.abspath(__file__)), "evaluation_data.csv")
+REMOVE_FILES = [EVALUATION_CSV]
 
 class TestOscillatorDesigner(unittest.TestCase):
 
@@ -33,10 +35,10 @@ class TestOscillatorDesigner(unittest.TestCase):
         if IGNORE_TEST:
             return
         if IS_PLOT:
-            df = pd.DataFrame({"time": self.designer.times, "x1": self.designer.x1_ref})
+            df = pd.DataFrame({"time": self.designer.times, "xfit": self.designer.xfit_ref})
             df = df.set_index("time")
             util.plotDF(df, is_plot=False, output_path="testConstructor.pdf")
-        self.assertEqual(len(self.designer.times), len(self.designer.x1_ref))
+        self.assertEqual(len(self.designer.times), len(self.designer.xfit_ref))
 
     def testCalculateResiduals(self):
         if IGNORE_TEST:
@@ -49,7 +51,7 @@ class TestOscillatorDesigner(unittest.TestCase):
         parameters.add("x2_0", value=1.0, min=0.1)
         residuals = self.designer.calculateResiduals(parameters)
         if IS_PLOT:
-            df = pd.DataFrame({"time": self.designer.times, "x1": residuals[0:100], "x2": residuals[100:]})
+            df = pd.DataFrame({"time": self.designer.times, "xfit": residuals[0:100], "xothers": residuals[100:]})
             df = df.set_index("time")
             util.plotDF(df, is_plot=False, output_path="testCalculateResiduals.pdf")    
         self.assertEqual(len(residuals), 2*self.designer.num_point)
@@ -60,12 +62,12 @@ class TestOscillatorDesigner(unittest.TestCase):
         _ = self.designer.find()
         if IS_PLOT:
             df = self.designer.simulate(is_plot=False)
-            df["ref_x1"] = self.designer.x1_ref
-            x1_ref = self.designer.alpha*np.sin(self.designer.times*self.designer.theta + self.designer.phi) + self.designer.omega
-            length = len(x1_ref)
+            df["ref_xfit"] = self.designer.xfit_ref
+            xfit_ref = self.designer.alpha*np.sin(self.designer.times*self.designer.theta + self.designer.phi) + self.designer.omega
+            length = len(xfit_ref)
             UPPER = 0.25
-            df["ref_x1_calc"] = x1_ref + np.random.normal(0, UPPER, length) 
-            df["calc_x1"] = self.designer.x1 + np.random.normal(0, UPPER, length)
+            df["ref_xfit_calc"] = xfit_ref + np.random.normal(0, UPPER, length) 
+            df["calc_xfit"] = self.designer.xfit + np.random.normal(0, UPPER, length)
             df["S1"] = df["S1"] + np.random.normal(0, UPPER, length)
             util.plotDF(df, is_plot=IS_PLOT, output_path="testFind.pdf")
         self.assertTrue(self.designer.minimizer.success)
@@ -95,7 +97,7 @@ class TestOscillatorDesigner(unittest.TestCase):
         if IGNORE_TEST:
             return
         evaluation = self.designer.evaluate()
-        self.assertTrue(evaluation.is_feasible)
+        self.assertEqual(evaluation.feasibledev, 0)
         self.assertTrue(isinstance(evaluation.alphadev, float))
 
     def testMakeEvaluationData(self):
@@ -104,22 +106,29 @@ class TestOscillatorDesigner(unittest.TestCase):
         df = self.designer.makeEvaluationData(
               thetas=[0.1, 1.0],
               alphas=[0.1, 10.0], phis=[0, np.pi],
-                            csv_path=CSV_PATH)
+                            csv_path=EVALUATION_CSV)
         self.assertTrue(isinstance(df, pd.DataFrame))
         self.assertTrue("alphadev" in df.columns)
         self.assertTrue("theta" in df.columns)
         self.assertTrue("alpha" in df.columns)
         self.assertTrue("phi" in df.columns)
         self.assertGreater(len(df), 0)
-        self.assertTrue(os.path.exists(CSV_PATH))
+        self.assertTrue(os.path.exists(EVALUATION_CSV))
 
     def testPlotEvaluationData(self):
-        #if IGNORE_TEST:
-        #    return
-        self.designer.plotEvaluationData("feasibledev", plot_path="testPlotEvaluationData_feas.pdf")
-        self.designer.plotEvaluationData("alphadev", plot_path="testPlotEvaluationData_alpha.pdf", vmin=-4, vmax=4)
-        self.designer.plotEvaluationData("phidev", plot_path="testPlotEvaluationData_phi.pdf")
-        import pdb; pdb.set_trace()
+        if IGNORE_TEST:
+            return
+        self.designer.plotEvaluationData("feasibledev", plot_path="testPlotEvaluationData_feas.pdf", is_plot=IS_PLOT, vmin=-1, vmax=1,
+                                         csv_path=TEST_EVALUATION_CSV)
+        self.designer.plotEvaluationData("alphadev", plot_path="testPlotEvaluationData_alpha.pdf", vmin=-1, vmax=1, is_plot=IS_PLOT,
+                                         csv_path=TEST_EVALUATION_CSV)
+        self.designer.plotEvaluationData("phidev", plot_path="testPlotEvaluationData_phi.pdf", is_plot=IS_PLOT, vmin=-1, vmax=1,
+                                         csv_path=TEST_EVALUATION_CSV)
+
+    def testPlotParameterHistograms(self):
+        if IGNORE_TEST:
+            return
+        self.designer.plotParameterHistograms(output_path="testPlotParameterHistograms.pdf", is_plot=IS_PLOT)
 
 
 if __name__ == "__main__":

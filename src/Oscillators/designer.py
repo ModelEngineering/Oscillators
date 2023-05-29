@@ -22,12 +22,14 @@ import seaborn as sns
 
 INITIAL_SSQ = 1e8
 MIN_VALUE = 0  # Minimum value for the parameters
-MAX_VALUE = 1e5  # Maximum value for the parameters
+MAX_VALUE = 1e3  # Maximum value for the parameters
 MAX_RESIDUAL = 1e6
 SOLVER = Solver()
 SOLVER.solve()
-CSV_PATH = os.path.join(os.path.dirname(__file__), "evaluation_data.csv")
-PLOT_PATH = os.path.join(os.path.dirname(__file__), "evaluation_data.pdf")
+EVALUATION_CSV = os.path.join(os.path.dirname(__file__), "evaluation_data.csv")
+EVALUATION_PLOT_PATH = os.path.join(os.path.dirname(__file__), "evaluation_plot.pdf")
+HISTOGRAM_PLOT_PATH = os.path.join(os.path.dirname(__file__), "histogram_plot.pdf")
+K1_VALUE = 1
 
 Evaluation = collections.namedtuple("Evaluation", "feasibledev, alphadev, phidev, k2, k_d, k4, k6, x1_0, x2_0")
 
@@ -36,7 +38,7 @@ class Designer(object):
 
     LESS_THAN_ZERO_MULTIPLIER = 2
 
-    def __init__(self, theta, alpha, phi, omega, end_time=10):
+    def __init__(self, theta, alpha, phi, omega, end_time=10, is_x1=True):
         """
         Args:
             theta: float (frequency in radians)
@@ -44,6 +46,7 @@ class Designer(object):
             phi: float (phase of the sinusoids)
             omega: float (offset of the sinusoids)
             num_point (int, optional): (number of points in a sinusoid series). Defaults to 100.
+            is_x1: bool (True if the fit is for x1, False if the fit is for x2)
         """
         self.theta = theta
         self.alpha = alpha
@@ -51,6 +54,7 @@ class Designer(object):
         self.omega = omega
         self.end_time = end_time
         self.num_point = 100
+        self.is_x1 = is_x1
         #
         self.times = np.linspace(0, self.end_time, self.num_point)
         # Reaction network parameters
@@ -63,10 +67,10 @@ class Designer(object):
         self.k_d = None
         self.x1_0 = None
         self.x2_0 = None
-        self.x1 = None
+        self.xfit = None # Fitted values. x1 if is_x1, x2 if not is_x1
         # Reference sinusoids
         self.ssq = INITIAL_SSQ  # Sum of squares calculated for the residuals
-        self.x1_ref = self.alpha*np.sin(self.times*self.theta + self.phi) + self.omega
+        self.xfit_ref = self.alpha*np.sin(self.times*self.theta + self.phi) + self.omega
 
     @property
     def _initial_value(self):
@@ -146,7 +150,7 @@ class Designer(object):
         phase_offset = self._calculatePhaseOffset(self.phi)
         phi = np.arctan(numr_phi/denom_phi) + phase_offset
         #
-        self.x1 = amp*np.sin(self.times*theta + phi) + omega
+        x1 = amp*np.sin(self.times*theta + phi) + omega
         ####
         # x2
         ####
@@ -161,10 +165,16 @@ class Designer(object):
         phi = phi + phase_offset
         phi = phi + np.pi
         x2 = amp*np.sin(self.times*theta + phi) + omega
-        x2_residuals = -1*(np.sign(x2)-1)*x2*self.LESS_THAN_ZERO_MULTIPLIER/2
-        # Calculate the residuals
-        residual_arr = self.x1_ref - self.x1
-        residual_arr = np.concatenate([residual_arr, x2_residuals])
+        # Calculate residuals
+        if self.is_x1:
+            self.xfit = x1
+            xother = x2
+        else:
+            self.xfit = x2
+            xother = x1
+        residual_arr = self.xfit_ref - self.xfit
+        xother_residuals = -1*(np.sign(xother)-1)*x2*self.LESS_THAN_ZERO_MULTIPLIER/2
+        residual_arr = np.concatenate([residual_arr, xother_residuals])
         # Updates the parameters
         ssq = np.sqrt(sum(residual_arr**2))
         if ssq < self.ssq:
@@ -182,7 +192,7 @@ class Designer(object):
         Args:
             dct: dict
         """
-        self.k1 = 1 # Aribratry choice
+        self.k1 = K1_VALUE # Aribratry choice
         self.k2 = dct["k2"]
         self.k_d = dct["k_d"]
         if self.k2 is not None:
@@ -235,17 +245,29 @@ class Designer(object):
             titles = [self._parameterToStr(n) for n in ["theta", "alpha", "phi", "omega"]]
             title = ", ".join(titles)
         ax.set_title(title, fontsize=10)
-        ax.plot(self.times, self.x1_ref, label="simulated S1", color="black")
         df = self.simulate()
-        ax.scatter(self.times, df["S1"], label="Fit", color="red")
-        ax.plot(self.times, df["S2"], label="smulated S2", linestyle="--", color="grey")
+        if self.is_x1:
+            fit_label = "simulated S1"
+            other_label = "simulated S2"
+            predicted_label = "predicted S1"
+            fit_values = df["S1"]
+            other_values = df["S2"]
+        else:
+            fit_label = "simulated S2"
+            other_label = "simulated S1"
+            predicted_label = "predicted S2"
+            fit_values = df["S2"]
+            other_values = df["S1"]
+        ax.plot(self.times, self.xfit_ref, label=fit_label, color="black")
+        ax.scatter(self.times, fit_values, label="Fit", color="red")
+        ax.plot(self.times, other_values, label=other_label, linestyle="--", color="grey")
         if is_xaxis:
             ax.set_xlabel(xlabel)
         else:
             ax.set_xticks([])
             ax.set_xticklabels([])
         if is_legend:
-            ax.legend(["simulated S1", "Fitted S1", "simulated S2"])
+            ax.legend([fit_label, predicted_label, other_label])
         if output_path is not None:
             ax.figure.savefig(output_path)
         if is_plot:
@@ -309,14 +331,14 @@ class Designer(object):
         alphadev = oc.alpha/self.alpha - 1
         phidev = self.phi - oc.phi
         sign = np.sign(phidev)
-        phidev = sign*(sign*100*phidev % int(200*np.pi))/100.0
-        phidev = phidev/2*np.pi
-        return Evaluation(feasibledev=feasibledev, alphadev=alphadev, phidev=phidev,
+        adj_phidev = min(np.abs(2*np.pi - np.abs(phidev)), np.abs(phidev))
+        new_phidev = sign*adj_phidev/(2*np.pi)
+        return Evaluation(feasibledev=feasibledev, alphadev=alphadev, phidev=new_phidev,
                           k2=self.k2, k_d=self.k_d, k4=self.k4, k6=self.k6, x1_0=self.x1_0, x2_0=self.x2_0)
     
     @classmethod
-    def plotEvaluationData(cls, value_name, csv_path=CSV_PATH, is_plot=True,
-                           plot_path=PLOT_PATH, title=None, vmin=0, vmax=1):
+    def plotEvaluationData(cls, value_name, csv_path=EVALUATION_CSV, is_plot=True,
+                           plot_path=EVALUATION_PLOT_PATH, title=None, vmin=0, vmax=1):
         """Plots previously constructed evaluation data.
         Plots 4 heatmaps, one per phase. A heatmap as x = frequency, y=amplitude
 
@@ -362,12 +384,19 @@ class Designer(object):
             plot_df = pd.pivot_table(new_df, values=value_name, index='alpha', columns='theta')
             plot_df = plot_df.sort_index(ascending=False)
             g = sns.heatmap(plot_df, cmap="seismic", vmin=vmin, vmax=vmax, linewidths=1.0, annot=True, ax=ax, cbar=cbar, cbar_ax=cbar_ax,
-                            annot_kws={"fontsize":6}, cbar_kws={'label': 'error fraction'})
+                            annot_kws={"fontsize":6}, cbar_kws={'label': 'error fraction'}, linecolor="grey")
             g.set_xticklabels(g.get_xticklabels(), rotation = 30, fontsize = 8)
             g.set_yticklabels(g.get_yticklabels(), rotation = 0, fontsize = 8)
             ax.set_ylabel(r'$\alpha$')
             ax.set_title(r'$\phi$ = {}'.format(np.round(phi, 2)))
-            icol += 1
+            if icol > 0:
+                ax.set_yticklabels([])
+                ax.set_yticks([])
+                ax.set_ylabel("")
+            if irow < nrow - 1:
+                ax.set_xticklabels([])
+                ax.set_xticks([])
+                ax.set_xlabel("")
             if irow == nrow - 1:
                 is_xaxis = True
             else:
@@ -377,6 +406,7 @@ class Designer(object):
                 ax.set_xlabel("")
             else:
                 ax.set_xlabel(r'$\theta$')
+            icol += 1
             if icol == ncol:
                 icol = 0
                 irow += 1 
@@ -385,17 +415,62 @@ class Designer(object):
             fig.savefig(plot_path)
         if is_plot:
             plt.show()
+
+    # FIXME: plot fraction of counts; use latex labels
+    @classmethod
+    def plotParameterHistograms(cls, csv_path=EVALUATION_CSV, is_plot=True, output_path=HISTOGRAM_PLOT_PATH):
+        """Plots histograms of kinetic parameters.
+
+        Args:
+            evaluation_data: str (path to evaluation data)
+        """
+        df = pd.read_csv(csv_path)
+        df["k1"] = K1_VALUE
+        df["k3"] = df["k1"] + df["k2"]
+        df["k5"] = df["k3"] + df["k_d"]
+        names = ["k1", "k2", "k3", "k4", "k5", "k6", "x1_0", "x2_0"]
+        nrow = 2
+        ncol = 4
+        fig = plt.figure()
+        irow = 0
+        icol = 0
+        gs = GridSpec(nrow, ncol, figure=fig)
+        for name in names:
+            ax = fig.add_subplot(gs[irow, icol])
+            ax.hist(df[name], bins=20, density=True)
+            ax.set_title(name)
+            ax.set_xlim([0, MAX_VALUE])
+            ax.set_xticklabels(ax.get_xticklabels(), fontsize = 8)
+            if irow < nrow - 1:
+                ax.set_xticklabels([])
+                ax.set_xticks([])
+                ax.set_xlabel("")
+            else:
+                ax.set_xlabel("value")
+            if icol > 0:
+                ax.set_yticklabels([])
+                ax.set_yticks([])
+                ax.set_ylabel("")
+            icol += 1
+            if icol == ncol:
+                icol = 0
+                irow += 1
+        if output_path is not None:
+            fig.savefig(output_path)
+        if is_plot:
+            plt.show()
     
     @classmethod
     def makeEvaluationData(cls, thetas=[0.1, 0.5, 1.0, 5.0, 10.0, 20.0, 50.0, 100.0],
                             alphas=[0.1, 0.5, 1.0, 2.0, 5.0, 10.0], phis=[0, 0.5*np.pi, np.pi, 1.5*np.pi],
-                            csv_path=CSV_PATH, is_report=True):
+                            csv_path=EVALUATION_CSV, is_report=True, **kwargs):
         """
         Creates a CSV file with evaluation data using alpha=omega.
 
         Args:
             output_path: str
             is_plot: bool
+            **kwargs: dict (arguments to Designer constructor)
 
         Returns:
             pd.DataFrame
@@ -415,7 +490,7 @@ class Designer(object):
         for theta in thetas:
             for alpha in alphas:
                 for phi in phis:
-                    designer = Designer(theta, alpha, phi, alpha)
+                    designer = Designer(theta, alpha, phi, alpha, **kwargs)
                     evaluation = designer.evaluate()
                     for name in local_names:
                         stmt = "result_dct['%s'].append(%s)" % (name, name)
