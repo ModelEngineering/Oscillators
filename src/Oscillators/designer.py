@@ -309,6 +309,7 @@ class Designer(object):
         if output_path is not None:
             fig.savefig(output_path)
 
+    # FIXME: phase deviation is still not calculated correctly
     def evaluate(self):
         """Evaluates the fit.
 
@@ -416,7 +417,6 @@ class Designer(object):
         if is_plot:
             plt.show()
 
-    # FIXME: plot fraction of counts; use latex labels
     @classmethod
     def plotParameterHistograms(cls, csv_path=EVALUATION_CSV, is_plot=True, output_path=HISTOGRAM_PLOT_PATH):
         """Plots histograms of kinetic parameters.
@@ -434,13 +434,23 @@ class Designer(object):
         fig = plt.figure()
         irow = 0
         icol = 0
+        bins = np.linspace(0, MAX_VALUE, 20)
         gs = GridSpec(nrow, ncol, figure=fig)
         for name in names:
             ax = fig.add_subplot(gs[irow, icol])
-            ax.hist(df[name], bins=20, density=True)
-            ax.set_title(name)
+            counts, _ = np.histogram(df[name], bins=bins)
+            fractions = counts/sum(counts)
+            xv = bins[0:-1]
+            ax.bar(xv, fractions, width=bins[1]-bins[0])
+            if name[0] == "x":
+                display_name = name[0] + name[1] + " (0)"
+            else:
+                display_name = name
+            display_name = display_name[0] + "_" + display_name[1:]
+            ax.set_title('$%s$' % display_name)
             ax.set_xlim([0, MAX_VALUE])
             ax.set_xticklabels(ax.get_xticklabels(), fontsize = 8)
+            ax.set_ylim([0, 1])
             if irow < nrow - 1:
                 ax.set_xticklabels([])
                 ax.set_xticks([])
@@ -451,6 +461,8 @@ class Designer(object):
                 ax.set_yticklabels([])
                 ax.set_yticks([])
                 ax.set_ylabel("")
+            else:
+                ax.set_ylabel("fraction")
             icol += 1
             if icol == ncol:
                 icol = 0

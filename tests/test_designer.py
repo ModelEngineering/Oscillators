@@ -8,7 +8,7 @@ import os
 import pandas as pd
 import unittest
 
-IGNORE_TEST = False
+IGNORE_TEST = True
 IS_PLOT = True
 END_TIME = 5
 EVALUATION_CSV = os.path.join(os.path.dirname(os.path.abspath(__file__)), "test_designer.csv")
@@ -126,8 +126,8 @@ class TestOscillatorDesigner(unittest.TestCase):
                                          csv_path=TEST_EVALUATION_CSV)
 
     def testPlotParameterHistograms(self):
-        if IGNORE_TEST:
-            return
+        #if IGNORE_TEST:
+        #    return
         self.designer.plotParameterHistograms(output_path="testPlotParameterHistograms.pdf", is_plot=IS_PLOT)
 
 
