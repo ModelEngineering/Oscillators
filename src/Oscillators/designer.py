@@ -31,7 +31,21 @@ EVALUATION_PLOT_PATH = os.path.join(os.path.dirname(__file__), "evaluation_plot.
 HISTOGRAM_PLOT_PATH = os.path.join(os.path.dirname(__file__), "histogram_plot.pdf")
 K1_VALUE = 1
 
-Evaluation = collections.namedtuple("Evaluation", "feasibledev, alphadev, phidev, k2, k_d, k4, k6, x1_0, x2_0")
+
+class Evaluation(object):
+
+    def __init__(self, feasibledev=None, alphadev=None, phidev=None, k2=None, k_d=None, k4=None,
+                 k6=None, x1_0=None, x2_0=None):
+        self.feasibledev = feasibledev
+        self.alphadev = alphadev
+        self.phidev = phidev
+        self.k2 = k2
+        self.k_d = k_d
+        self.k4 = k4
+        self.k6 = k6
+        self.x1_0 = x1_0
+        self.x2_0 = x2_0
+
 
 
 class Designer(object):
@@ -320,9 +334,13 @@ class Designer(object):
             self.find()
         # Check if success
         if self.ssq == INITIAL_SSQ:
-            return Evaluation(feasibledev=False, alphadev=None, phidev=None)
+            return Evaluation(feasibledev=1)
         # Completed the optimization
-        oc, _ = SOLVER.getOscillatorCharacteristics(dct=self.params)
+        oc1, oc2 = SOLVER.getOscillatorCharacteristics(dct=self.params)
+        if self.is_x1:
+            oc = oc1
+        else:
+            oc = oc2
         x_vec = util.getSubstitutedExpression(SOLVER.x_vec, self.params) 
         x1_vec, x2_vec = x_vec[0], x_vec[1]
         x1_arr = np.array([float(x1_vec.subs({t: v})) for v in self.times])
