@@ -148,7 +148,6 @@ class Solver(object):
         del result_dct[0]
         return result_dct
 
-    # FXIME: Handle phase offset 
     def simulate(self, expression=None, param_dct=cn.PARAM_DCT, end_time=5, **kwargs):
         """
         Simulates an expression over time.

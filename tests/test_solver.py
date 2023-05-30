@@ -9,7 +9,7 @@ import pandas as pd
 import sympy as sp
 import unittest
 
-IGNORE_TEST = True
+IGNORE_TEST = False
 IS_PLOT = False
 TEST_DIR = os.path.dirname(os.path.abspath(__file__)) # This directory
 TEST_FILE = os.path.join(TEST_DIR, "test_oscillator_solution.pdf")
@@ -62,7 +62,7 @@ class TestOscillatorSolution(unittest.TestCase):
             return
         self.soln.solve(is_check=False)
         oc1, oc2 = self.soln.getOscillatorCharacteristics(dct=cn.PARAM_DCT)
-        self.assertEqual(oc1.theta==oc2.theta)
+        self.assertEqual(oc1.theta, oc2.theta)
 
 if __name__ == "__main__":
     unittest.main()
