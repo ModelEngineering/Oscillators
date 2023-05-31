@@ -12,7 +12,7 @@ IGNORE_TEST = False
 IS_PLOT = False
 REMOVE_FILES = []
 END_TIME = 5
-EVALUATION_CSV = os.path.join(os.path.dirname(os.path.abspath(__file__)), "sample_evaluation.csv")
+EVALUATION_CSV = os.path.join(os.path.dirname(os.path.abspath(__file__)), "sample_evaluation_data.csv")
 TEST_EVALUATION_CSV = os.path.join(os.path.dirname(os.path.abspath(__file__)), "test_evaluation_data.csv")
 REMOVE_FILES = [EVALUATION_CSV]
 
@@ -78,7 +78,7 @@ class TestEvaluator(unittest.TestCase):
     def testPlotParameterHistograms(self):
         if IGNORE_TEST:
             return
-        self.evaluator.plotParameterHistograms(output_path="testPlotParameterHistograms.pdf", is_plot=IS_PLOT)
+        self.evaluator.plotParameterHistograms(csv_path=TEST_EVALUATION_CSV, output_path="testPlotParameterHistograms.pdf", is_plot=IS_PLOT)
 
 if __name__ == "__main__":
     unittest.main()

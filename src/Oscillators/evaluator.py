@@ -4,7 +4,7 @@
 from src.Oscillators import t
 from src.Oscillators import util
 from src.Oscillators import constants as cn
-from src.Oscillators.designer import Designer, MAX_VALUE
+from src.Oscillators.designer import Designer, MAX_VALUE, INITIAL_SSQ
 from src.Oscillators import solver
 
 import matplotlib.pyplot as plt
@@ -18,7 +18,6 @@ import seaborn as sns
 SOLVER = solver.Solver()
 SOLVER.solve()
 MAX_FEASIBLEDEV = 1
-INITIAL_SSQ = 1e6
 EVALUATION_CSV = os.path.join(os.path.dirname(__file__), "evaluation_data.csv")
 EVALUATION_PLOT_PATH = os.path.join(os.path.dirname(__file__), "evaluation_plot.pdf")
 HISTOGRAM_PLOT_PATH = os.path.join(os.path.dirname(__file__), "histogram_plot.pdf")
@@ -71,9 +70,9 @@ class Evaluator(object):
         Returns:
             float: fraction error
         """
-        predicted_df = self.solver.simulate(param_dct=self.designer.params, expression=self.solver.x_vec)
+        predicted_df = self.solver.simulate(param_dct=self.designer.params, expression=self.solver.x_vec, is_plot=False)
         simulated_df = util.simulateRR(param_dct=self.designer.params, end_time=self.designer.end_time,
-                                     num_point=self.designer.num_point)
+                                     num_point=self.designer.num_point, is_plot=False)
         error_ssq = np.sum(np.sum(predicted_df - simulated_df)**2)
         total_ssq = np.sum(np.sum(simulated_df)**2)
         prediction_error = error_ssq/total_ssq
@@ -81,7 +80,7 @@ class Evaluator(object):
     
     @classmethod
     def makeData(cls, thetas=[0.1, 0.5, 1.0, 5.0, 10.0, 20.0, 50.0, 100.0],
-                            alphas=[0.1, 0.5, 1.0, 2.0, 5.0, 10.0], phis=[0, 0.5*np.pi, np.pi, 1.5*np.pi],
+                            alphas=[0.1, 0.5, 1.0, 2.0, 5.0, 10.0, 20.0, 50.0, 100.0], phis=[0, 0.5*np.pi, np.pi, 1.5*np.pi],
                             csv_path=EVALUATION_CSV, is_report=True, **kwargs):
         """
         Creates a CSV file with evaluation data using alpha=omega.
