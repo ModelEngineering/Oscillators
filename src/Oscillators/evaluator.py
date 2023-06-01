@@ -2,6 +2,7 @@
 
 # Import packagesa
 from src.Oscillators import t
+from src.Oscillators.design_error import DesignError
 from src.Oscillators import util
 from src.Oscillators import constants as cn
 from src.Oscillators.designer import Designer, MAX_VALUE, INITIAL_SSQ
@@ -17,7 +18,6 @@ import seaborn as sns
 
 SOLVER = solver.Solver()
 SOLVER.solve()
-MAX_FEASIBLEDEV = 1
 EVALUATION_CSV = os.path.join(os.path.dirname(__file__), "evaluation_data.csv")
 EVALUATION_PLOT_PATH = os.path.join(os.path.dirname(__file__), "evaluation_plot.pdf")
 HISTOGRAM_PLOT_PATH = os.path.join(os.path.dirname(__file__), "histogram_plot.pdf")
@@ -32,52 +32,8 @@ class Evaluator(object):
         if designer.k2 is None:
             designer.find()
         # Outputs
-        self.feasibledev = None
-        self.alphadev = None
-        self.phidev = None
-        self.prediction_error = None
+        self.design_error = DesignError(designer)
 
-    def evaluate(self):
-        """Evaluates the fit.
-        """
-        # Check results of the finder
-        if self.designer.ssq == INITIAL_SSQ:
-            self.feasibledev = MAX_FEASIBLEDEV
-            return
-        # Completed the optimization
-        oc1, oc2 = SOLVER.getOscillatorCharacteristics(dct=self.designer.params)
-        if self.designer.is_x1:
-            oc = oc1
-        else:
-            oc = oc2
-        x_vec = util.getSubstitutedExpression(SOLVER.x_vec, self.designer.params) 
-        x1_vec, x2_vec = x_vec[0], x_vec[1]
-        x1_arr = np.array([float(x1_vec.subs({t: v})) for v in self.designer.times])
-        x2_arr = np.array([x2_vec.subs({t: v}) for v in self.designer.times])
-        arr = np.concatenate([x1_arr, x2_arr])
-        self.feasibledev = sum(arr < -1e6)/len(arr)
-        self.alphadev = oc.alpha/self.designer.alpha - 1
-        self.phidev = self.designer.phi - oc.phi
-        sign = np.sign(self.phidev)
-        adj_phidev = min(np.abs(2*np.pi - np.abs(self.phidev)), np.abs(self.phidev))
-        self.phidev = sign*adj_phidev/(2*np.pi)
-        self.prediction_error = self._evaluatePredictions()
-
-    def _evaluatePredictions(self):
-        """
-        Evaluates the predicted values of S1 and S2.
-
-        Returns:
-            float: fraction error
-        """
-        predicted_df = self.solver.simulate(param_dct=self.designer.params, expression=self.solver.x_vec, is_plot=False)
-        simulated_df = util.simulateRR(param_dct=self.designer.params, end_time=self.designer.end_time,
-                                     num_point=self.designer.num_point, is_plot=False)
-        error_ssq = np.sum(np.sum(predicted_df - simulated_df)**2)
-        total_ssq = np.sum(np.sum(simulated_df)**2)
-        prediction_error = error_ssq/total_ssq
-        return prediction_error
-    
     @classmethod
     def makeData(cls, thetas=[0.1, 0.5, 1.0, 5.0, 10.0, 20.0, 50.0, 100.0],
                             alphas=[0.1, 0.5, 1.0, 2.0, 5.0, 10.0, 20.0, 50.0, 100.0], phis=[0, 0.5*np.pi, np.pi, 1.5*np.pi],
@@ -110,12 +66,11 @@ class Evaluator(object):
                 for phi in phis:
                     designer = Designer(theta, alpha, phi, alpha, **kwargs)
                     evaluator = Evaluator(designer)
-                    evaluator.evaluate()
                     for name in self_names:
                         stmt = "result_dct['%s'].append(%s)" % (name, name)
                         exec(stmt)
                     for name in evaluator_names:
-                        stmt = "result_dct['%s'].append(evaluator.%s)" % (name, name)
+                        stmt = "result_dct['%s'].append(evaluator.design_error.%s)" % (name, name)
                         exec(stmt)
                     for name in designer_names:
                         stmt = "result_dct['%s'].append(designer.%s)" % (name, name)
@@ -132,13 +87,13 @@ class Evaluator(object):
         return df
     
     @classmethod
-    def plotEvaluationData(cls, value_name, csv_path=EVALUATION_CSV, is_plot=True,
+    def plotDesignErrors(cls, value_name, csv_path=EVALUATION_CSV, is_plot=True,
                            plot_path=EVALUATION_PLOT_PATH, title=None, vmin=0, vmax=1):
         """Plots previously constructed evaluation data.
         Plots 4 heatmaps, one per phase. A heatmap as x = frequency, y=amplitude
 
         Args:
-            value_name: str ("feasibledev", "ampdev", "phidev")
+            value_name: str (in cn.DESIGN_ERROR_LABEL_DCT)
             csv_path: str
             output_path: str
             is_plot: bool
@@ -146,6 +101,9 @@ class Evaluator(object):
             vmin: float (minimum on colobar)
             vmax: float (maximum on colobar)
         """
+        if not value_name in cn.DESIGN_ERROR_LABEL_DCT.keys():
+            raise ValueError("value_name %s not in %s" % (value_name, cn.DESIGN_ERROR_LABEL_DCT.keys()))
+        #
         df = pd.read_csv(csv_path)
         df = df.round(decimals=1)
         nrow = 2
@@ -178,8 +136,9 @@ class Evaluator(object):
                 cbar=False
             plot_df = pd.pivot_table(new_df, values=value_name, index='alpha', columns='theta')
             plot_df = plot_df.sort_index(ascending=False)
+            cbar_label = cn.DESIGN_ERROR_LABEL_DCT[value_name]
             g = sns.heatmap(plot_df, cmap="seismic", vmin=vmin, vmax=vmax, linewidths=1.0, annot=True, ax=ax, cbar=cbar, cbar_ax=cbar_ax,
-                            annot_kws={"fontsize":6}, cbar_kws={'label': 'error fraction'}, linecolor="grey")
+                            annot_kws={"fontsize":6}, cbar_kws={'label': cbar_label}, linecolor="grey")
             g.set_xticklabels(g.get_xticklabels(), rotation = 30, fontsize = 8)
             g.set_yticklabels(g.get_yticklabels(), rotation = 0, fontsize = 8)
             ax.set_ylabel(r'$\alpha$')
@@ -222,6 +181,8 @@ class Evaluator(object):
         df[cn.C_K1] = cn.K1_VALUE
         df[cn.C_K3] = df[cn.C_K2] + df[cn.C_K2]
         df[cn.C_K5] = df[cn.C_K3] + df[cn.C_K_D]
+        df[cn.C_S1] = df[cn.C_X1_0]
+        df[cn.C_S2] = df[cn.C_X2_0]
         nrow = 2
         ncol = 4
         fig = plt.figure()
@@ -229,7 +190,7 @@ class Evaluator(object):
         icol = 0
         bins = np.linspace(0, MAX_VALUE, 20)
         gs = GridSpec(nrow, ncol, figure=fig)
-        for name in cn.C_MODEL_PARAMETERS:
+        for name in cn.C_SIMULATION_PARAMETERS:
             ax = fig.add_subplot(gs[irow, icol])
             counts, _ = np.histogram(df[name], bins=bins)
             fractions = counts/sum(counts)
@@ -265,4 +226,3 @@ class Evaluator(object):
             fig.savefig(output_path)
         if is_plot:
             plt.show()
-    

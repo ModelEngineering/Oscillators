@@ -6,8 +6,8 @@ BUGS
 1. Poor fits for phi > pi/2
 """
 
-from src.Oscillators import t
 import src.Oscillators.constants as cn
+from src.Oscillators.design_error import DesignError
 from src.Oscillators import util
 from src.Oscillators.solver import Solver
 
@@ -22,6 +22,7 @@ INITIAL_SSQ = 1e8
 MIN_VALUE = 0  # Minimum value for the parameters
 MAX_VALUE = 1e3  # Maximum value for the parameters
 MAX_RESIDUAL = 1e6
+MAX_FEASIBLEDEV = 1
 SOLVER = Solver()
 SOLVER.solve()
 EVALUATION_CSV = os.path.join(os.path.dirname(__file__), "evaluation_data.csv")
@@ -29,27 +30,11 @@ EVALUATION_PLOT_PATH = os.path.join(os.path.dirname(__file__), "evaluation_plot.
 HISTOGRAM_PLOT_PATH = os.path.join(os.path.dirname(__file__), "histogram_plot.pdf")
 
 
-class Evaluation(object):
-
-    def __init__(self, feasibledev=None, alphadev=None, phidev=None, k2=None, k_d=None, k4=None,
-                 k6=None, x1_0=None, x2_0=None):
-        self.feasibledev = feasibledev
-        self.alphadev = alphadev
-        self.phidev = phidev
-        self.k2 = k2
-        self.k_d = k_d
-        self.k4 = k4
-        self.k6 = k6
-        self.x1_0 = x1_0
-        self.x2_0 = x2_0
-
-
-
 class Designer(object):
 
     LESS_THAN_ZERO_MULTIPLIER = 2
 
-    def __init__(self, theta, alpha, phi, omega, end_time=10, is_x1=True):
+    def __init__(self, theta=1, alpha=1, phi=0, omega=1, end_time=10, is_x1=True):
         """
         Args:
             theta: float (frequency in radians)
@@ -319,3 +304,47 @@ class Designer(object):
             plt.show()
         if output_path is not None:
             fig.savefig(output_path)
+
+    def __lt__(self, other):
+        """Checks if the design error of this object is less than another."""
+        this_design_error = DesignError(self)
+        this_design_error.calculate()
+        other_design_error = DesignError(other)
+        other_design_error.calculate()
+        #
+        if this_design_error.feasibledev != other_design_error.feasibledev:
+            return True
+        if this_design_error.alphadev < other_design_error.alphadev:
+            return True
+        if this_design_error.phidev < other_design_error.phidev:
+            return True
+        return self.ssq < other.ssq
+    
+    def is_success(self):
+        """Successful design."""
+        return self.ssq != INITIAL_SSQ
+
+    # FIXME: Test
+    @classmethod
+    def design(self, is_both=True, **kwargs):
+        """Designs an oscillator with the desired characteristics.
+
+        Args:
+            is_both (bool): Consider designs with x1 and x2 as the oscillating species.
+            kwargs: dict (arguments to Designer constructor)
+        Returns:
+            Designer
+        """
+        if is_both:
+            new_kwargs = dict(kwargs)
+            if "is_x1" in kwargs:
+                del new_kwargs["is_x1"]
+            designer_x1 = Designer(is_x1=True, **new_kwargs) 
+            designer_x2 = Designer(is_x1=False, **new_kwargs)
+            if designer_x1 < designer_x2:
+                designer = designer_x1
+            else:
+                designer = designer_x2
+        else:
+            designer = Designer(**kwargs)
+        return designer

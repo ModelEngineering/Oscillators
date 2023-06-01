@@ -7,6 +7,7 @@ C_PHI = "phi"
 C_FEASIBLEDEV = "feasibledev"
 C_ALPHADEV = "alphadev"
 C_PHIDEV = "phidev"
+C_PREDICTION_ERROR = "prediction_error"  # Fractional SSQ error between ODE model and simulation
 C_K1 = "k1"
 C_K2 = "k2"
 C_KD = "kd"
@@ -19,6 +20,10 @@ C_X1_0 = "x1_0"
 C_X2_0 = "x2_0"
 C_S1 = "S1"
 C_S2 = "S2"
+DESIGN_ERROR_LABEL_DCT = {C_FEASIBLEDEV: "feasibility design error",
+                          C_ALPHADEV: "amplitude design error",
+                          C_PHIDEV: "phase design error",
+                          C_PREDICTION_ERROR: "prediction error"}
 C_PREDICTION_ERROR = "prediction_error"  # Fractional SSQ error between ODE model and simulation
 C_COLUMNS = [C_THETA, C_ALPHA, C_PHI, C_FEASIBLEDEV, C_ALPHADEV, C_PHIDEV, C_K2,
               C_K_D, C_K4, C_K6, C_X1_0, C_X2_0, C_PREDICTION_ERROR]

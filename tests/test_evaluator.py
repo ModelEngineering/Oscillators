@@ -35,18 +35,6 @@ class TestEvaluator(unittest.TestCase):
         if IGNORE_TEST:
             return
         self.assertEqual(self.evaluator.designer.k2, self.designer.k2)
-
-    def testEvaluate(self):
-        if IGNORE_TEST:
-            return
-        self.evaluator.evaluate()
-        self.assertTrue(np.isclose(self.evaluator.feasibledev, 0))
-    
-    def testEvaluatePredictions(self):
-        if IGNORE_TEST:
-            return
-        fractional_error = self.evaluator._evaluatePredictions()
-        self.assertLess(fractional_error, 1e-5)
     
     def testMakeData(self):
         if IGNORE_TEST:
@@ -66,13 +54,13 @@ class TestEvaluator(unittest.TestCase):
     def testPlotEvaluationData(self):
         #if IGNORE_TEST:
         #    return
-        self.evaluator.plotEvaluationData("feasibledev", plot_path="testPlotEvaluationData_feas.pdf", is_plot=IS_PLOT, vmin=-1, vmax=1,
+        self.evaluator.plotDesignErrors("feasibledev", plot_path="testPlotEvaluationData_feas.pdf", is_plot=IS_PLOT, vmin=-1, vmax=1,
                                          csv_path=TEST_EVALUATION_CSV)
-        self.evaluator.plotEvaluationData("alphadev", plot_path="testPlotEvaluationData_alpha.pdf", vmin=-1, vmax=1, is_plot=IS_PLOT,
+        self.evaluator.plotDesignErrors("alphadev", plot_path="testPlotEvaluationData_alpha.pdf", vmin=-1, vmax=1, is_plot=IS_PLOT,
                                          csv_path=TEST_EVALUATION_CSV)
-        self.evaluator.plotEvaluationData("phidev", plot_path="testPlotEvaluationData_phi.pdf", is_plot=IS_PLOT, vmin=-1, vmax=1,
+        self.evaluator.plotDesignErrors("phidev", plot_path="testPlotEvaluationData_phi.pdf", is_plot=IS_PLOT, vmin=-1, vmax=1,
                                          csv_path=TEST_EVALUATION_CSV)
-        self.evaluator.plotEvaluationData(cn.C_PREDICTION_ERROR, plot_path="testPlotEvaluationData_prediction_error.pdf", is_plot=IS_PLOT, vmin=-1, vmax=1,
+        self.evaluator.plotDesignErrors(cn.C_PREDICTION_ERROR, plot_path="testPlotEvaluationData_prediction_error.pdf", is_plot=IS_PLOT, vmin=-1, vmax=1,
                                          csv_path=TEST_EVALUATION_CSV)
 
     def testPlotParameterHistograms(self):
