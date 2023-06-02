@@ -80,6 +80,13 @@ class TestOscillatorDesigner(unittest.TestCase):
             return
         self.designer.plotManyFits(output_path="testPlotManyFigs.pdf")
 
+    def testLt(self):
+        if IGNORE_TEST:
+            return
+        designer = Designer(theta=2*np.pi, alpha=3, phi=0, omega=5)
+        self.assertFalse(self.designer < self.designer)
+        designer.feasibledev = 1
+
 
 if __name__ == "__main__":
     unittest.main()

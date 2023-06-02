@@ -309,6 +309,11 @@ class Designer(object):
 
     def __lt__(self, other):
         """Checks if the design error of this object is less than another."""
+        def isLessThan(x, y):
+            if x is None:
+                return False
+            return np.abs(x) < np.abs(y)
+        #
         this_design_error = DesignError(self)
         this_design_error.calculate()
         other_design_error = DesignError(other)
@@ -316,9 +321,9 @@ class Designer(object):
         #
         if this_design_error.feasibledev != other_design_error.feasibledev:
             return True
-        if this_design_error.alphadev < other_design_error.alphadev:
+        if isLessThan(this_design_error.alphadev, other_design_error.alphadev):
             return True
-        if this_design_error.phidev < other_design_error.phidev:
+        if isLessThan(this_design_error.phidev, other_design_error.phidev):
             return True
         return self.ssq < other.ssq
     

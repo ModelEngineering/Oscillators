@@ -37,7 +37,9 @@ class Evaluator(object):
 
     @classmethod
     def makeData(cls, thetas=[0.1, 0.5, 1.0, 5.0, 10.0, 20.0, 50.0, 100.0],
-                            alphas=[0.1, 0.5, 1.0, 2.0, 5.0, 10.0, 20.0, 50.0, 100.0], phis=[0, 0.5*np.pi, np.pi, 1.5*np.pi],
+                            alphas=[0.1, 0.5, 1.0, 2.0, 5.0, 10.0, 20.0, 50.0, 100.0],
+                            #phis=[0, 0.5*np.pi, np.pi, 1.5*np.pi],
+                            phis=[0, np.pi/2, np.pi, 3*np.pi/2],
                             csv_path=EVALUATION_CSV, is_report=True, **kwargs):
         """
         Creates a CSV file with evaluation data using alpha=omega.
@@ -55,7 +57,7 @@ class Evaluator(object):
         #
         self_names = [cn.C_THETA, cn.C_ALPHA, cn.C_PHI]
         evaluator_names = [cn.C_FEASIBLEDEV, cn.C_ALPHADEV, cn.C_PHIDEV, cn.C_PREDICTION_ERROR]
-        designer_names = [cn.C_K2, cn.C_K_D, cn.C_K4, cn.C_K6, cn.C_X1_0, cn.C_X2_0]
+        designer_names = [cn.C_K2, cn.C_K_D, cn.C_K4, cn.C_K6, cn.C_X1_0, cn.C_X2_0, cn.C_IS_X1]
         names = list(designer_names)
         names.extend(evaluator_names)
         names.extend(self_names)
@@ -125,8 +127,10 @@ class Evaluator(object):
         icol = 0
         irow = 0
         phis = df["phi"].unique()
+        if len(phis) != nrow*ncol:
+            raise RuntimeError("Expected %d phis, but found %d" % (nrow*ncol, len(phis)))
         # Iterate across the plots
-        for idx, phi in enumerate(phis):
+        for phi in phis:
             ax = fig.add_subplot(gs[plot_starts[irow]:plot_ends[irow], plot_starts[icol]:plot_ends[icol]])
             new_df = df[df["phi"] == phi]
             if (irow == nrow-1) and (icol == ncol - 1):

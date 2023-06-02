@@ -4,6 +4,8 @@ import numpy as np
 C_THETA = "theta"
 C_ALPHA = "alpha"
 C_PHI = "phi"
+C_OMEGA = "omega"
+C_IS_X1 = "is_x1"
 C_FEASIBLEDEV = "feasibledev"
 C_ALPHADEV = "alphadev"
 C_PHIDEV = "phidev"
