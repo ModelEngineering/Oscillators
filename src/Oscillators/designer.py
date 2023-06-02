@@ -49,7 +49,8 @@ class Designer(object):
         self.phi = phi
         self.omega = omega
         period = 2*np.pi/theta
-        self.end_time = 10*period
+        num_cycle = 10 
+        self.end_time = num_cycle*period
         self.num_point = 1000
         self.is_x1 = is_x1
         #
@@ -68,6 +69,8 @@ class Designer(object):
         # Reference sinusoids
         self.ssq = INITIAL_SSQ  # Sum of squares calculated for the residuals
         self.xfit_ref = self.alpha*np.sin(self.times*self.theta + self.phi) + self.omega
+        #
+        self.design_error = None
 
     @property
     def _initial_value(self):
@@ -102,6 +105,8 @@ class Designer(object):
         dct = {n: params[n] for n in ["k2", "k4", "k6", "x1_0", "x2_0", "k_d"]}
         self._setParameters(dct)
         self.ssq = best_result.ssq
+        self.design_error = DesignError(self)
+        self.design_error.calculate()
         #
         return self.minimizer
 
@@ -269,6 +274,8 @@ class Designer(object):
             ax.figure.savefig(output_path)
         if is_plot:
             plt.show()
+        else:
+            plt.close()
 
     @classmethod
     def plotManyFits(cls, output_path=None, is_plot=True):
@@ -304,34 +311,15 @@ class Designer(object):
                 irow += 1 
         if is_plot:
             plt.show()
+        else:
+            plt.close()
         if output_path is not None:
             fig.savefig(output_path)
 
-    def __lt__(self, other):
-        """Checks if the design error of this object is less than another."""
-        def isLessThan(x, y):
-            if x is None:
-                return False
-            return np.abs(x) < np.abs(y)
-        #
-        this_design_error = DesignError(self)
-        this_design_error.calculate()
-        other_design_error = DesignError(other)
-        other_design_error.calculate()
-        #
-        if this_design_error.feasibledev != other_design_error.feasibledev:
-            return True
-        if isLessThan(this_design_error.alphadev, other_design_error.alphadev):
-            return True
-        if isLessThan(this_design_error.phidev, other_design_error.phidev):
-            return True
-        return self.ssq < other.ssq
-    
     def is_success(self):
         """Successful design."""
         return self.ssq != INITIAL_SSQ
 
-    # FIXME: Test
     @classmethod
     def design(self, is_both=True, **kwargs):
         """Designs an oscillator with the desired characteristics.
@@ -342,16 +330,23 @@ class Designer(object):
         Returns:
             Designer
         """
+        def makeDesign(**designKwargs):
+            designer = Designer(**designKwargs)
+            designer.find()
+            design_error = DesignError(designer)
+            design_error.calculate()
+            return designer, design_error
+        #
         if is_both:
             new_kwargs = dict(kwargs)
             if "is_x1" in kwargs:
                 del new_kwargs["is_x1"]
-            designer_x1 = Designer(is_x1=True, **new_kwargs) 
-            designer_x2 = Designer(is_x1=False, **new_kwargs)
-            if designer_x1 < designer_x2:
+            designer_x1, design_error_x1 = makeDesign(is_x1=True, **new_kwargs) 
+            designer_x2, design_error_x2 = makeDesign(is_x1=False, **new_kwargs)
+            if design_error_x1 < design_error_x2:
                 designer = designer_x1
             else:
                 designer = designer_x2
         else:
-            designer = Designer(**kwargs)
+            designer, _ = Designer(**kwargs)
         return designer

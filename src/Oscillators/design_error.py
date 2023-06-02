@@ -64,3 +64,37 @@ class DesignError(object):
         total_ssq = np.sum(np.sum(simulated_df)**2)
         prediction_error = error_ssq/total_ssq
         return prediction_error
+
+    def __lt__(self, other):
+        """
+        Checks if the design error of this object is less than another. Must have already called calculate().
+
+        Args:
+            other: DesignError
+        Returns:
+            bool
+        """
+        def isLessThan(x, y):
+            if x is None:
+                return False
+            if y is None:
+                return True
+            return np.abs(x) < np.abs(y)
+        #
+        if isLessThan(self.feasibledev, other.feasibledev):
+            return True
+        if isLessThan(other.feasibledev, self.feasibledev):
+            return False
+        if isLessThan(self.alphadev, other.alphadev):
+            return True
+        if isLessThan(other.alphadev, self.alphadev):
+            return False
+        if isLessThan(self.phidev, other.phidev):
+            return True
+        if isLessThan(other.phidev, self.phidev):
+            return False
+        return self.designer.ssq < other.designer.ssq
+    
+    def __repr__(self):
+        return "feasibledev=%s, alphadev=%s, phidev=%s, prediction_error=%s" % (
+            self.feasibledev, self.alphadev, self.phidev, self.prediction_error)

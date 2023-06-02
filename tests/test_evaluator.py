@@ -18,7 +18,7 @@ REMOVE_FILES = [EVALUATION_CSV]
 
 class TestEvaluator(unittest.TestCase):
 
-    def setUp(self):
+    def init(self):
         self.remove()
         self.designer = Designer(theta=2*np.pi, alpha=3, phi=0, omega=5)
         self.evaluator = Evaluator(self.designer)
@@ -34,11 +34,13 @@ class TestEvaluator(unittest.TestCase):
     def testConstructor(self):
         if IGNORE_TEST:
             return
+        self.init()
         self.assertEqual(self.evaluator.designer.k2, self.designer.k2)
     
     def testMakeData(self):
-        if IGNORE_TEST:
-            return
+        #if IGNORE_TEST:
+        #    return
+        self.init()
         df = self.evaluator.makeData(
               thetas=[0.1, 1.0],
               alphas=[0.1, 10.0], phis=[0, np.pi],
@@ -52,8 +54,9 @@ class TestEvaluator(unittest.TestCase):
         self.assertTrue(os.path.exists(EVALUATION_CSV))
 
     def testPlotEvaluationData(self):
-        #if IGNORE_TEST:
-        #    return
+        if IGNORE_TEST:
+            return
+        self.init()
         self.evaluator.plotDesignErrors("feasibledev", plot_path="testPlotEvaluationData_feas.pdf", is_plot=IS_PLOT, vmin=-1, vmax=1,
                                          csv_path=TEST_EVALUATION_CSV)
         self.evaluator.plotDesignErrors("alphadev", plot_path="testPlotEvaluationData_alpha.pdf", vmin=-1, vmax=1, is_plot=IS_PLOT,
@@ -66,6 +69,7 @@ class TestEvaluator(unittest.TestCase):
     def testPlotParameterHistograms(self):
         if IGNORE_TEST:
             return
+        self.init()
         self.evaluator.plotParameterHistograms(csv_path=TEST_EVALUATION_CSV, output_path="testPlotParameterHistograms.pdf", is_plot=IS_PLOT)
 
 if __name__ == "__main__":

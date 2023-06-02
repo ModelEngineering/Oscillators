@@ -32,6 +32,26 @@ class TestDesignError(unittest.TestCase):
         fractional_error = self.design_error._evaluatePredictions()
         self.assertLess(fractional_error, 1e-5)
 
+    def testLt(self):
+        if IGNORE_TEST:
+            return
+        design_error = DesignError(self.designer)
+        self.assertFalse(self.design_error < self.design_error)
+        design_error.alphadev = 0
+        design_error.phidev = 5
+        design_error.feasibledev = 1
+        self.design_error.feasibledev = 0
+        self.design_error.alphadev = 5
+        self.design_error.phidev = 0
+        self.assertTrue(self.design_error < design_error)
+        self.assertFalse(design_error < self.design_error)
+        # alphadev
+        design_error.feasibledev = 0
+        self.assertFalse(self.design_error < design_error)
+        # phidev
+        self.design_error.alphadev = 0
+        self.assertTrue(self.design_error < design_error)
+
 
 if __name__ == "__main__":
     unittest.main()

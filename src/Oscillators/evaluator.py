@@ -2,12 +2,12 @@
 
 # Import packagesa
 from src.Oscillators import t
-from src.Oscillators.design_error import DesignError
 from src.Oscillators import util
 from src.Oscillators import constants as cn
 from src.Oscillators.designer import Designer, MAX_VALUE, INITIAL_SSQ
 from src.Oscillators import solver
 
+import matplotlib.ticker as mticker
 import matplotlib.pyplot as plt
 from matplotlib.gridspec import GridSpec
 import os
@@ -31,9 +31,6 @@ class Evaluator(object):
         self.solver = SOLVER
         if designer.k2 is None:
             designer.find()
-        # Outputs
-        self.design_error = DesignError(designer)
-        self.design_error.calculate()
 
     @classmethod
     def makeData(cls, thetas=[0.1, 0.5, 1.0, 5.0, 10.0, 20.0, 50.0, 100.0],
@@ -55,12 +52,12 @@ class Evaluator(object):
         """
         num_rows = len(thetas)*len(alphas)*len(phis)
         #
-        self_names = [cn.C_THETA, cn.C_ALPHA, cn.C_PHI]
-        evaluator_names = [cn.C_FEASIBLEDEV, cn.C_ALPHADEV, cn.C_PHIDEV, cn.C_PREDICTION_ERROR]
+        local_names = [cn.C_THETA, cn.C_ALPHA, cn.C_PHI]
         designer_names = [cn.C_K2, cn.C_K_D, cn.C_K4, cn.C_K6, cn.C_X1_0, cn.C_X2_0, cn.C_IS_X1]
+        design_error_names = [cn.C_FEASIBLEDEV, cn.C_ALPHADEV, cn.C_PHIDEV, cn.C_PREDICTION_ERROR]
         names = list(designer_names)
-        names.extend(evaluator_names)
-        names.extend(self_names)
+        names.extend(design_error_names)
+        names.extend(local_names)
         result_dct = {n: [] for n in names}
         count = 0
         percent = 0
@@ -68,12 +65,12 @@ class Evaluator(object):
             for alpha in alphas:
                 for phi in phis:
                     designer = Designer(theta=theta, alpha=alpha, phi=phi, omega=alpha, **kwargs)
-                    evaluator = Evaluator(designer)
-                    for name in self_names:
+                    designer.find()
+                    for name in local_names:
                         stmt = "result_dct['%s'].append(%s)" % (name, name)
                         exec(stmt)
-                    for name in evaluator_names:
-                        stmt = "result_dct['%s'].append(evaluator.design_error.%s)" % (name, name)
+                    for name in design_error_names:
+                        stmt = "result_dct['%s'].append(designer.design_error.%s)" % (name, name)
                         exec(stmt)
                     for name in designer_names:
                         stmt = "result_dct['%s'].append(designer.%s)" % (name, name)
@@ -209,6 +206,8 @@ class Evaluator(object):
             display_name = display_name.replace("__", "")
             ax.set_title('$%s$' % display_name)
             ax.set_xlim([0, MAX_VALUE])
+            ticks_loc = ax.get_xticks().tolist()
+            ax.xaxis.set_major_locator(mticker.FixedLocator(ticks_loc))
             ax.set_xticklabels(ax.get_xticklabels(), fontsize = 8)
             ax.set_ylim([0, 1])
             if irow < nrow - 1:

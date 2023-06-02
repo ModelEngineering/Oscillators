@@ -59,6 +59,7 @@ class TestOscillatorDesigner(unittest.TestCase):
             df[cn.C_S1] = df[cn.C_S1] + np.random.normal(0, UPPER, length)
             util.plotDF(df, is_plot=IS_PLOT, output_path="testFind.pdf")
         self.assertTrue(self.designer.minimizer.success)
+        self.assertEqual(self.designer.design_error.feasibledev, 0)
 
     def testParameterToStr(self):
         if IGNORE_TEST:
@@ -72,20 +73,31 @@ class TestOscillatorDesigner(unittest.TestCase):
         designer = Designer(theta=2*np.pi, alpha=20, phi=-1,
                                 omega=20)
         designer.find()
-        if IS_PLOT:
-            designer.plotFit(output_path="testPlotFit.pdf")
+        designer.plotFit(output_path="testPlotFit.pdf", is_plot=IS_PLOT)
 
     def testPlotManyFits(self):
         if IGNORE_TEST:
             return
-        self.designer.plotManyFits(output_path="testPlotManyFigs.pdf")
+        self.designer.plotManyFits(output_path="testPlotManyFigs.pdf",
+                                   is_plot=IS_PLOT)
 
-    def testLt(self):
+    def testDesign(self):
         if IGNORE_TEST:
             return
-        designer = Designer(theta=2*np.pi, alpha=3, phi=0, omega=5)
-        self.assertFalse(self.designer < self.designer)
-        designer.feasibledev = 1
+        def make(**kwargs):
+            designer = Designer.design(**kwargs)
+            designer.find()
+            return designer.design_error
+        #
+        design_error_x1 = make(is_x1=True)
+        design_error_x2 = make(is_x1=False)
+        design_error_both = make(is_both=True)
+        for _ in range(3):
+            new_design_error_both = make(is_both=True)
+            if (new_design_error_both < design_error_both):
+                design_error_both = new_design_error_both
+        is_true = (design_error_both < design_error_x1) or (design_error_both < design_error_x2)
+        self.assertTrue(is_true)
 
 
 if __name__ == "__main__":
