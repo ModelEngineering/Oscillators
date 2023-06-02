@@ -12,9 +12,9 @@ CSV_PATH_BOTH = CSV_PATH_PAT % "both"
 CSV_PATHS = [CSV_PATH_X1, CSV_PATH_X2, CSV_PATH_BOTH]
 #
 
-print("Creating data for x1")
-Evaluator.makeData(is_x1=True, is_both=False, csv_path=CSV_PATH_X1
-print("\n\nCreating data for x2")
+print("****Creating data for x1****")
+Evaluator.makeData(is_x1=True, is_both=False, csv_path=CSV_PATH_X1)
+print("\n\n****Creating data for x2****")
 Evaluator.makeData(is_x1=False, is_both=False, csv_path=CSV_PATH_X2)
-print("\n\nCreating data for both")
+print("\n\n****Creating data for both****")
 Evaluator.makeData(is_both=True, csv_path=CSV_PATH_BOTH)
