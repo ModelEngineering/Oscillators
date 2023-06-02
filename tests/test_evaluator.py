@@ -20,7 +20,7 @@ class TestEvaluator(unittest.TestCase):
 
     def setUp(self):
         self.remove()
-        self.designer = Designer(theta=2*np.pi, alpha=3, phi=0, omega=5, end_time=END_TIME)
+        self.designer = Designer(theta=2*np.pi, alpha=3, phi=0, omega=5)
         self.evaluator = Evaluator(self.designer)
 
     def tearDown(self):

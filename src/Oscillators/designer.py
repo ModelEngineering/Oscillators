@@ -48,8 +48,9 @@ class Designer(object):
         self.alpha = alpha
         self.phi = phi
         self.omega = omega
-        self.end_time = end_time
-        self.num_point = 100
+        period = 2*np.pi/theta
+        self.end_time = 10*period
+        self.num_point = 1000
         self.is_x1 = is_x1
         #
         self.times = np.linspace(0, self.end_time, self.num_point)
@@ -289,7 +290,8 @@ class Designer(object):
         irow = 0
         icol = 0
         for idx in range(length):
-            designer = Designer(thetas[idx], alphas[idx], phis[idx], omegas[idx], end_time=2)
+            designer = Designer(theta=thetas[idx], alpha=alphas[idx],
+                                 phi=phis[idx], omega=omegas[idx])
             designer.find()
             if irow == nrow - 1:
                 is_xaxis = True

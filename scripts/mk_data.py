@@ -2,4 +2,4 @@
 
 from src.Oscillators.evaluator import Evaluator
 
-Evaluator.makeData()
+Evaluator.makeData(end_time=20)

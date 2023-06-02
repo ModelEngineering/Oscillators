@@ -33,6 +33,7 @@ class Evaluator(object):
             designer.find()
         # Outputs
         self.design_error = DesignError(designer)
+        self.design_error.calculate()
 
     @classmethod
     def makeData(cls, thetas=[0.1, 0.5, 1.0, 5.0, 10.0, 20.0, 50.0, 100.0],
@@ -64,7 +65,7 @@ class Evaluator(object):
         for theta in thetas:
             for alpha in alphas:
                 for phi in phis:
-                    designer = Designer(theta, alpha, phi, alpha, **kwargs)
+                    designer = Designer(theta=theta, alpha=alpha, phi=phi, omega=alpha, **kwargs)
                     evaluator = Evaluator(designer)
                     for name in self_names:
                         stmt = "result_dct['%s'].append(%s)" % (name, name)
@@ -82,8 +83,8 @@ class Evaluator(object):
                             percent = new_percent
                             msg = "Completed %d%%" % percent
                             print(msg)
-        df = pd.DataFrame(result_dct)
-        df.to_csv(csv_path, index=False)
+                    df = pd.DataFrame(result_dct)
+                    df.to_csv(csv_path, index=False)
         return df
     
     @classmethod

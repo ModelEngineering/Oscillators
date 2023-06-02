@@ -12,7 +12,7 @@ END_TIME = 5
 class TestDesignError(unittest.TestCase):
 
     def setUp(self):
-        self.designer = Designer(theta=2*np.pi, alpha=3, phi=0, omega=5, end_time=END_TIME)
+        self.designer = Designer(theta=2*np.pi, alpha=3, phi=0, omega=5)
         self.design_error = DesignError(self.designer)
 
     def testConstructor(self):

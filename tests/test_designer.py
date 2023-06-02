@@ -17,7 +17,7 @@ END_TIME = 5
 class TestOscillatorDesigner(unittest.TestCase):
 
     def setUp(self):
-        self.designer = Designer(theta=2*np.pi, alpha=3, phi=0, omega=5, end_time=END_TIME)
+        self.designer = Designer(theta=2*np.pi, alpha=3, phi=0, omega=5)
 
     def testConstructor(self):
         if IGNORE_TEST:
@@ -70,7 +70,7 @@ class TestOscillatorDesigner(unittest.TestCase):
         if IGNORE_TEST:
             return
         designer = Designer(theta=2*np.pi, alpha=20, phi=-1,
-                                omega=20, end_time=5)
+                                omega=20)
         designer.find()
         if IS_PLOT:
             designer.plotFit(output_path="testPlotFit.pdf")
