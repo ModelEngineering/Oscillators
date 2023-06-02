@@ -18,9 +18,6 @@ import seaborn as sns
 
 SOLVER = solver.Solver()
 SOLVER.solve()
-EVALUATION_CSV = os.path.join(os.path.dirname(__file__), "evaluation_data.csv")
-EVALUATION_PLOT_PATH = os.path.join(os.path.dirname(__file__), "evaluation_plot.pdf")
-HISTOGRAM_PLOT_PATH = os.path.join(os.path.dirname(__file__), "histogram_plot.pdf")
 K1_VALUE = 1.0
 
 
@@ -37,7 +34,7 @@ class Evaluator(object):
                             alphas=[0.1, 0.5, 1.0, 2.0, 5.0, 10.0, 20.0, 50.0, 100.0],
                             #phis=[0, 0.5*np.pi, np.pi, 1.5*np.pi],
                             phis=[0, np.pi/2, np.pi, 3*np.pi/2],
-                            csv_path=EVALUATION_CSV, is_report=True, **kwargs):
+                            csv_path=cn.EVALUATION_CSV, is_report=True, **kwargs):
         """
         Creates a CSV file with evaluation data using alpha=omega.
 
@@ -64,7 +61,7 @@ class Evaluator(object):
         for theta in thetas:
             for alpha in alphas:
                 for phi in phis:
-                    designer = Designer(theta=theta, alpha=alpha, phi=phi, omega=alpha, **kwargs)
+                    designer = Designer.design(theta=theta, alpha=alpha, phi=phi, omega=alpha, **kwargs)
                     designer.find()
                     for name in local_names:
                         stmt = "result_dct['%s'].append(%s)" % (name, name)
@@ -87,8 +84,8 @@ class Evaluator(object):
         return df
     
     @classmethod
-    def plotDesignErrors(cls, value_name, csv_path=EVALUATION_CSV, is_plot=True,
-                           plot_path=EVALUATION_PLOT_PATH, title=None, vmin=0, vmax=1):
+    def plotDesignErrors(cls, value_name, csv_path=cn.EVALUATION_CSV, is_plot=True,
+                           plot_path=cn.EVALUATION_PLOT_PATH, title=None, vmin=0, vmax=1):
         """Plots previously constructed evaluation data.
         Plots 4 heatmaps, one per phase. A heatmap as x = frequency, y=amplitude
 
@@ -173,7 +170,7 @@ class Evaluator(object):
             plt.show()
 
     @classmethod
-    def plotParameterHistograms(cls, csv_path=EVALUATION_CSV, is_plot=True, output_path=HISTOGRAM_PLOT_PATH):
+    def plotParameterHistograms(cls, csv_path=cn.EVALUATION_CSV, is_plot=True, output_path=cn.HISTOGRAM_PLOT_PATH):
         """Plots histograms of kinetic parameters.
 
         Args:

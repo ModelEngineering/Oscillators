@@ -1,4 +1,5 @@
 import numpy as np
+import os
 
 # Columns in evaluation data
 C_THETA = "theta"
@@ -40,3 +41,13 @@ PARAM_DCT[C_K_D] = PARAM_DCT[C_K5] - PARAM_DCT[C_K3]
 PARAM_DCT[C_THETA] = np.sqrt(PARAM_DCT[C_K2]*PARAM_DCT[C_K_D])
 
 K1_VALUE =1  # Value used for k1
+
+# Paths
+PROJECT_DIR = os.path.dirname(__file__)
+for _ in range(2):
+    PROJECT_DIR = os.path.dirname(PROJECT_DIR)
+DATA_DIR = os.path.join(PROJECT_DIR, "data")
+PLOT_DIR = os.path.join(PROJECT_DIR, "plots")
+EVALUATION_CSV = os.path.join(DATA_DIR, "evaluation_data.csv")
+EVALUATION_PLOT_PATH = os.path.join(PLOT_DIR, "evaluation_plot.pdf")
+HISTOGRAM_PLOT_PATH = os.path.join(PLOT_DIR, "histogram_plot.pdf")

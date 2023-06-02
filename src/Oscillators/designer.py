@@ -25,9 +25,6 @@ MAX_RESIDUAL = 1e6
 MAX_FEASIBLEDEV = 1
 SOLVER = Solver()
 SOLVER.solve()
-EVALUATION_CSV = os.path.join(os.path.dirname(__file__), "evaluation_data.csv")
-EVALUATION_PLOT_PATH = os.path.join(os.path.dirname(__file__), "evaluation_plot.pdf")
-HISTOGRAM_PLOT_PATH = os.path.join(os.path.dirname(__file__), "histogram_plot.pdf")
 
 
 class Designer(object):
@@ -333,20 +330,18 @@ class Designer(object):
         def makeDesign(**designKwargs):
             designer = Designer(**designKwargs)
             designer.find()
-            design_error = DesignError(designer)
-            design_error.calculate()
-            return designer, design_error
+            return designer
         #
         if is_both:
             new_kwargs = dict(kwargs)
             if "is_x1" in kwargs:
                 del new_kwargs["is_x1"]
-            designer_x1, design_error_x1 = makeDesign(is_x1=True, **new_kwargs) 
-            designer_x2, design_error_x2 = makeDesign(is_x1=False, **new_kwargs)
-            if design_error_x1 < design_error_x2:
+            designer_x1 = makeDesign(is_x1=True, **new_kwargs) 
+            designer_x2 = makeDesign(is_x1=False, **new_kwargs)
+            if designer_x1.design_error < designer_x2.design_error:
                 designer = designer_x1
             else:
                 designer = designer_x2
         else:
-            designer, _ = Designer(**kwargs)
+            designer = Designer(**kwargs)
         return designer
