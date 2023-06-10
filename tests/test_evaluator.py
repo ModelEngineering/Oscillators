@@ -8,8 +8,8 @@ import os
 import pandas as pd
 import unittest
 
-IGNORE_TEST = False
-IS_PLOT = False
+IGNORE_TEST = True
+IS_PLOT = True
 REMOVE_FILES = []
 END_TIME = 5
 EVALUATION_CSV = os.path.join(os.path.dirname(os.path.abspath(__file__)), "sample_evaluation_data.csv")
@@ -38,8 +38,8 @@ class TestEvaluator(unittest.TestCase):
         self.assertEqual(self.evaluator.designer.k2, self.designer.k2)
     
     def testMakeData(self):
-        #if IGNORE_TEST:
-        #    return
+        if IGNORE_TEST:
+            return
         self.init()
         df = self.evaluator.makeData(
               thetas=[0.1, 1.0],

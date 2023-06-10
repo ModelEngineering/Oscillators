@@ -41,7 +41,6 @@ PARAM_DCT[C_K_D] = PARAM_DCT[C_K5] - PARAM_DCT[C_K3]
 PARAM_DCT[C_THETA] = np.sqrt(PARAM_DCT[C_K2]*PARAM_DCT[C_K_D])
 
 K1_VALUE =1  # Value used for k1
-K1_VALUE =0  # Value used for k1
 
 # Paths
 PROJECT_DIR = os.path.dirname(__file__)

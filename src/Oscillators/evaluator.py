@@ -135,8 +135,18 @@ class Evaluator(object):
                 cbar=False
             plot_df = pd.pivot_table(new_df, values=value_name, index='alpha', columns='theta')
             plot_df = plot_df.sort_index(ascending=False)
+            # Find the value of is_x1 for each row and column of plot_df and transform it with 'a' or 'b'
             cbar_label = cn.DESIGN_ERROR_LABEL_DCT[value_name]
-            g = sns.heatmap(plot_df, cmap="seismic", vmin=vmin, vmax=vmax, linewidths=1.0, annot=True, ax=ax, cbar=cbar, cbar_ax=cbar_ax,
+            text_df = plot_df.copy()
+            for alpha, row in plot_df.iterrows():
+                for theta, value in row.iteritems():
+                    is_x1 = new_df[(new_df["alpha"] == alpha) & (new_df["theta"] == theta)]["is_x1"].values[0]
+                    text_df.loc[alpha, theta] = str(value) + "a" if is_x1 else str(value) + "b"
+            text_arr = text_df.values
+            g = sns.heatmap(plot_df, cmap="seismic", vmin=vmin, vmax=vmax, linewidths=1.0, 
+                            annot=text_arr,
+                            fmt="",
+                            ax=ax, cbar=cbar, cbar_ax=cbar_ax,
                             annot_kws={"fontsize":6}, cbar_kws={'label': cbar_label}, linecolor="grey")
             g.set_xticklabels(g.get_xticklabels(), rotation = 30, fontsize = 8)
             g.set_yticklabels(g.get_yticklabels(), rotation = 0, fontsize = 8)
