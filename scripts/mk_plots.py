@@ -1,6 +1,7 @@
 """Creates Plots for Paper"""
 
 from src.Oscillators.evaluator import Evaluator
+from src.Oscillators.solver import Solver
 import src.Oscillators.constants as cn
 
 import os
@@ -8,10 +9,11 @@ import os
 SPECIES = ["x1", "x2", "both"]
 METRICS = ["feasibledev", "alphadev", "phidev", "prediction_error"]
 #
-CSV_PATH_PAT = os.path.join(cn.DATA_DIR, "evaluation_data_%s.csv")
+CSV_PATH_PAT = os.path.join(cn.DATA_DIR, "k1_is_1", "evaluation_data_%s.csv")
 CSV_PATHS = [CSV_PATH_PAT % s for s in SPECIES]
 EVALUATION_PLOT_PATH_PAT = os.path.join(cn.PLOT_DIR, "evaluation_plot_%s_%s.pdf")   #  metric, species
 HISTOGRAM_PLOT_PATH_PAT = os.path.join(cn.PLOT_DIR, "histogram_plot_%s.pdf")   #  species
+EVALUATE_MODEL_PLOT = os.path.join(cn.PLOT_DIR, "evaluate_model.pdf")
 EVALUATION_PLOT_PATH_DCT = {}
 for metric in METRICS:
     for species in SPECIES:
@@ -27,3 +29,8 @@ for species in SPECIES:
     for metric in METRICS:
         Evaluator.plotDesignErrors(metric, csv_path=csv_path,
                                   plot_path=EVALUATION_PLOT_PATH_DCT[(metric, species)], vmin=-1, vmax=1)
+        
+# Plot accuracy of predictions
+solver = Solver()
+solver.solve(is_check=False)
+solver.plotManyFits(is_plot=True, output_path=EVALUATE_MODEL_PLOT)

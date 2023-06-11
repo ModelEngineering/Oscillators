@@ -189,18 +189,25 @@ class Solver(object):
                 raise ValueError("expression is None and self.x_vec is None")   
             expression = self.x_vec
         new_param_dct = dict(param_dct)
-        new_param_dct["theta"] = self.calculateTheta(param_dct["k2"], param_dct["k_d"])
+        self.calculateDependentParameters(new_param_dct)
         symbol_dct = util.makeSymbolDct(expression, new_param_dct)
         if expression == self.A_mat:
             mat = self.A_mat.subs(symbol_dct)
-            df = util.simulateLinearSystem(A=mat, end_time=end_time, column_names=["S1", "S2"], **kwargs)
+            df = util.simulateLinearSystem(A=mat, end_time=end_time, column_names=[cn.C_S1, cn.C_S2], **kwargs)
         else:
             vector_func = expression.subs(symbol_dct)
             df = util.simulateExpressionVector(vector_func, new_param_dct, end_time=end_time, **kwargs)
         return df
     
     def _parameterToStr(self, parameter_name, parameter_value, num_digits=4):
-        stg = "%s=%s" % (parameter_name, parameter_name)
+        if not "_" in parameter_name:
+            parameter_name = parameter_name[0] + "_" + parameter_name[1]
+        elif len(parameter_name) > 3:
+            if "1" in parameter_name:
+                parameter_name = "x_1(0)"
+            else:
+                parameter_name = "x_2(0)"
+        stg = "$%s$=%s" % (parameter_name, np.round(parameter_value, 1))
         return stg
     
     def plotFit(self, ax=None, is_plot=True, output_path=None, xlabel="time", title=None,
@@ -233,9 +240,8 @@ class Solver(object):
         simulation_df = util.simulateRR(param_dct=param_dct, end_time=end_time, is_plot=False, num_point=len(prediction_df))
         times = simulation_df.index.to_list()
         # Plot
-        ax.set_title(title, fontsize=10)
-        # FIXME: better colors
-        for color, species in zip(["black", "blue"], ["S1", "S2"]):
+        ax.set_title(title, fontsize=6)
+        for color, species in zip(["black", "blue"], [cn.C_S1, cn.C_S2]):
             ax.plot(times, simulation_df[species], label="True", color=color)
             ax.scatter(times, prediction_df[species], label="Predicted", color=color, marker="*")
         if is_xaxis:
@@ -244,7 +250,7 @@ class Solver(object):
             ax.set_xticks([])
             ax.set_xticklabels([])
         if is_legend:
-            ax.legend(["True S1", "Predicted S1", "True S2", "Predicted S2"])
+            ax.legend(["Simulated S1", "Predicted S1", "Simulated S2", "Predicted S2"])
         if output_path is not None:
             ax.figure.savefig(output_path)
         if is_plot:
@@ -262,25 +268,28 @@ class Solver(object):
         """
         END_TIME = 2
         dct = {}
-        dct["k2"] = [11.35, 5.97, 9.78, 16.81]
-        dct["k_d"] = [2.20, 4.18, 10, 23, 5.94]
-        dct["k4"] = [118.82, 372.57, 119.92, 777.43]
-        dct["k6"] = [129.83, 592.03, 169.95, 993.03]
-        dct["x1_0"] = [5.0, 57.33, 5.0, 40.64]
-        dct["x2_0"] = [7.66, 10.0, 2.038, 10.0]
-        length = len(dct["k2"])
+        dct[cn.C_K2] = [11.35, 5.97, 9.78, 16.81]
+        dct[cn.C_K_D] = [2.20, 4.18, 10, 5.94]
+        dct[cn.C_K4] = [118.82, 372.57, 119.92, 777.43]
+        dct[cn.C_K6] = [129.83, 592.03, 169.95, 993.03]
+        dct[cn.C_X1_0] = [5.0, 57.33, 5.0, 40.64]
+        dct[cn.C_X2_0] = [7.66, 10.0, 2.038, 10.0]
+        length = len(dct[cn.C_K_D])
         nrow = length//2
         ncol = nrow
         fig, axs = plt.subplots(nrow, ncol) 
         irow = 0
         icol = 0
         for idx in range(length):
+            is_legend = False
             if irow == nrow - 1:
                 is_xaxis = True
+                if icol == 0:
+                    is_legend = True
             else:
                 is_xaxis = False
             param_dct = {n: v[idx] for n, v in dct.items()}
-            self.plotFit(is_plot=False, param_dct=param_dct, ax=axs[irow, icol], is_legend=False, is_xaxis=is_xaxis,
+            self.plotFit(is_plot=False, param_dct=param_dct, ax=axs[irow, icol], is_legend=is_legend, is_xaxis=is_xaxis,
                           end_time=END_TIME)
             icol += 1
             if icol == ncol:

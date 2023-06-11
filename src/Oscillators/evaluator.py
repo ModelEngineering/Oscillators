@@ -120,7 +120,9 @@ class Evaluator(object):
         #
         icol = 0
         irow = 0
-        phis = df["phi"].unique()
+        phis = df[cn.C_PHI].tolist()
+        if len(phis) != nrow*ncol:
+            phis = df[cn.C_PHI].unique().tolist()
         if len(phis) != nrow*ncol:
             raise RuntimeError("Expected %d phis, but found %d" % (nrow*ncol, len(phis)))
         # Iterate across the plots
@@ -139,7 +141,7 @@ class Evaluator(object):
             cbar_label = cn.DESIGN_ERROR_LABEL_DCT[value_name]
             text_df = plot_df.copy()
             for alpha, row in plot_df.iterrows():
-                for theta, value in row.iteritems():
+                for theta, value in row.items():
                     is_x1 = new_df[(new_df["alpha"] == alpha) & (new_df["theta"] == theta)]["is_x1"].values[0]
                     text_df.loc[alpha, theta] = str(value) + "a" if is_x1 else str(value) + "b"
             text_arr = text_df.values

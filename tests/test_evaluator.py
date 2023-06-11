@@ -8,8 +8,8 @@ import os
 import pandas as pd
 import unittest
 
-IGNORE_TEST = True
-IS_PLOT = True
+IGNORE_TEST = False
+IS_PLOT = False
 REMOVE_FILES = []
 END_TIME = 5
 EVALUATION_CSV = os.path.join(os.path.dirname(os.path.abspath(__file__)), "sample_evaluation_data.csv")
@@ -46,10 +46,12 @@ class TestEvaluator(unittest.TestCase):
               alphas=[0.1, 10.0], phis=[0, np.pi],
                             csv_path=EVALUATION_CSV)
         self.assertTrue(isinstance(df, pd.DataFrame))
+        self.assertTrue("feasibledev" in df.columns)
         self.assertTrue("alphadev" in df.columns)
-        self.assertTrue("theta" in df.columns)
-        self.assertTrue("alpha" in df.columns)
-        self.assertTrue("phi" in df.columns)
+        self.assertTrue("phidev" in df.columns)
+        self.assertTrue(cn.C_THETA in df.columns)
+        self.assertTrue(cn.C_ALPHA in df.columns)
+        self.assertTrue(cn.C_PHI in df.columns)
         self.assertGreater(len(df), 0)
         self.assertTrue(os.path.exists(EVALUATION_CSV))
 

@@ -9,8 +9,8 @@ import pandas as pd
 import sympy as sp
 import unittest
 
-IGNORE_TEST = True
-IS_PLOT = True
+IGNORE_TEST = False
+IS_PLOT = False
 TEST_DIR = os.path.dirname(os.path.abspath(__file__)) # This directory
 TEST_FILE = os.path.join(TEST_DIR, "test_oscillator_solution.pdf")
 REMOVE_FILES = [TEST_FILE] 
@@ -82,11 +82,10 @@ class TestOscillatorSolution(unittest.TestCase):
         self.soln.plotFit(is_plot=IS_PLOT, param_dct=param_dct, output_path=TEST_FILE, title="testPlotFit1")
 
     def testPlotManyFits(self):
-        #if IGNORE_TEST:
-        #    return
+        if IGNORE_TEST:
+            return
         self.soln.solve(is_check=False)
         self.soln.plotManyFits(is_plot=IS_PLOT, output_path=TEST_FILE)
-        import pdb; pdb.set_trace()
 
 if __name__ == "__main__":
     unittest.main()
