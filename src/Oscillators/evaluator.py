@@ -85,7 +85,8 @@ class Evaluator(object):
     
     @classmethod
     def plotDesignErrors(cls, value_name, csv_path=cn.EVALUATION_CSV, is_plot=True,
-                           plot_path=cn.EVALUATION_PLOT_PATH, title=None, vmin=0, vmax=1):
+                           plot_path=cn.EVALUATION_PLOT_PATH, title=None, vmin=0, vmax=1,
+                           phi_labels=None):
         """Plots previously constructed evaluation data.
         Plots 4 heatmaps, one per phase. A heatmap as x = frequency, y=amplitude
 
@@ -93,13 +94,16 @@ class Evaluator(object):
             value_name: str (in cn.DESIGN_ERROR_LABEL_DCT)
             csv_path: str
             output_path: str
-            is_plot: bool
+            is_plot: boolFalsse
             plot_path: str (pdf file for plot)
             vmin: float (minimum on colobar)
             vmax: float (maximum on colobar)
+            phi_labels: list-str (labels for phi)
         """
         if not value_name in cn.DESIGN_ERROR_LABEL_DCT.keys():
             raise ValueError("value_name %s not in %s" % (value_name, cn.DESIGN_ERROR_LABEL_DCT.keys()))
+        if phi_labels is None:
+            phi_labels = ["0", r"$\pi/2$", r"$\pi$", r"$3\pi/2$"]
         #
         df = pd.read_csv(csv_path)
         df = df.round(decimals=1)
@@ -152,8 +156,9 @@ class Evaluator(object):
                             annot_kws={"fontsize":6}, cbar_kws={'label': cbar_label}, linecolor="grey")
             g.set_xticklabels(g.get_xticklabels(), rotation = 30, fontsize = 8)
             g.set_yticklabels(g.get_yticklabels(), rotation = 0, fontsize = 8)
-            ax.set_ylabel(r'$\alpha$')
-            ax.set_title(r'$\phi$ = {}'.format(np.round(phi, 2)))
+            ax.set_ylabel(r'$\alpha^\star$')
+            #ax.set_title(r'$\phi^\star$ = {}'.format(np.round(phi, 2)))
+            ax.set_title(r'$\phi^\star$ = %s' % phi_labels[irow*ncol + icol])
             if icol > 0:
                 ax.set_yticklabels([])
                 ax.set_yticks([])
@@ -170,7 +175,7 @@ class Evaluator(object):
                 ax.set_xticklabels([])
                 ax.set_xlabel("")
             else:
-                ax.set_xlabel(r'$\theta$')
+                ax.set_xlabel(r'$\theta^\star$')
             icol += 1
             if icol == ncol:
                 icol = 0
