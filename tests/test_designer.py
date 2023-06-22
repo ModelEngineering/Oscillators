@@ -76,11 +76,10 @@ class TestOscillatorDesigner(unittest.TestCase):
         designer.plotFit(output_path="testPlotFit.pdf", is_plot=IS_PLOT)
 
     def testPlotManyFits(self):
-        #if IGNORE_TEST:
-        #    return
+        if IGNORE_TEST:
+            return
         self.designer.plotManyFits(output_path="testPlotManyFigs.pdf",
                                    is_plot=IS_PLOT)
-        import pdb; pdb.set_trace()
 
     def testDesign(self):
         if IGNORE_TEST:

@@ -29,7 +29,7 @@ for species in SPECIES:
     for metric in METRICS:
         Evaluator.plotDesignErrors(metric, csv_path=csv_path,
                                   plot_path=EVALUATION_PLOT_PATH_DCT[(metric, species)], vmin=-1, vmax=1)
-        
+
 # Plot accuracy of predictions
 solver = Solver()
 solver.solve(is_check=False)

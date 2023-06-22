@@ -111,7 +111,7 @@ def simulateExpression(sym, dct, times=TIMES, **kwargs):
     plotDF(df, **kwargs)
     return vals
 
-def simulateExpressionVector(vec, dct, end_time=round(TIMES[-1]), column_names=None, **kwargs):
+def simulateExpressionVector(vec, dct, end_time=round(TIMES[-1]), times=None, column_names=None, **kwargs):
     """
     Simulates a 2-d vector symbol that is a function of time.
     The time symbol must be "t".
@@ -120,6 +120,7 @@ def simulateExpressionVector(vec, dct, end_time=round(TIMES[-1]), column_names=N
     ----------
     sym: sp.Symbol
     dct: dict (substitutions)
+    times: list-float
 
     Returns
     -------
@@ -128,7 +129,8 @@ def simulateExpressionVector(vec, dct, end_time=round(TIMES[-1]), column_names=N
     """
     if column_names is None:
         column_names = ["S1", "S2"]
-    times = makeTimes(end_time=end_time)
+    if times is None:
+        times = makeTimes(end_time=end_time)
     s1_vals = simulateExpression(vec[0], dct, times=times, is_plot=False)
     s2_vals = simulateExpression(vec[1], dct, times=times, is_plot=False)
     df = pd.DataFrame({"time": times, column_names[0]: s1_vals, column_names[1]: s2_vals})
