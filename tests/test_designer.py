@@ -5,7 +5,6 @@ import src.Oscillators.constants as cn
 import lmfit
 import matplotlib.pyplot as plt
 import numpy as np
-import os
 import pandas as pd
 import unittest
 

@@ -197,8 +197,8 @@ class Evaluator(object):
         df[cn.C_K1] = cn.K1_VALUE
         df[cn.C_K3] = df[cn.C_K2] + df[cn.C_K2]
         df[cn.C_K5] = df[cn.C_K3] + df[cn.C_K_D]
-        df[cn.C_S1] = df[cn.C_X1_0]
-        df[cn.C_S2] = df[cn.C_X2_0]
+        df[cn.C_X1_0] = df[cn.C_X1_0]
+        df[cn.C_X2_0] = df[cn.C_X2_0]
         nrow = 2
         ncol = 4
         fig = plt.figure()
@@ -207,6 +207,9 @@ class Evaluator(object):
         bins = np.linspace(0, MAX_VALUE, 20)
         gs = GridSpec(nrow, ncol, figure=fig)
         for name in cn.C_SIMULATION_PARAMETERS:
+            if name[0] == "S":
+                index = name[1]
+                name = "x" + index + "_0"
             ax = fig.add_subplot(gs[irow, icol])
             counts, _ = np.histogram(df[name], bins=bins)
             fractions = counts/sum(counts)

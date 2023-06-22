@@ -108,16 +108,51 @@ class Designer(object):
         #
         return self.minimizer
 
-    @staticmethod
-    def _calculatePhaseOffset(phi):
-        if np.abs(phi) > np.pi:
-            phase_offset = np.pi
+    def _calculatePhaseOffset(self, params, is_x1):
+        """
+        Calculates the phase offset for the sinusoid.
+        
+        Args:
+            params: dict
+            is_xi: bool (True if the fit is for x1, False if the fit is for x2)
+        Returns:
+            float
+        """
+        adjustment = 0
+        k2, k4, k6, x1_0, x2_0, theta, k_d = self._getVariables(params)
+        if is_x1:
+            denom1 = k2*theta + k_d*theta
+            denom2 = k2*theta**2 + k_d*theta**2
+            numr1 = k2**2*x1_0 + k2**2*x2_0 - 2*k2*k4 + k2*k6 + k2*k_d*x1_0 - 2*k4*k_d
+            numr2 = k2*k4*theta - k2*k6*theta + k4*k_d*theta
+            total = numr1/denom1 + numr2/denom2 + theta*x2_0/(k2 + k_d)
+            if total < 0:
+                adjustment = np.pi
         else:
-            phase_offset = 0
-        return phase_offset
+            total = (k2*x1_0 + k2*x2_0 - k6 + k_d*x1_0)/theta
+            if total > 0:
+                adjustment = np.pi
+        return adjustment
     
     def _calculateKd(self, k2):
         return self.theta**2/k2
+    
+    def _getVariables(self, params):
+        """
+        Gets the variables from the parameters.
+        Args:
+            params: dict
+        Returns:
+            float*7 (k2, k4, k6, x1_0, x2_0, theta, k_d) 
+        """
+        k2 = params[cn.C_K2].value
+        k4 = params[cn.C_K4].value
+        k6 = params[cn.C_K6].value
+        x1_0 = params[cn.C_X1_0].value
+        x2_0 = params[cn.C_X2_0].value
+        theta = self.theta
+        k_d = self._calculateKd(k2)
+        return k2, k4, k6, x1_0, x2_0, theta, k_d
 
     def calculateResiduals(self, params):
         """
@@ -128,65 +163,45 @@ class Designer(object):
             params: lmfit.Parameters 
                 k2, k4 k6, x1_0, x2_0
         """
+        k2, k4, k6, x1_0, x2_0, theta, k_d = self._getVariables(params)
+        ####
+        # x1
+        ####
+        numr_omega = -k2**2*k4 + k2**2*k6 - k2*k4*k_d + k6*theta**2
+        denom = theta**2*(k2 + k_d)
+        omega = numr_omega/denom
         #
-        if False:
-            name_dct = dict(params.valuesdict())
-            name_dct[cn.C_THETA] = self.theta
-            name_dct[cn.C_K_D] = self._calculateKd(name_dct[cn.C_K2])
-            symbol_dct =  util.makeSymbolDct(self.solver.x_vec, name_dct)
-            df = util.simulateExpressionVector(self.solver.x_vec, symbol_dct, times=self.times)
-            if self.is_x1:
-                self.xfit = df[cn.C_S1].to_numpy()
-                xother = df[cn.C_S2].to_numpy()
-            else:
-                self.xfit = df[cn.C_S2].to_numpy()
-                xother = df[cn.C_S1].to_numpy()
+        amp_1 = theta**2*(k2**2*x1_0 + k2**2*x2_0 - k2*k4 + k2*k_d*x1_0 - k4*k_d + theta**2*x2_0)**2 
+        amp_2 = (k2**2*k4 - k2**2*k6 + k2*k4*k_d + k2*theta**2*x1_0 - k6*theta**2 + k_d*theta**2*x1_0)**2
+        amp = np.sqrt(amp_1 + amp_2)/denom
+        numr_phi = k2**2*k4 - k2**2*k6 + k2*k4*k_d + k2*theta**2*x1_0 - k6*theta**2 + k_d*theta**2*x1_0
+        denom_phi = theta*(k2**2*x1_0 + k2**2*x2_0 - k2*k4 + k2*k_d*x1_0 - k4*k_d + theta**2*x2_0)
+        phase_offset = self._calculatePhaseOffset(params, is_x1=True)
+        phi = np.arctan(numr_phi/denom_phi) + phase_offset
+        #
+        x1 = amp*np.sin(self.times*theta + phi) + omega
+        ####
+        # x2
+        ####
+        denom = theta**2
+        omega = (k2*k4 - k2*k6 + k4*k_d)/denom
+        #
+        amp_1 = theta**2*(k2*x1_0 + k2*x2_0 - k6 + k_d*x1_0)**2 + (k2*k4 - k2*k6 + k4*k_d - theta**2*x2_0)**2
+        amp = np.sqrt(amp_1)/denom
+        #
+        phi = np.arctan((k2*k4 - k2*k6 + k4*k_d - theta**2*x2_0)/(theta*(k2*x1_0 + k2*x2_0 - k6 + k_d*x1_0)))
+        phase_offset = self._calculatePhaseOffset(params, is_x1=False)
+        phi += phase_offset
+        x2 = amp*np.sin(self.times*theta + phi) + omega
+        # Calculate residuals
+        if self.is_x1:
+            self.xfit = x1
+            xother = x2
         else:
-            k2 = params[cn.C_K2].value
-            k4 = params[cn.C_K4].value
-            k6 = params[cn.C_K6].value
-            x1_0 = params[cn.C_X1_0].value
-            x2_0 = params[cn.C_X2_0].value
-            theta = self.theta
-            k_d = self._calculateKd(k2)
-            ####
-            # x1
-            ####
-            numr_omega = -k2**2*k4 + k2**2*k6 - k2*k4*k_d + k6*theta**2
-            denom = theta**2*(k2 + k_d)
-            omega = numr_omega/denom
-            #
-            amp_1 = theta**2*(k2**2*x1_0 + k2**2*x2_0 - k2*k4 + k2*k_d*x1_0 - k4*k_d + theta**2*x2_0)**2 
-            amp_2 = (k2**2*k4 - k2**2*k6 + k2*k4*k_d + k2*theta**2*x1_0 - k6*theta**2 + k_d*theta**2*x1_0)**2
-            amp = np.sqrt(amp_1 + amp_2)/denom
-            numr_phi = k2**2*k4 - k2**2*k6 + k2*k4*k_d + k2*theta**2*x1_0 - k6*theta**2 + k_d*theta**2*x1_0
-            denom_phi = theta*(k2**2*x1_0 + k2**2*x2_0 - k2*k4 + k2*k_d*x1_0 - k4*k_d + theta**2*x2_0)
-            phase_offset = self._calculatePhaseOffset(self.phi)
-            phi = np.arctan(numr_phi/denom_phi) + phase_offset
-            #
-            x1 = amp*np.sin(self.times*theta + phi) + omega
-            ####
-            # x2
-            ####
-            denom = theta**2
-            omega = (k2*k4 - k2*k6 + k4*k_d)/denom
-            #
-            amp_1 = theta**2*(k2*x1_0 + k2*x2_0 - k6 + k_d*x1_0)**2 + (k2*k4 - k2*k6 + k4*k_d - theta**2*x2_0)**2
-            amp = np.sqrt(amp_1)/denom
-            #
-            phi = np.arctan((k2*k4 - k2*k6 + k4*k_d - theta**2*x2_0)/(theta*(k2*x1_0 + k2*x2_0 - k6 + k_d*x1_0)))
-            phase_offset = self._calculatePhaseOffset(phi)
-            phi = phi + phase_offset
-            phi = phi + np.pi
-            x2 = amp*np.sin(self.times*theta + phi) + omega
-            # Calculate residuals
-            if self.is_x1:
-                self.xfit = x1
-                xother = x2
-            else:
-                self.xfit = x2
-                xother = x1
-            name_dct = {cn.C_K2: k2, cn.C_K_D: k_d, cn.C_K4: k4, cn.C_K6: k6, cn.C_X1_0: x1_0, cn.C_X2_0: x2_0}
+            self.xfit = x2
+            xother = x1
+        name_dct = {cn.C_K2: k2, cn.C_K_D: k_d, cn.C_K4: k4, cn.C_K6: k6, cn.C_X1_0: x1_0, cn.C_X2_0: x2_0}
+        # Calculate residuals
         residual_arr = self.xfit_ref - self.xfit
         xother_residuals = -1*(np.sign(xother)-1)*xother*self.LESS_THAN_ZERO_MULTIPLIER/2
         residual_arr = np.concatenate([residual_arr, xother_residuals])
