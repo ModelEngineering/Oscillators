@@ -390,62 +390,70 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Preliminaries}
 
-    This write-up provides details on the derivation of the time domain solution for the reaction network described in the main text.
+This write-up provides details on the derivation of the
+time domain solution for the reaction network described in the main text.
+Recall that the reaction network is constructed to be a system
+of linear ODEs.
+As such, the time domain solution is an initial value problem (IVP).
+
 
     The reaction network has 8 parameters. There are 6 kinetic constants,
-\(k_i,~ i\in \{1, 2, 3, 4, 5, 6\}\). And there are two initial
-concentrations, \(x_n (0),~ n \in \{1, 2 \}\), where \(x_n(0)\) is the
-initial concentration for \(S_n\).
+$k_i,~ i\in \{1, 2, 3, 4, 5, 6\}$. And there are two initial
+concentrations, $x_n (0),~ n \in \{1, 2 \}$, where $x_n(0)$ is the
+initial concentration for $S_n$.
 
 Because the reaction network can be described as a 
 system of linear system (by construction), we
 know that oscillations are sinusoids.
-Let \(x_n (t)\) be the concentration
-of species \(S_n\) at time \(t\). Then, an oscillating solution has the
+Let $x_n (t)$ be the concentration
+of species $S_n$ at time $t$. Then, an oscillating solution has the
 form \begin{equation*}
 x_n(t) = \alpha_n sin(\theta_n t + \phi_n) + \omega_n,
-\end{equation*} where \(\alpha_n\) is the amplitude of the sinusoid for
-\(S_n\), \(\theta_n\) is its frequency, \(\phi_n\) is its phase, and
-\(\omega_n\) is the DC offset (the mean value of the sinusoid over
+\end{equation*} where $\alpha_n$ is the amplitude of the sinusoid for
+$S_n$, $\theta_n$ is its frequency, $\phi_n$ is its phase, and
+$\omega_n$ is the DC offset (the mean value of the sinusoid over
 time).
 It turns out that both species have the same frequency, as we show shortly.
 So, $\theta_n = \theta$, and there are just 7 parameters.
-We refer to \(\alpha_n, \theta, \phi_n, \omega_n\) as the
+We refer to $\alpha_n, \theta, \phi_n, \omega_n$ as the
 \textbf{oscillation characteristics (OC)} of the reaction network.
 
 We use the following notation: 
 \begin{itemize}
-\item \({\bf A}\) - Jacobian matrix
-\item \(\alpha_n\) - amplitude of oscillation for species \(n\)
-\item \(\Delta\) -
-\(det {\bf A})\)
-\item \(i\) - indexes constants
-\item \(k_i\), \(k_d\) -
+\item ${\bf A}$ - Jacobian matrix
+\item $\alpha_n$ - amplitude of oscillation for species $n$
+\item ${\bf c} = \begin{pmatrix} c_1 \\ c_2 \end{pmatrix}$ - constants associated with the homogeneous solution
+\item $\Delta$ -
+$det {\bf A})$
+\item  ${\bf F} (t)$ - fundamental matrix
+\item $i$ - indexes constants
+\item $k_i$, $k_d$ -
 positive constant 
-\item \(K\) - number of constants
-\item \(\lambda\) -
+\item $K$ - number of constants
+\item $\lambda$ -
 eigenvalue
-\item \(n\) - indexes species
-\item \(N\) - number of species
-\item \(\omega_n\) - offset of species \(n\) 
-\item \(\phi_n\) - phase in radians
-\item \(t\) - time 
-\item \(\tau\) - \(tr({\bf A})\) 
-\item \(\theta\) - frequency in
+\item $n$ - indexes species
+\item $N$ - number of species
+\item $\omega_n$ - offset of species $n$ 
+\item $\phi_n$ - phase in radians
+\item $t$ - time 
+\item $\tau$ - $tr({\bf A})$ 
+\item $\theta$ - frequency in
 radians 
-\item \({\bf u}\) - forced input (kinetic constants for zeroth order
-rates)  \({\bf x}\) (\(N \times 1\)) is the state vector
-\item \(\dot{\bf x} (t)\) - derivative w.r.t. time of \({\bf x}\)
-\item \(x_n\)
-(t) - time varying concentration of species \(n\)
+\item ${\bf u}$ - forced input (kinetic constants for zeroth order
+rates)  ${\bf x}$ ($N \times 1$) is the state vector
+\item $\dot{\bf x} (t)$ - derivative w.r.t. time of ${\bf x}$
+\item $x_n$
+(t) - time varying concentration of species $n$
 \end{itemize}
 
     Since we have constructed the reaction network so that the dynamics can
 be described as a system of linear ODEs, it can be described using the
-vector differential equation: \begin{equation}
-\dot{\bf x} = {\bf A} {\bf x} + {\bf u}\label{eq:linear}
-\end{equation} where
-\({\bf A} = \begin{pmatrix} a_{11} & a_{12} \\ a_{21} & a_{22} \\ \end{pmatrix}\)
+vector differential equation: 
+\begin{equation*}
+\dot{\bf x} = {\bf A} {\bf x} + {\bf u}
+\end{equation*} where
+${\bf A} = \begin{pmatrix} a_{11} & a_{12} \\ a_{21} & a_{22} \\ \end{pmatrix}$
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Eigenvalues}
@@ -453,10 +461,10 @@ Here, we calculate the eigenvalues for the reaction network described
 in the text.
 
 If there is an oscillating solution for this system, then the
-eigenvalues of \({\bf A}\) must be pure imaginary. Since this is a two
-state system, this means that if \(\theta i\) is an eigenvalue, then
-\(-\theta i\) must also be an eigenvalue. This means that
-\(\theta_1 = \theta = \theta_2\), which justifies our previous claim.
+eigenvalues of ${\bf A}$ must be pure imaginary. Since this is a two
+state system, this means that if $\theta i$ is an eigenvalue, then
+$-\theta i$ must also be an eigenvalue. This means that
+$\theta_1 = \theta = \theta_2$, which justifies our previous claim.
 
 Next we develop the conditions for ${\bf A}$ to have a pure imaginary
 eigenvalues. The determinant of ${\bf A}$ is
@@ -473,30 +481,30 @@ if the following constraints hold:
 \end{itemize}
 
 Now, we analyze ${\bf A}$ for the reaction network.
-\begin{equation}
+\begin{equation*}
 {\bf A} =
 \begin{pmatrix}
 k_3 - k_1 & k_2 \\
 k_1 - k_5 & -k_2 \\
 \end{pmatrix}
-\end{equation}
+\end{equation*}
 
 and 
-\begin{equation}
+\begin{equation*}
 {\bf u} = 
 \begin{pmatrix} - k_4 \\ k_6 \\ \end{pmatrix}
-\end{equation}
+\end{equation*}
 So the trace and determinant are:
-\begin{eqnarray}
+\begin{eqnarray*}
 \tau & = & k_3 -k_1 - k_2 \\
 \Delta & = & (k_3 - k_1)(-k_2) - k_2 (k_1 - k_5) \\
 & = & k_2 (k_5 - k_3) \\
-\end{eqnarray}
+\end{eqnarray*}
 
-To obtain purely imaginary solutions, we require that \(\tau =0\) and
-\(\Delta > 0\). The former implies that \(k_3 = k_1 + k_2\). The latter
-implies that that \(k_5 > k_3\). We define \(k_d = k_5 - k_3 > 0\)
-Applying the foregoing to the \({\bf A}\) matrix, we first note that
+To obtain purely imaginary solutions, we require that $\tau =0$ and
+$\Delta > 0$. The former implies that $k_3 = k_1 + k_2$. The latter
+implies that that $k_5 > k_3$. We define $k_d = k_5 - k_3 > 0$
+Applying the foregoing to the ${\bf A}$ matrix, we first note that
 \begin{align*}
 k_1 - k_5 & = & k_1 - k_3 -k_d \\
 & = & k_3 - k_2 - k_3 - k_d \\
@@ -504,131 +512,146 @@ k_1 - k_5 & = & k_1 - k_3 -k_d \\
 \end{align*}
 Applying the constraints,
 we see that
-\begin{equation}
+\begin{equation*}
 {\bf A} = 
 \begin{pmatrix}
 k_2 & k_2 \\
 -k_2 - k_d & -k_2 \\
 \end{pmatrix}
-\end{equation}
-Observe that $\(\Delta = k_2 k_d$.
+\end{equation*}
+Observe that $\Delta = k_2 k_d$.
 As a result
-\(\theta = \pm \sqrt{\Delta} = \pm \sqrt{k_2 k_d}\). Hereafter, we drop
-the \(\pm\).
+$\theta = \pm \sqrt{\Delta} = \pm \sqrt{k_2 k_d}$. Hereafter, we drop
+the $\pm$.
 
 %%%%%%%%%%%%%%%%%%%%%%%%
 \section{Eigenvectors and Fundamental Matrix}
 
-We find the eigenvectors of \({\bf A}\) as an intermediate step to
+We find the eigenvectors of ${\bf A}$ as an intermediate step to
 finding the time domain solution.
 
-First, observe that that since \(k_d > 0\), \({\bf A}\) is nonsingular,
+First, observe that that since $k_d > 0$, ${\bf A}$ is nonsingular,
 and so we can calculate eigenvectors directly.
 
-\begin{equation}
+\begin{equation*}
     {\bf w}_1 =
     \begin{pmatrix}
 - \frac{k_{2}}{k_{2} + k_{d}}
 + \frac{i \theta}{k_{2} + k_{d}} 
 \\ 1
 \end{pmatrix}
-\end{equation}
+\end{equation*}
 for the eigenvalue $\lambda_1 = - \sqrt{k_d k_2}$.
 
-\begin{equation}
+\begin{equation*}
     {\bf w}_2 =
     \begin{pmatrix}
 - \frac{k_{2}}{k_{2} + k_{d}}
 - \frac{i \theta}{k_{2} + k_{d}} 
 \\ 1
 \end{pmatrix}
-\end{equation}
+\end{equation*}
 for the eigenvalue $\lambda_1 = \sqrt{k_d k_2}$.
 
-
-Note that ${\bf A}$ is real valued and the eigenvectors are complex
-conjuates. For example,
-\begin{equation}
-{\bf w}_ 1 = 
-\begin{pmatrix}
-- \frac{k_{2}}{k_{2} + k_{d}}
-\\ 1
-\end{pmatrix}
-+
-i
-\begin{pmatrix}
- \frac{\theta}{k_{2} + k_{d}} 
-\\ 0
-\end{pmatrix}
-\end{equation}
-We have a similar decomposition for ${\bf w}_2$.
-Now consider ${\bf w}_n e^{\lambda_n}$.
-We can use the Euler formulas to express the these expressions
-in terms of $sin$ and $cos$.
-{\color{red} Is the statement correct?}
-This is represented as ${\bf F}$, the {\bf fundamental matrix} where column $n$ is
+The solution to the initial value problem is a sum of eigenvectors
+multiplied by their eigenvalues.
+The {\bf fundamental matrix} {\bf F} of a system of 
+linear ODEs has a column
+for each eigenvector multiplied by its eigenvalue,
 ${\bf w}_n e^{\lambda_n}$.
-\begin{equation}
+
+Rather than writing ${\bf F} (t)$ immediately, we first
+observe that it can be transformed into
+a real valued matrix.
+We can use the decomposition of eigenvectors into
+real and imaginary parts along with Euler formulas
+to express ${\bf F}(t)$
+in terms of $sin$ and $cos$.
+(This also involves taking simple linear
+combinations of the vectors to simplify the expressions.)
+\begin{equation*}
 {\bf F} (t) = \begin{pmatrix}- \frac{k_{2} \cos{\left(t \theta \right)}}{k_{2} + k_{d}} 
 + \frac{\theta \sin{\left(t \theta \right)}}{k_{2} + k_{d}} & - \frac{k_{2} \sin{\left(t \theta \right)}}{k_{2} + k_{d}} - \frac{\theta \cos{\left(t \theta \right)}}{k_{2} + k_{d}}\\\cos{\left(t \theta \right)} & \sin{\left(t \theta \right)}
 \end{pmatrix}
-\end{equation}
+\end{equation*}
 
 %%%%%%%%%%%%%%%%%%%%%%%
 \section{Solving the Initial Value Problem}
-We proceed in the usual way to construct a solution:
+We proceed in the usual way to solve an IVP:
 \begin{enumerate}
 \item Find the
 solution to the homogeneous system
-\(\dot{\bf x}^H (t) = {\bf A} {\bf x}^H (t)\) using the eigenvectors.
+$\dot{\bf x}^H (t) = {\bf A} {\bf x}^H (t)$.
 \item
 Find a particular solution such that
-\(\dot{x}^P (t) = {\bf A} {\bf x}^P (t)\)
+$\dot{x}^P (t) = {\bf A} {\bf x}^P (t) + {\bf u}$
 \item
-\({\bf x} (t) = {\bf x}^H (t) + {\bf x}^P (t)\)
+${\bf x} (t) = 
+\begin{pmatrix}
+c_1 x_1^H (t) \\
+c_2 x_2^H (t) \\
+\end{pmatrix}
+ + {\bf x}^P (t),$
+ where
+{\bf c} is determined by the initial conditions.
 \end{enumerate}
 
-\({\bf x}^H (t) = {\bf F} {\bf c} (t),\) where \({\bf c}\) is a vector
-of unknown constants that are determined based on initial conditions.
+${\bf x}^H (t) = {\bf F} (t) {\bf c},$ where ${\bf c}$ is a vector
+of unknown constants that are determined based on initial conditions,
+intitial conditions are the initial concentrations of
+$S_1$, $S_2$.
 
-We assume that \({\bf x}^P (t) = {\bf F}(t) {\bf v}\). This means that
-\begin{eqnarray}
+We assume that ${\bf x}^P (t) = {\bf F}(t) {\bf v}$. This means that
+\begin{eqnarray*}
 \dot{\bf x}^P (t) &= & \dot{\bf F} (t) {\bf v} + {\bf F} (t) \dot{\bf v} \\
 \dot{\bf F} (t) {\bf v} + {\bf F} (t) \dot{\bf v} & = & {\bf A} {\bf F}(t) {\bf v} + {\bf u} \\
 {\bf A} {\bf F} (t){\bf v} + {\bf F} (t) \dot{\bf v} & = & {\bf A} {\bf F} (t) {\bf v} + {\bf u} \\
 {\bf F} (t) \dot{\bf v} & = & {\bf u} \\
 {\bf v} = \int \left( {\bf F}^{-1} (t) {\bf u} \right)dt
-\end{eqnarray}
+\end{eqnarray*}
 
-    Solving, we have
-
-\begin{eqnarray}
+Calculating this integral (with help from the python package
+{\tt sympy}), we have
+\begin{eqnarray*}
 {\bf x}^P (t) & = & {\bf F} (t) {\bf v} \\
 & = & \begin{pmatrix}\frac{- k_{2}^{2} k_{4} \cos{\left(t \theta \right)} - k_{2}^{2} k_{4} + k_{2}^{2} k_{6} \cos{\left(t \theta \right)} + k_{2}^{2} k_{6} - k_{2} k_{4} k_{d} \cos{\left(t \theta \right)} - k_{2} k_{4} k_{d} + k_{2} k_{4} \theta \sin{\left(t \theta \right)} - k_{2} k_{6} \theta \sin{\left(t \theta \right)} + k_{4} k_{d} \theta \sin{\left(t \theta \right)} + k_{6} \theta^{2}}{\theta^{2} \left(k_{2} + k_{d}\right)}\\\frac{k_{2} k_{4} \cos{\left(t \theta \right)} + k_{2} k_{4} - k_{2} k_{6} \cos{\left(t \theta \right)} - k_{2} k_{6} + k_{4} k_{d} \cos{\left(t \theta \right)} + k_{4} k_{d}}{\theta^{2}}\end{pmatrix}
-\end{eqnarray}
+\end{eqnarray*}
 
-    \begin{eqnarray}
+    \begin{eqnarray*}
 {\bf x} (t) & = & {\bf x}^H (t) + {\bf x}^P (t) \\
 & = & \begin{pmatrix}- \frac{k_{2} \cos{\left(t \theta \right)}}{k_{2} + k_{d}} + \frac{\theta \sin{\left(t \theta \right)}}{k_{2} + k_{d}} & - \frac{k_{2} \sin{\left(t \theta \right)}}{k_{2} + k_{d}} - \frac{\theta \cos{\left(t \theta \right)}}{k_{2} + k_{d}}\\\cos{\left(t \theta \right)} & \sin{\left(t \theta \right)}\end{pmatrix}  \begin{pmatrix} c_1 \\ c_2 \end{pmatrix} \\
 &  & + \begin{pmatrix}\frac{- k_{2}^{2} k_{4} \cos{\left(t \theta \right)} - k_{2}^{2} k_{4} + k_{2}^{2} k_{6} \cos{\left(t \theta \right)} + k_{2}^{2} k_{6} - k_{2} k_{4} k_{d} \cos{\left(t \theta \right)} - k_{2} k_{4} k_{d} + k_{2} k_{4} \theta \sin{\left(t \theta \right)} - k_{2} k_{6} \theta \sin{\left(t \theta \right)} + k_{4} k_{d} \theta \sin{\left(t \theta \right)} + k_{6} \theta^{2}}{\theta^{2} \left(k_{2} + k_{d}\right)}\\\frac{k_{2} k_{4} \cos{\left(t \theta \right)} + k_{2} k_{4} - k_{2} k_{6} \cos{\left(t \theta \right)} - k_{2} k_{6} + k_{4} k_{d} \cos{\left(t \theta \right)} + k_{4} k_{d}}{\theta^{2}}\end{pmatrix}
-\end{eqnarray}
+\end{eqnarray*}
 
-    We find \(c_1, c_2\) by \begin{eqnarray}
+    We find $c_1, c_2$ by \begin{eqnarray*}
 {\bf x} (0) & = & \begin{pmatrix} x_1 (0) \\ x_2 (0) \end{pmatrix} \\
 & = & \begin{pmatrix}- \frac{k_{2} \cos{\left(t \theta \right)}}{k_{2} + k_{d}} + \frac{\theta \sin{\left(t \theta \right)}}{k_{2} + k_{d}} & - \frac{k_{2} \sin{\left(t \theta \right)}}{k_{2} + k_{d}} - \frac{\theta \cos{\left(t \theta \right)}}{k_{2} + k_{d}}\\\cos{\left(t \theta \right)} & \sin{\left(t \theta \right)}\end{pmatrix}  \begin{pmatrix} c_1 \\ c_2 \end{pmatrix} \\
 &  & + \begin{pmatrix}\frac{- k_{2}^{2} k_{4} \cos{\left(t \theta \right)} - k_{2}^{2} k_{4} + k_{2}^{2} k_{6} \cos{\left(t \theta \right)} + k_{2}^{2} k_{6} - k_{2} k_{4} k_{d} \cos{\left(t \theta \right)} - k_{2} k_{4} k_{d} + k_{2} k_{4} \theta \sin{\left(t \theta \right)} - k_{2} k_{6} \theta \sin{\left(t \theta \right)} + k_{4} k_{d} \theta \sin{\left(t \theta \right)} + k_{6} \theta^{2}}{\theta^{2} \left(k_{2} + k_{d}\right)}\\\frac{k_{2} k_{4} \cos{\left(t \theta \right)} + k_{2} k_{4} - k_{2} k_{6} \cos{\left(t \theta \right)} - k_{2} k_{6} + k_{4} k_{d} \cos{\left(t \theta \right)} + k_{4} k_{d}}{\theta^{2}}\end{pmatrix}
-\end{eqnarray}
+\end{eqnarray*}
 
 Solving, we have
-\({\bf x} (t) = \begin{pmatrix}\frac{\left(- \frac{k_{2} \sin{\left(t \theta \right)}}{k_{2} + k_{d}} - \frac{\theta \cos{\left(t \theta \right)}}{k_{2} + k_{d}}\right) \left(- k_{2} x_{1 0} - k_{2} x_{2 0} + k_{6} - k_{d} x_{1 0}\right)}{\theta} + \frac{\left(- \frac{k_{2} \cos{\left(t \theta \right)}}{k_{2} + k_{d}} + \frac{\theta \sin{\left(t \theta \right)}}{k_{2} + k_{d}}\right) \left(- 2 k_{2} k_{4} + 2 k_{2} k_{6} - 2 k_{4} k_{d} + \theta^{2} x_{2 0}\right)}{\theta^{2}} + \frac{- k_{2}^{2} k_{4} \cos{\left(t \theta \right)} - k_{2}^{2} k_{4} + k_{2}^{2} k_{6} \cos{\left(t \theta \right)} + k_{2}^{2} k_{6} - k_{2} k_{4} k_{d} \cos{\left(t \theta \right)} - k_{2} k_{4} k_{d} + k_{2} k_{4} \theta \sin{\left(t \theta \right)} - k_{2} k_{6} \theta \sin{\left(t \theta \right)} + k_{4} k_{d} \theta \sin{\left(t \theta \right)} + k_{6} \theta^{2}}{\theta^{2} \left(k_{2} + k_{d}\right)}\\ \frac{\left(- k_{2} x_{1 0} - k_{2} x_{2 0} + k_{6} - k_{d} x_{1 0}\right) \sin{\left(t \theta \right)}}{\theta} + \frac{\left(- 2 k_{2} k_{4} + 2 k_{2} k_{6} - 2 k_{4} k_{d} + \theta^{2} x_{2 0}\right) \cos{\left(t \theta \right)}}{\theta^{2}} + \frac{k_{2} k_{4} \cos{\left(t \theta \right)} + k_{2} k_{4} - k_{2} k_{6} \cos{\left(t \theta \right)} - k_{2} k_{6} + k_{4} k_{d} \cos{\left(t \theta \right)} + k_{4} k_{d}}{\theta^{2}}\end{pmatrix}\)
+\begin{eqnarray*}
+{\bf x} (t) & = & \begin{pmatrix}\frac{\left(- \frac{k_{2} \sin{\left(t \theta \right)}}{k_{2} + k_{d}} 
+- \frac{\theta \cos{\left(t \theta \right)}}{k_{2} + k_{d}}\right) \left(- k_{2} x_1 (0)} - k_{2} x_2 (0)} + k_{6} - k_{d} x_1 (0)}\right)}{\theta} 
++ \frac{\left(- \frac{k_{2} \cos{\left(t \theta \right)}}{k_{2} + k_{d}} 
++ \frac{\theta \sin{\left(t \theta \right)}}{k_{2} + k_{d}}\right) \left(- 2 k_{2} k_{4} + 2 k_{2} k_{6} - 2 k_{4} k_{d} + \theta^{2} x_2 (0)}\right)}{\theta^{2}} 
++ \frac{- k_{2}^{2} k_{4} \cos{\left(t \theta \right)} - k_{2}^{2} k_{4} + k_{2}^{2} k_{6} \cos{\left(t \theta \right)} 
++ k_{2}^{2} k_{6} - k_{2} k_{4} k_{d} \cos{\left(t \theta \right)} - k_{2} k_{4} k_{d} 
++ k_{2} k_{4} \theta \sin{\left(t \theta \right)} 
+- k_{2} k_{6} \theta \sin{\left(t \theta \right)} 
++ k_{4} k_{d} \theta \sin{\left(t \theta \right)} + k_{6} \theta^{2}}{\theta^{2} \left(k_{2} + k_{d}\right)}  \\ 
+\frac{\left(- k_{2} x_1 (0)} - k_{2} x_2 (0)} + k_{6} - k_{d} x_1 (0)}\right) \sin{\left(t \theta \right)}}{\theta} + \frac{\left(- 2 k_{2} k_{4} + 2 k_{2} k_{6} - 2 k_{4} k_{d} + \theta^{2} x_2 (0)}\right) \cos{\left(t \theta \right)}}{\theta^{2}} + \frac{k_{2} k_{4} \cos{\left(t \theta \right)} + k_{2} k_{4} - k_{2} k_{6} \cos{\left(t \theta \right)} - k_{2} k_{6} + k_{4} k_{d} \cos{\left(t \theta \right)} + k_{4} k_{d}}{\theta^{2}}\end{pmatrix}
+\end{eqnarray*}
 
-    Our next task is to restructure \({\bf x} (t)\) to isolate the
-oscillation characteristics \(\theta, \alpha_n, \phi_n, \omega_n\). This
-is mostly a tedious factoring. \(\theta\) is the coefficient of time
-\(t\). The \(\alpha_n\) are obtained from the coefficients of
-\(cos(\theta t)\) and \(sin(\theta t)\) in \(x_n (t)\). And,
-\(\omega_n\) are terms in \(x_n (t)\) that have no \(sin\) or \(cos\).
-We obtain \(\phi_n\) by applying the trigonometric equality
+%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Formulas for Oscillation Characteristics}
+Our final task is to restructure ${\bf x} (t)$ to isolate the
+oscillation characteristics $\theta, \alpha_n, \phi_n, \omega_n$. This
+is mostly a tedious factoring. $\theta$ is the coefficient of time
+$t$. The $\alpha_n$ are obtained from the coefficients of
+$cos(\theta t)$ and $sin(\theta t)$ in $x_n (t)$. And,
+$\omega_n$ are terms in $x_n (t)$ that have no $sin$ or $cos$.
+We obtain $\phi_n$ by applying the trigonometric equality
 \[a cos(t) + b sin(t) = \sqrt{a^2 + b^2} sin(t + tan^{-1}\frac{a}{b})
 \].
 
@@ -636,18 +659,18 @@ We obtain \(\phi_n\) by applying the trigonometric equality
 
 \begin{itemize}
 \item
-  \(\theta = \sqrt{k_2 k_d}\)
+  $\theta = \sqrt{k_2 k_d}$
 \item
-  \(\alpha_1 = \frac{\sqrt{\theta^{2} \left(k_{2}^{2} x_{1 0} + k_{2}^{2} x_{2 0} - k_{2} k_{4} + k_{2} k_{d} x_{1 0} - k_{4} k_{d} + \theta^{2} x_{2 0}\right)^{2} + \left(k_{2}^{2} k_{4} - k_{2}^{2} k_{6} + k_{2} k_{4} k_{d} + k_{2} \theta^{2} x_{1 0} - k_{6} \theta^{2} + k_{d} \theta^{2} x_{1 0}\right)^{2}}}{\theta^{2} \left(k_{2} + k_{d}\right)}\)
+  $\alpha_1 = \frac{\sqrt{\theta^{2} \left(k_{2}^{2} x_1 (0)} + k_{2}^{2} x_2 (0)} - k_{2} k_{4} + k_{2} k_{d} x_1 (0)} - k_{4} k_{d} + \theta^{2} x_2 (0)}\right)^{2} + \left(k_{2}^{2} k_{4} - k_{2}^{2} k_{6} + k_{2} k_{4} k_{d} + k_{2} \theta^{2} x_1 (0)} - k_{6} \theta^{2} + k_{d} \theta^{2} x_1 (0)}\right)^{2}}}{\theta^{2} \left(k_{2} + k_{d}\right)}$
 \item
-  \(\alpha_2 = \frac{\sqrt{\theta^{2} \left(k_{2} x_{1 0} + k_{2} x_{2 0} - k_{6} + k_{d} x_{1 0}\right)^{2} + \left(k_{2} k_{4} - k_{2} k_{6} + k_{4} k_{d} - \theta^{2} x_{2 0}\right)^{2}}}{\theta^{2}}\)
+  $\alpha_2 = \frac{\sqrt{\theta^{2} \left(k_{2} x_1 (0)} + k_{2} x_2 (0)} - k_{6} + k_{d} x_1 (0)}\right)^{2} + \left(k_{2} k_{4} - k_{2} k_{6} + k_{4} k_{d} - \theta^{2} x_2 (0)}\right)^{2}}}{\theta^{2}}$
 \item
   \$\phi\_1 =
-  \operatorname{atan}{\left(\frac{k_{2}^{2} k_{4} - k_{2}^{2} k_{6} + k_{2} k_{4} k_{d} + k_{2} \theta^{2} x_{1 0} - k_{6} \theta^{2} + k_{d} \theta^{2} x_{1 0}}{\theta \left(k_{2}^{2} x_{1 0} + k_{2}^{2} x_{2 0} - k_{2} k_{4} + k_{2} k_{d} x_{1 0} - k_{4} k_{d} + \theta^{2} x_{2 0}\right)} \right)}
+  \operatorname{atan}{\left(\frac{k_{2}^{2} k_{4} - k_{2}^{2} k_{6} + k_{2} k_{4} k_{d} + k_{2} \theta^{2} x_1 (0)} - k_{6} \theta^{2} + k_{d} \theta^{2} x_1 (0)}}{\theta \left(k_{2}^{2} x_1 (0)} + k_{2}^{2} x_2 (0)} - k_{2} k_{4} + k_{2} k_{d} x_1 (0)} - k_{4} k_{d} + \theta^{2} x_2 (0)}\right)} \right)}
   + \delta\_1 \pi,\textasciitilde{} \$ where
   \textbackslash begin\{eqnarray\} \delta\_1 \& = \&
-  \frac{k_{2}^{2} x_{1 0}}{k_{2} \theta + k_{d} \theta} +
-  \frac{k_{2}^{2} x_{2 0}}{k_{2} \theta + k_{d} \theta} +
+  \frac{k_{2}^{2} x_1 (0)}}{k_{2} \theta + k_{d} \theta} +
+  \frac{k_{2}^{2} x_2 (0)}}{k_{2} \theta + k_{d} \theta} +
   \frac{k_{2} k_{4} \theta}{k_{2} \theta^{2} + k_{d} \theta^{2}}
 \item
   \frac{2 k_{2} k_{4}}{k_{2} \theta + k_{d} \theta} -
@@ -657,20 +680,20 @@ We obtain \(\phi_n\) by applying the trigonometric equality
   k\_\{d\} \theta\^{}\{2\}\} \textbackslash{} \& \&
 \item
   \frac{k_{2} k_{6}}{k_{2} \theta + k_{d} \theta} +
-  \frac{k_{2} k_{d} x_{1 0}}{k_{2} \theta + k_{d} \theta} +
+  \frac{k_{2} k_{d} x_1 (0)}}{k_{2} \theta + k_{d} \theta} +
   \frac{k_{4} k_{d} \theta}{k_{2} \theta^{2} + k_{d} 
   \theta^{2}} - \frac{2 k_{4} k_{d}}{k_{2} \theta + k_{d} \theta} +
-  \frac{\theta x_{2 0}}{k_{2} + k_{d}} \textless{} 0
+  \frac{\theta x_2 (0)}}{k_{2} + k_{d}} \textless{} 0
   \textbackslash end\{eqnarray\}
 \item
   \$\phi\_2 =
-  \operatorname{atan}{\left(\frac{k_{2} k_{4} - k_{2} k_{6} + k_{4} k_{d} - \theta^{2} x_{2 0}}{\theta \left(k_{2} x_{1 0} + k_{2} x_{2 0} - k_{6} + k_{d} x_{1 0}\right)} \right)}
+  \operatorname{atan}{\left(\frac{k_{2} k_{4} - k_{2} k_{6} + k_{4} k_{d} - \theta^{2} x_2 (0)}}{\theta \left(k_{2} x_1 (0)} + k_{2} x_2 (0)} - k_{6} + k_{d} x_1 (0)}\right)} \right)}
   + \delta\_2 \pi,\textasciitilde{} \$ where
-  \(\delta_2 = \frac{k_{2} x_{1 0}}{\theta} + \frac{k_{2} x_{2 0}}{\theta} - \frac{k_{6}}{\theta} + \frac{k_{d} x_{1 0}}{\theta} > 0\)
+  $\delta_2 = \frac{k_{2} x_1 (0)}}{\theta} + \frac{k_{2} x_2 (0)}}{\theta} - \frac{k_{6}}{\theta} + \frac{k_{d} x_1 (0)}}{\theta} > 0$
 \item
-  \(\omega_1 = \frac{- k_{2}^{2} k_{4} + k_{2}^{2} k_{6} - k_{2} k_{4} k_{d} + k_{6} \theta^{2}}{k_{2} \theta^{2} + k_{d} \theta^{2}}\)
+  $\omega_1 = \frac{- k_{2}^{2} k_{4} + k_{2}^{2} k_{6} - k_{2} k_{4} k_{d} + k_{6} \theta^{2}}{k_{2} \theta^{2} + k_{d} \theta^{2}}$
 \item
-  \(\omega_2 = \frac{k_{2} k_{4} - k_{2} k_{6} + k_{4} k_{d}}{\theta^{2}}\)
+  $\omega_2 = \frac{k_{2} k_{4} - k_{2} k_{6} + k_{4} k_{d}}{\theta^{2}}$
 \end{itemize}
 
 
