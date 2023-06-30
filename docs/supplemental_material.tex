@@ -456,7 +456,7 @@ vector differential equation:
 ${\bf A} = \begin{pmatrix} a_{11} & a_{12} \\ a_{21} & a_{22} \\ \end{pmatrix}$
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Eigenvalues}
+\section{Jacobian and Eigenvalues}
 Here, we calculate the eigenvalues for the reaction network described
 in the text.
 
@@ -466,7 +466,8 @@ state system, this means that if $\theta i$ is an eigenvalue, then
 $-\theta i$ must also be an eigenvalue. This means that
 $\theta_1 = \theta = \theta_2$, which justifies our previous claim.
 
-Next we develop the conditions for ${\bf A}$ to have a pure imaginary
+Next we develop the conditions for the Jacobian
+${\bf A}$ to have a pure imaginary
 eigenvalues. The determinant of ${\bf A}$ is
 $det({\bf A}) = a_{11} a_{22} - a_{12} a_{21} = \Delta.$
 The trace of
@@ -567,8 +568,10 @@ We can use the decomposition of eigenvectors into
 real and imaginary parts along with Euler formulas
 to express ${\bf F}(t)$
 in terms of $sin$ and $cos$.
-(This also involves taking simple linear
-combinations of the vectors to simplify the expressions.)
+We do some further simplifications by taking linear
+combinations of the columns of the fundamental matrix,
+transformations that change the basis for the solution space
+but not the solution space itself.
 \begin{equation*}
 {\bf F} (t) = \begin{pmatrix}- \frac{k_{2} \cos{\left(t \theta \right)}}{k_{2} + k_{d}} 
 + \frac{\theta \sin{\left(t \theta \right)}}{k_{2} + k_{d}} & - \frac{k_{2} \sin{\left(t \theta \right)}}{k_{2} + k_{d}} - \frac{\theta \cos{\left(t \theta \right)}}{k_{2} + k_{d}}\\\cos{\left(t \theta \right)} & \sin{\left(t \theta \right)}
@@ -629,19 +632,74 @@ Calculating this integral (with help from the python package
 &  & + \begin{pmatrix}\frac{- k_{2}^{2} k_{4} \cos{\left(t \theta \right)} - k_{2}^{2} k_{4} + k_{2}^{2} k_{6} \cos{\left(t \theta \right)} + k_{2}^{2} k_{6} - k_{2} k_{4} k_{d} \cos{\left(t \theta \right)} - k_{2} k_{4} k_{d} + k_{2} k_{4} \theta \sin{\left(t \theta \right)} - k_{2} k_{6} \theta \sin{\left(t \theta \right)} + k_{4} k_{d} \theta \sin{\left(t \theta \right)} + k_{6} \theta^{2}}{\theta^{2} \left(k_{2} + k_{d}\right)}\\\frac{k_{2} k_{4} \cos{\left(t \theta \right)} + k_{2} k_{4} - k_{2} k_{6} \cos{\left(t \theta \right)} - k_{2} k_{6} + k_{4} k_{d} \cos{\left(t \theta \right)} + k_{4} k_{d}}{\theta^{2}}\end{pmatrix}
 \end{eqnarray*}
 
-Solving, we have
+Sort the following into $x_n(t)$.
 \begin{eqnarray*}
-{\bf x} (t) & = & \begin{pmatrix}\frac{\left(- \frac{k_{2} \sin{\left(t \theta \right)}}{k_{2} + k_{d}} 
-- \frac{\theta \cos{\left(t \theta \right)}}{k_{2} + k_{d}}\right) \left(- k_{2} x_1 (0)} - k_{2} x_2 (0)} + k_{6} - k_{d} x_1 (0)}\right)}{\theta} 
-+ \frac{\left(- \frac{k_{2} \cos{\left(t \theta \right)}}{k_{2} + k_{d}} 
-+ \frac{\theta \sin{\left(t \theta \right)}}{k_{2} + k_{d}}\right) \left(- 2 k_{2} k_{4} + 2 k_{2} k_{6} - 2 k_{4} k_{d} + \theta^{2} x_2 (0)}\right)}{\theta^{2}} 
-+ \frac{- k_{2}^{2} k_{4} \cos{\left(t \theta \right)} - k_{2}^{2} k_{4} + k_{2}^{2} k_{6} \cos{\left(t \theta \right)} 
-+ k_{2}^{2} k_{6} - k_{2} k_{4} k_{d} \cos{\left(t \theta \right)} - k_{2} k_{4} k_{d} 
-+ k_{2} k_{4} \theta \sin{\left(t \theta \right)} 
-- k_{2} k_{6} \theta \sin{\left(t \theta \right)} 
-+ k_{4} k_{d} \theta \sin{\left(t \theta \right)} + k_{6} \theta^{2}}{\theta^{2} \left(k_{2} + k_{d}\right)}  \\ 
-\frac{\left(- k_{2} x_1 (0)} - k_{2} x_2 (0)} + k_{6} - k_{d} x_1 (0)}\right) \sin{\left(t \theta \right)}}{\theta} + \frac{\left(- 2 k_{2} k_{4} + 2 k_{2} k_{6} - 2 k_{4} k_{d} + \theta^{2} x_2 (0)}\right) \cos{\left(t \theta \right)}}{\theta^{2}} + \frac{k_{2} k_{4} \cos{\left(t \theta \right)} + k_{2} k_{4} - k_{2} k_{6} \cos{\left(t \theta \right)} - k_{2} k_{6} + k_{4} k_{d} \cos{\left(t \theta \right)} + k_{4} k_{d}}{\theta^{2}}\end{pmatrix}
+x_1 (t) & =  &
+\frac{1}{\theta}
+\left(- \frac{k_{2} \sin{\left(t \theta \right)}}{k_{2} + k_{d}} - \frac{\theta \cos{\left(t \theta \right)}}{k_{2} + k_{d}}\right)
+\left(- k_{2} x_1 (0) - k_{2} x_2 (0) + k_{6} - k_{d} x_1 (0)\right)\\
+& & + \frac{1}{\theta^2}
+\left(- \frac{k_{2} \cos{\left(t \theta \right)}}{k_{2} + k_{d}} + \frac{\theta \sin{\left(t \theta \right)}}{k_{2} + k_{d}}\right) \left(- 2 k_{2} k_{4} + 2 k_{2} k_{6} - 2 k_{4} k_{d} + \theta^{2} x_2 (0)\right)   \\
+& & + \frac{1}{\theta^2 (k_2 + k_d)} \left(
+- k_{2}^{2} k_{4} \cos{\left(t \theta \right)} - k_{2}^{2} k_{4} + k_{2}^{2} k_{6} \cos{\left(t \theta \right) + k_2^2 k_6 + k_6 \theta^2} \right) \\
+& & + \frac{1}{\theta^2 (k_2 + k_d)} \left(
+- k_{2} k_{4} k_{d} \cos{\left(t \theta \right)} - k_{2} k_{4} k_{d} 
+ + k_{2} k_{4} \theta \sin{\left(t \theta \right)} - k_{2} k_{6} \theta \sin{\left(t \theta \right)} + k_{4} k_{d} \theta \sin{\left(t \theta \right)} \right)
 \end{eqnarray*}
+\begin{eqnarray*}
+x_2 (t) & = &
+\frac{1}{\theta}
+\left(- k_{2} x_1 (0) - k_{2} x_2 (0) + k_{6} - k_{d} x_1 (0)\right) \sin{\left(t \theta \right)} \\
+& & + \frac{1}{\theta^2}
+\left(- 2 k_{2} k_{4} + 2 k_{2} k_{6} - 2 k_{4} k_{d} + \theta^{2} x_2 (0)\right) \cos{\left(t \theta \right)} \\
+& & + \frac{1}{\theta^2}
+\left( k_{2} k_{4} \cos{\left(t \theta \right)} + k_{2} k_{4} - k_{2} k_{6} \cos{\left(t \theta \right)} - k_{2} k_{6} + k_{4} k_{d} \cos{\left(t \theta \right)} + k_{4} k_{d} \right)
+% raw x(t)
+%\begin{eqnarray*}
+%\frac{\left(- \frac{k_{2} \sin{\left(t \theta \right)}}{k_{2} + k_{d}} - \frac{\theta \cos{\left(t \theta \right)}}{k_{2} + k_{d}}\right) \left(- k_{2} x_1 (0) - k_{2} x_2 (0) + k_{6} - k_{d} x_1 (0)\right)}{\theta} + \frac{\left(- \frac{k_{2} \cos{\left(t \theta \right)}}{k_{2} + k_{d}} + \frac{\theta \sin{\left(t \theta \right)}}{k_{2} + k_{d}}\right) \left(- 2 k_{2} k_{4} + 2 k_{2} k_{6} - 2 k_{4} k_{d} + \theta^{2} x_2 (0)\right)}{\theta^{2}} + \frac{- k_{2}^{2} k_{4} \cos{\left(t \theta \right)} - k_{2}^{2} k_{4} + k_{2}^{2} k_{6} \cos{\left(t \theta \right)} + k_{2}^{2} k_{6} - k_{2} k_{4} k_{d} \cos{\left(t \theta \right)} - k_{2} k_{4} k_{d} + k_{2} k_{4} \theta \sin{\left(t \theta \right)} - k_{2} k_{6} \theta \sin{\left(t \theta \right)} + k_{4} k_{d} \theta \sin{\left(t \theta \right)} + k_{6} \theta^{2}}{\theta^{2} \left(k_{2} + k_{d}\right)}\\\frac{\left(- k_{2} x_1 (0) - k_{2} x_2 (0) + k_{6} - k_{d} x_1 (0)\right) \sin{\left(t \theta \right)}}{\theta} + \frac{\left(- 2 k_{2} k_{4} + 2 k_{2} k_{6} - 2 k_{4} k_{d} + \theta^{2} x_2 (0)\right) \cos{\left(t \theta \right)}}{\theta^{2}} + \frac{k_{2} k_{4} \cos{\left(t \theta \right)} + k_{2} k_{4} - k_{2} k_{6} \cos{\left(t \theta \right)} - k_{2} k_{6} + k_{4} k_{d} \cos{\left(t \theta \right)} + k_{4} k_{d}}{\theta^{2}}
+%\end{eqnarray*}
+
+This is after factoring.
+\begin{eqnarray*}
+x_1 (t) & = &
+\frac{- k_{2}^{2} k_{4} + k_{2}^{2} k_{6} - k_{2} k_{4} k_{d} + k_{6} \theta^{2}}{k_{2} \theta^{2} + k_{d} \theta^{2}} i \\
+& & + \frac{\sqrt{numerator_1}
+\sin{\left(t \theta 
++ \operatorname{atan}{\left(\frac{k_{2}^{2} k_{4} - k_{2}^{2} k_{6} + k_{2} k_{4} k_{d} + k_{2} \theta^{2} x_1 (0) - k_{6} \theta^{2} + k_{d} \theta^{2} x_1 (0)}{\theta \left(k_{2}^{2} x_1 (0) + k_{2}^{2} x_2 (0) - k_{2} k_{4} + k_{2} k_{d} x_1 (0) - k_{4} k_{d} + \theta^{2} x_2 (0)\right)} \right)} + \pi_1
+\right)}}{\theta^{2} \left(k_{2} + k_{d}\right)}
+\end{eqnarray*}
+
+\begin{eqnarray*}
+numerator_1 & = &
+\theta^{2} \left(k_{2}^{2} x_1 (0) + k_{2}^{2} x_2 (0) - k_{2} k_{4} + k_{2} k_{d} x_1 (0) - k_{4} k_{d} + \theta^{2} x_2 (0)\right)^{2} \\
+& & + \left(k_{2}^{2} k_{4} - k_{2}^{2} k_{6} + k_{2} k_{4} k_{d} + k_{2} \theta^{2} x_1 (0) - k_{6} \theta^{2} + k_{d} \theta^{2} x_1 (0)\right)^{2}
+\end{eqnarray*}
+
+%Solving, we have
+%\begin{eqnarray*}
+%{\bf x} (t) & = & \begin{pmatrix}\frac{\left(- \frac{k_{2} \sin{\left(t \theta \right)}}{k_{2} + k_{d}} 
+%- \frac{\theta \cos{\left(t \theta \right)}}{k_{2} + k_{d}}\right) \left(- k_{2} x_1 (0)} - k_{2} x_2 (0)} + k_{6} - k_{d} x_1 (0)}\right)}{\theta} 
+%+ \frac{\left(- \frac{k_{2} \cos{\left(t \theta \right)}}{k_{2} + k_{d}} 
+%+ \frac{\theta \sin{\left(t \theta \right)}}{k_{2} + k_{d}}\right) \left(- 2 k_{2} k_{4} + 2 k_{2} k_{6} - 2 k_{4} k_{d} + \theta^{2} x_2 (0)}\right)}{\theta^{2}} 
+%+ \frac{- k_{2}^{2} k_{4} \cos{\left(t \theta \right)} - k_{2}^{2} k_{4} + k_{2}^{2} k_{6} \cos{\left(t \theta \right)} 
+%+ k_{2}^{2} k_{6} - k_{2} k_{4} k_{d} \cos{\left(t \theta \right)} - k_{2} k_{4} k_{d} 
+%+ k_{2} k_{4} \theta \sin{\left(t \theta \right)} 
+%- k_{2} k_{6} \theta \sin{\left(t \theta \right)} 
+%+ k_{4} k_{d} \theta \sin{\left(t \theta \right)} + k_{6} \theta^{2}}{\theta^{2} \left(k_{2} + k_{d}\right)}  \\ 
+%\frac{\left(- k_{2} x_1 (0)} - k_{2} x_2 (0)} + k_{6} - k_{d} x_1 (0)}\right) \sin{\left(t \theta \right)}}{\theta} + \frac{\left(- 2 k_{2} k_{4} + 2 k_{2} k_{6} - 2 k_{4} k_{d} + \theta^{2} x_2 (0)}\right) \cos{\left(t \theta \right)}}{\theta^{2}} + \frac{k_{2} k_{4} \cos{\left(t \theta \right)} + k_{2} k_{4} - k_{2} k_{6} \cos{\left(t \theta \right)} - k_{2} k_{6} + k_{4} k_{d} \cos{\left(t \theta \right)} + k_{4} k_{d}}{\theta^{2}}\end{pmatrix}
+%\end{eqnarray*}
+%
+%\begin{eqnarray*}
+%x_1 (t) & = & \frac{\left(- \frac{k_{2} \sin{\left(t \theta \right)}}{k_{2} + k_{d}}  \\
+%& & - \frac{\theta \cos{\left(t \theta \right)}}{k_{2} + k_{d}}\right) \left(- k_{2} x_1 (0)} - k_{2} x_2 (0)} + k_{6} - k_{d} x_1 (0)}\right)}{\theta} 
+%+ \frac{\left(- \frac{k_{2} \cos{\left(t \theta \right)}}{k_{2} + k_{d}} 
+%+ \frac{\theta \sin{\left(t \theta \right)}}{k_{2} + k_{d}}\right) \left(- 2 k_{2} k_{4} + 2 k_{2} k_{6} - 2 k_{4} k_{d} + \theta^{2} x_2 (0)}\right)}{\theta^{2}} 
+%+ \frac{- k_{2}^{2} k_{4} \cos{\left(t \theta \right)} - k_{2}^{2} k_{4} + k_{2}^{2} k_{6} \cos{\left(t \theta \right)} 
+%+ k_{2}^{2} k_{6} - k_{2} k_{4} k_{d} \cos{\left(t \theta \right)} - k_{2} k_{4} k_{d} 
+%+ k_{2} k_{4} \theta \sin{\left(t \theta \right)} 
+%- k_{2} k_{6} \theta \sin{\left(t \theta \right)} 
+%+ k_{4} k_{d} \theta \sin{\left(t \theta \right)} + k_{6} \theta^{2}}{\theta^{2} \left(k_{2} + k_{d}\right)} 
+%\end{eqnarray*}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Formulas for Oscillation Characteristics}
