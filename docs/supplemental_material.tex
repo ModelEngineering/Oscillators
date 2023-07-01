@@ -203,8 +203,10 @@ Seatttle, Washington
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Preliminaries}
 
+%%%%%%%%%%%%%%% reaction-network
 This write-up provides details on the derivation of the
-time domain solution for the reaction network described in the main text.
+time domain solution for the
+reaction network depicted in Fig.~\ref{fig:reaction-network}.
 Recall that the reaction network is constructed to be a system
 of linear ODEs.
 As such, the time domain solution is an initial value problem (IVP).
@@ -267,6 +269,13 @@ vector differential equation:
 \dot{\bf x} = {\bf A} {\bf x} + {\bf u}
 \end{equation*} where the Jacobian matrix is
 ${\bf A} = \begin{pmatrix} a_{11} & a_{12} \\ a_{21} & a_{22} \\ \end{pmatrix}$
+
+\begin{figure}
+        \centering
+         \includegraphics[scale=0.5]{Fig1.pdf}
+         \caption[]{Reaction network that creates oscillations in the chemical species $S_1, S_2$. The reaction network is designed so that its time domain solution is a system of linear differential equations. The text describes constraints on the kinetic constants ($k_i$) and initial conditions of the chemical species to create an oscillator such that species concentrations are non-negative, a requirement for biological feasibility.}
+         \label{fig:reaction-network}
+\end{figure}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Jacobian and Eigenvalues}
@@ -452,6 +461,7 @@ x_1 (t) & =  &
 \frac{1}{\theta}
 \left(- \frac{k_{2} \sin{\left(t \theta \right)}}{k_{2} + k_{d}} - \frac{\theta \cos{\left(t \theta \right)}}{k_{2} + k_{d}}\right)
 \left(- k_{2} x_1 (0) - k_{2} x_2 (0) + k_{6} - k_{d} x_1 (0)\right)\\ \nonumber
+ \label{eq:x1}
 & & + \frac{1}{\theta^2}
 \left(- \frac{k_{2} \cos{\left(t \theta \right)}}{k_{2} + k_{d}} + \frac{\theta \sin{\left(t \theta \right)}}{k_{2} + k_{d}}\right) \left(- 2 k_{2} k_{4} + 2 k_{2} k_{6} - 2 k_{4} k_{d} + \theta^{2} x_2 (0)\right)   \\ \nonumber
 & & + \frac{1}{\theta^2 (k_2 + k_d)} \left(
@@ -459,7 +469,6 @@ x_1 (t) & =  &
 & & + \frac{1}{\theta^2 (k_2 + k_d)} \left(
 - k_{2} k_{4} k_{d} \cos{\left(t \theta \right)}
  + k_{2} k_{4} \theta \sin{\left(t \theta \right)} - k_{2} k_{6} \theta \sin{\left(t \theta \right)} + k_{4} k_{d} \theta \sin{\left(t \theta \right)} \right)
- \label{eq:x1}
 \end{eqnarray}
 \begin{eqnarray}
 x_2 (t) & = &
@@ -478,15 +487,16 @@ Our final task is to restructure ${\bf x} (t)$ to isolate the
 oscillation characteristics $\theta, \alpha_n, \phi_n, \omega_n$.
 From this
 The first step is to factor
-Eq.~\ref{eq:x1} and Eq.~\ref{eq:x2} so that 
+Eq.~(1) and Eq.~(2) so that 
 \begin{equation}
 x_n (t) = a_n \cos(\theta t) + b_n \sin(\theta t) + \omega_n
 \label{eq:factor}
 \end{equation}
 That is, the sum of terms that are not multiplied by $\cos, \sin$ will constitute the DC offset.
-From Eq.~\ref{eq:factor}, we calculate $\alpha_n, \phi_n$ using the
+From Eq.~(3), we calculate $\alpha_n, \phi_n$ using the
 the trigonometric equality
-$a_n cos(t \theta) + b_n sin(t \theta) = \sqrt{a_n^2 + b_n^2} sin(t \theta + tan^{-1}\frac{a_n}{b_n}).$
+$a_n cos(t \theta) + b_n sin(t \theta) 
+= \sqrt{a_n^2 + b_n^2} sin(t \theta + tan^{-1}\frac{a_n}{b_n}).$
 Thus, $\alpha_n = \sqrt{a_n^2 + b_n^2}$, and
 $\phi_n = tan^{-1}\frac{a_n}{b_n}.$
 
@@ -523,6 +533,13 @@ $\alpha_1  =
 \item
   $\omega_2 = \frac{k_{2} k_{4} - k_{2} k_{6} + k_{4} k_{d}}{\theta^{2}}$
 \end{itemize}
+
+$\pi_1, \pi_2$ arise from techical conditions related to taking the
+inverse of the tangent function.
+Tangent is only defined over a range of $\pi$ since it is calculated
+from the ration of $a_n$ to $b_n$.
+Hence we cannot distinguish between to positive values of these number,
+and two negative values of these numbers.
 
 \begin{eqnarray*}
 cond_1 & = &
