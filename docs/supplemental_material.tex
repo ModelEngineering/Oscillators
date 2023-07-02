@@ -199,6 +199,7 @@ Seatttle, Washington
 %% accordingly for your article type.        %%
 %%                                           %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\setlength{\parindent}{15pt}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Preliminaries}
@@ -207,18 +208,16 @@ Seatttle, Washington
 This write-up provides details on the derivation of the
 time domain solution for the
 reaction network depicted in Fig.~\ref{fig:reaction-network}.
-Recall that the reaction network is constructed to be a system
-of linear ODEs.
-As such, the time domain solution is an initial value problem (IVP).
+Recall that the reaction network is constructed so that its kinetics are described by a system of linear ODEs with sustained oscillations.
+The time domain solution is an initial value problem (IVP).
 
-
-    The reaction network has 8 parameters. There are 6 kinetic constants,
+\par
+The reaction network has 8 parameters. There are 6 kinetic constants,
 $k_i,~ i\in \{1, 2, 3, 4, 5, 6\}$. And there are two initial
 concentrations, $x_n (0),~ n \in \{1, 2 \}$, where $x_n(0)$ is the
 initial concentration for $S_n$.
 
-Because the reaction network can be described as a 
-system of linear system (by construction), we
+Because the dynamics of the network can be described by an oscillating linear system, we
 know that oscillations are sinusoids.
 Let $x_n (t)$ be the concentration
 of species $S_n$ at time $t$. Then, an oscillating solution has the
@@ -228,47 +227,18 @@ x_n(t) = \alpha_n sin(\theta_n t + \phi_n) + \omega_n,
 $S_n$, $\theta_n$ is its frequency, $\phi_n$ is its phase, and
 $\omega_n$ is the DC offset (the mean value of the sinusoid over
 time).
-It turns out that both species have the same frequency, as we show shortly.
+As we show shortly, both species have the same frequency.
 So, $\theta_n = \theta$, and there are just 7 parameters.
 We refer to $\alpha_n, \theta, \phi_n, \omega_n$ as the
 \textbf{oscillation characteristics (OC)} of the reaction network.
 
-We use the following notation: 
-\begin{itemize}
-\item ${\bf A}$ - Jacobian matrix
-\item $\alpha_n$ - amplitude of oscillation for species $n$
-\item ${\bf c} = \begin{pmatrix} c_1 \\ c_2 \end{pmatrix}$ - constants associated with the homogeneous solution
-\item $\Delta$ -
-$det {\bf A})$
-\item  ${\bf F} (t)$ - fundamental matrix
-\item $i$ - indexes constants
-\item $k_i$, $k_d$ -
-positive constant 
-\item $K$ - number of constants
-\item $\lambda$ -
-eigenvalue
-\item $n$ - indexes species
-\item $N$ - number of species
-\item $\omega_n$ - offset of species $n$ 
-\item $\phi_n$ - phase in radians
-\item $t$ - time 
-\item $\tau$ - $tr({\bf A})$ 
-\item $\theta$ - frequency in
-radians 
-\item ${\bf u}$ - forced input (kinetic constants for zeroth order
-rates)  ${\bf x}$ ($N \times 1$) is the state vector
-\item $\dot{\bf x} (t)$ - derivative w.r.t. time of ${\bf x}$
-\item $x_n$
-(t) - time varying concentration of species $n$
-\end{itemize}
-
-Since we have constructed the reaction network so that the dynamics can
-be described as a system of linear ODEs, it can be described using the
-vector differential equation: 
+We make use of the vector representation of linear systems of ODEs.
 \begin{equation*}
 \dot{\bf x} = {\bf A} {\bf x} + {\bf u}
 \end{equation*} where the Jacobian matrix is
-${\bf A} = \begin{pmatrix} a_{11} & a_{12} \\ a_{21} & a_{22} \\ \end{pmatrix}$
+${\bf A} = \begin{pmatrix} a_{11} & a_{12} \\ a_{21} & a_{22} \\ \end{pmatrix}$,
+${\bf x} (t)$ is the state vector,
+$\dot {\bf x} (t)$ is the time derivative of the state vector, and ${\bf u}$ is the time-independent forced inputs.
 
 \begin{figure}
         \centering
@@ -279,14 +249,13 @@ ${\bf A} = \begin{pmatrix} a_{11} & a_{12} \\ a_{21} & a_{22} \\ \end{pmatrix}$
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Jacobian and Eigenvalues}
-Here, we calculate the eigenvalues for the reaction network described
-in the text.
+Here, we construct the Jacobian of the reaction network, and calculate its eigenvalues.
 
 If there is an oscillating solution for this system, then the
 eigenvalues of ${\bf A}$ must be pure imaginary. Since this is a two
 state system, this means that if $\theta i$ is an eigenvalue, then
 $-\theta i$ must also be an eigenvalue. This means that
-$\theta_1 = \theta = \theta_2$, which justifies our previous claim.
+$\theta_1 = \theta = \theta_2$, which justifies our previous claim that the two species have the same oscillation frequency.
 
 Next we develop the conditions for the Jacobian
 ${\bf A}$ to have a pure imaginary
@@ -294,7 +263,7 @@ eigenvalues. The determinant of ${\bf A}$ is
 $det({\bf A}) = a_{11} a_{22} - a_{12} a_{21} = \Delta.$
 The trace of
 ${\bf A}$ is $tr({\bf A}) = a_{11} + a_{22} = \tau.$
-So, the eigenvalues $\lambda$ are in
+So, the eigenvalues $\lambda_n$ are
 $\frac{1}{2} \left( - \tau \pm \sqrt{\tau^2 - 4 \Delta} \right). $
 We get pure imaginary eigenvalues 
 if the following constraints hold:
@@ -303,7 +272,7 @@ if the following constraints hold:
 \item $\Delta > 0.$
 \end{itemize}
 
-Now, we analyze ${\bf A}$ for the reaction network.
+For the reaction network, ${\bf A}$ is
 \begin{equation*}
 {\bf A} =
 \begin{pmatrix}
@@ -324,8 +293,7 @@ So the trace and determinant are:
 & = & k_2 (k_5 - k_3) \\
 \end{eqnarray*}
 
-To obtain purely imaginary solutions, we require that $\tau =0$ and
-$\Delta > 0$. The former implies that $k_3 = k_1 + k_2$. The latter
+$\tau = 0$ implies that $k_3 = k_1 + k_2$. $\Delta > 0$
 implies that that $k_5 > k_3$. We define $k_d = k_5 - k_3 > 0$
 Applying the foregoing to the ${\bf A}$ matrix, we first note that
 \begin{align*}
@@ -344,14 +312,14 @@ k_2 & k_2 \\
 \end{equation*}
 Observe that $\Delta = k_2 k_d$.
 As a result
-$\theta = \pm \sqrt{\Delta} = \pm \sqrt{k_2 k_d}$. Hereafter, we drop
+$\theta = \pm \sqrt{\Delta} = \pm \sqrt{k_2 k_d}$. The negative sign affects phase, not frequency; we address phase separately. So, hereafter, we drop
 the $\pm$.
 
 %%%%%%%%%%%%%%%%%%%%%%%%
 \section{Eigenvectors and Fundamental Matrix}
 
 We find the eigenvectors of ${\bf A}$ as an intermediate step to
-finding the time domain solution.
+solving the IVP.
 
 First, observe that that since $k_d > 0$, ${\bf A}$ is nonsingular,
 and so we can calculate eigenvectors directly.
@@ -376,18 +344,15 @@ for the eigenvalue $\lambda_1 = - \sqrt{k_d k_2}$.
 \end{equation*}
 for the eigenvalue $\lambda_1 = \sqrt{k_d k_2}$.
 
-The solution to the initial value problem is a sum of eigenvectors
-multiplied by their eigenvalues.
 The {\bf fundamental matrix} {\bf F} of a system of 
 linear ODEs has a column
-for each eigenvector multiplied by its eigenvalue,
+for each
 ${\bf w}_n e^{\lambda_n}$.
-
 Rather than writing ${\bf F} (t)$ immediately, we first
 observe that it can be transformed into
-a real valued matrix.
-We can use the decomposition of eigenvectors into
-real and imaginary parts along with Euler formulas
+a real valued matrix. This involves factoring the
+eigenvectors into
+real and imaginary parts and then applying Euler formulas
 to express ${\bf F}(t)$
 in terms of $sin$ and $cos$.
 We do some further simplifications by taking linear
@@ -409,26 +374,21 @@ solution to the homogeneous system
 $\dot{\bf x}^H (t) = {\bf A} {\bf x}^H (t)$.
 \item
 Find a particular solution such that
-$\dot{x}^P (t) = {\bf A} {\bf x}^P (t) + {\bf u}$
+$\dot{x}^P (t) = {\bf A} {\bf x}^P (t) + {\bf u}$.
 \item
-${\bf x} (t) = 
-\begin{pmatrix}
-c_1 x_1^H (t) \\
-c_2 x_2^H (t) \\
-\end{pmatrix}
- + {\bf x}^P (t),$
- where
-{\bf c} is determined by the initial conditions.
+Construct the full solution
+${\bf x} (t) = {\bf x}^H (t) 
+ + {\bf x}^P (t).$
 \end{enumerate}
 
 ${\bf x}^H (t) = {\bf F} (t) {\bf c},$ where ${\bf c}$ is a vector
-of unknown constants that are determined based on initial conditions,
-intitial conditions are the initial concentrations of
-$S_1$, $S_2$.
+of unknown constants that are determined based on initial conditions (where the
+initial conditions are the initial concentrations of
+$S_1$, $S_2$).
 
-We assume that ${\bf x}^P (t) = {\bf F}(t) {\bf v}$. This means that
+We find ${\bf x}^P (t)$ using the fundamental matrix. We assume that ${\bf x}^P (t) = {\bf F}(t) {\bf v}$ for some unknown ${\bf v}$, and we solve for this vector. Substituting for ${\bf x}^P (t)$ and recalling that each column of ${\bf F}(t)$ is a solution to the homogeneous system, we have
 \begin{eqnarray*}
-\dot{\bf x}^P (t) &= & \dot{\bf F} (t) {\bf v} + {\bf F} (t) \dot{\bf v} \\
+\dot{\bf x}^P (t) &= & {\bf A} {\bf x}^P(t)  + {\bf u} \\
 \dot{\bf F} (t) {\bf v} + {\bf F} (t) \dot{\bf v} & = & {\bf A} {\bf F}(t) {\bf v} + {\bf u} \\
 {\bf A} {\bf F} (t){\bf v} + {\bf F} (t) \dot{\bf v} & = & {\bf A} {\bf F} (t) {\bf v} + {\bf u} \\
 {\bf F} (t) \dot{\bf v} & = & {\bf u} \\
@@ -442,20 +402,18 @@ Calculating this integral (with help from the python package
 & = & \begin{pmatrix}\frac{- k_{2}^{2} k_{4} \cos{\left(t \theta \right)} - k_{2}^{2} k_{4} + k_{2}^{2} k_{6} \cos{\left(t \theta \right)} + k_{2}^{2} k_{6} - k_{2} k_{4} k_{d} \cos{\left(t \theta \right)} - k_{2} k_{4} k_{d} + k_{2} k_{4} \theta \sin{\left(t \theta \right)} - k_{2} k_{6} \theta \sin{\left(t \theta \right)} + k_{4} k_{d} \theta \sin{\left(t \theta \right)} + k_{6} \theta^{2}}{\theta^{2} \left(k_{2} + k_{d}\right)}\\\frac{k_{2} k_{4} \cos{\left(t \theta \right)} + k_{2} k_{4} - k_{2} k_{6} \cos{\left(t \theta \right)} - k_{2} k_{6} + k_{4} k_{d} \cos{\left(t \theta \right)} + k_{4} k_{d}}{\theta^{2}}\end{pmatrix}
 \end{eqnarray*}
 
-    \begin{eqnarray*}
+\begin{eqnarray*}
 {\bf x} (t) & = & {\bf x}^H (t) + {\bf x}^P (t) \\
 & = & \begin{pmatrix}- \frac{k_{2} \cos{\left(t \theta \right)}}{k_{2} + k_{d}} + \frac{\theta \sin{\left(t \theta \right)}}{k_{2} + k_{d}} & - \frac{k_{2} \sin{\left(t \theta \right)}}{k_{2} + k_{d}} - \frac{\theta \cos{\left(t \theta \right)}}{k_{2} + k_{d}}\\\cos{\left(t \theta \right)} & \sin{\left(t \theta \right)}\end{pmatrix}  \begin{pmatrix} c_1 \\ c_2 \end{pmatrix} \\
 &  & + \begin{pmatrix}\frac{- k_{2}^{2} k_{4} \cos{\left(t \theta \right)} - k_{2}^{2} k_{4} + k_{2}^{2} k_{6} \cos{\left(t \theta \right)} + k_{2}^{2} k_{6} - k_{2} k_{4} k_{d} \cos{\left(t \theta \right)} - k_{2} k_{4} k_{d} + k_{2} k_{4} \theta \sin{\left(t \theta \right)} - k_{2} k_{6} \theta \sin{\left(t \theta \right)} + k_{4} k_{d} \theta \sin{\left(t \theta \right)} + k_{6} \theta^{2}}{\theta^{2} \left(k_{2} + k_{d}\right)}\\\frac{k_{2} k_{4} \cos{\left(t \theta \right)} + k_{2} k_{4} - k_{2} k_{6} \cos{\left(t \theta \right)} - k_{2} k_{6} + k_{4} k_{d} \cos{\left(t \theta \right)} + k_{4} k_{d}}{\theta^{2}}\end{pmatrix}
 \end{eqnarray*}
 
-We find $c_1, c_2$ by solving
+We find the constants $c_1, c_2$ by solving the linear system below. (Recall that $x_n (0)$ is the initial concentration of $S_n$, which is an input to the IVP.)
 \begin{eqnarray*}
-{\bf x} (0) & = & \begin{pmatrix} x_1 (0) \\ x_2 (0) \end{pmatrix} \\
-& = & \begin{pmatrix}- \frac{k_{2} \cos{\left(t \theta \right)}}{k_{2} + k_{d}} + \frac{\theta \sin{\left(t \theta \right)}}{k_{2} + k_{d}} & - \frac{k_{2} \sin{\left(t \theta \right)}}{k_{2} + k_{d}} - \frac{\theta \cos{\left(t \theta \right)}}{k_{2} + k_{d}}\\\cos{\left(t \theta \right)} & \sin{\left(t \theta \right)}\end{pmatrix}  \begin{pmatrix} c_1 \\ c_2 \end{pmatrix} \\
-&  & + \begin{pmatrix}\frac{- k_{2}^{2} k_{4} \cos{\left(t \theta \right)} - k_{2}^{2} k_{4} + k_{2}^{2} k_{6} \cos{\left(t \theta \right)} + k_{2}^{2} k_{6} - k_{2} k_{4} k_{d} \cos{\left(t \theta \right)} - k_{2} k_{4} k_{d} + k_{2} k_{4} \theta \sin{\left(t \theta \right)} - k_{2} k_{6} \theta \sin{\left(t \theta \right)} + k_{4} k_{d} \theta \sin{\left(t \theta \right)} + k_{6} \theta^{2}}{\theta^{2} \left(k_{2} + k_{d}\right)}\\\frac{k_{2} k_{4} \cos{\left(t \theta \right)} + k_{2} k_{4} - k_{2} k_{6} \cos{\left(t \theta \right)} - k_{2} k_{6} + k_{4} k_{d} \cos{\left(t \theta \right)} + k_{4} k_{d}}{\theta^{2}}\end{pmatrix}
+\begin{pmatrix} x_1 (0) \\ x_2 (0) \end{pmatrix}   & = & \begin{pmatrix} x_1 (t)_{t=0} \\ x_2 (t)_{t=0} \end{pmatrix}  \begin{pmatrix} c_1 \\ c_2 \end{pmatrix} 
 \end{eqnarray*}
 
-The result is
+The resulting equations are lengthy, and so we display the $x_n (t)$ separately.
 \begin{eqnarray}
 x_1 (t) & =  &
 \frac{1}{\theta}
@@ -485,14 +443,14 @@ x_2 (t) & = &
 \section{Formulas for Oscillation Characteristics}
 Our final task is to restructure ${\bf x} (t)$ to isolate the
 oscillation characteristics $\theta, \alpha_n, \phi_n, \omega_n$.
-From this
 The first step is to factor
 Eq.~(1) and Eq.~(2) so that 
 \begin{equation}
 x_n (t) = a_n \cos(\theta t) + b_n \sin(\theta t) + \omega_n
 \label{eq:factor}
 \end{equation}
-That is, the sum of terms that are not multiplied by $\cos, \sin$ will constitute the DC offset.
+Observe that $\omega_n$ (the DC offset) is the sum of terms that are {\em not} multiplied by $\cos(t \theta)$
+or $\sin(t \theta)$.
 From Eq.~(3), we calculate $\alpha_n, \phi_n$ using the
 the trigonometric equality
 $a_n cos(t \theta) + b_n sin(t \theta) 
@@ -537,8 +495,8 @@ $\alpha_1  =
 $\pi_1, \pi_2$ arise from techical conditions related to taking the
 inverse of the tangent function.
 Tangent is only defined over a range of $\pi$ since it is calculated
-from the ration of $a_n$ to $b_n$.
-Hence we cannot distinguish between to positive values of these number,
+from the ratio of $a_n$ to $b_n$.
+Hence, we cannot distinguish between two positive values of these number,
 and two negative values of these numbers.
 
 \begin{eqnarray*}
@@ -564,5 +522,34 @@ cond_2 &  = &  \frac{k_{2} x_1 (0)}{\theta} + \frac{k_{2} x_2 (0)}{\theta} - \fr
 
 \bibliographystyle{bmc-mathphys} % Style BST file (bmc-mathphys, vancouver, spbasic).
 \bibliography{oscillations}      % Bibliography file (usually '*.bib' )
+
+\section*{Notation}
+\begin{itemize}
+\item ${\bf A}$ - Jacobian matrix
+\item $\alpha_n$ - amplitude of oscillation for species $n$
+\item ${\bf c} = \begin{pmatrix} c_1 \\ c_2 \end{pmatrix}$ - constants associated with the homogeneous solution
+\item $\Delta$ -
+$det {\bf A})$ (determinant)
+\item  ${\bf F} (t)$ - fundamental matrix
+\item $i$ - indexes kinetic constants
+\item $k_i$, $k_d$ -
+non-negative constants for kinetic constants
+\item $\lambda$ -
+eigenvalue
+\item $n$ - indexes states (chemical species)
+\item $N$ - number of species
+\item $\omega_n$ - offset of species $n$ 
+\item $\phi_n$ - phase in radians
+\item $S_n$ - chemical species in the reaction network
+\item $t$ - time 
+\item $\tau$ - $tr({\bf A})$ (trace)
+\item $\theta$ - frequency in
+radians 
+\item ${\bf u} = \begin{pmatrix} u_1 \\ u_2 \end{pmatrix}$ - forced input (kinetic constants for zeroth order
+rates)
+\item $\dot{\bf x} (t)$ - derivative w.r.t. time of ${\bf x}$
+\item $x_n(t)$
+ - time varying concentration of species $n$
+\end{itemize}
 
 \end{document}
