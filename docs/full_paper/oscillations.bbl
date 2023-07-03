@@ -1,0 +1,1182 @@
+%% BioMed_Central_Bib_Style_v1.01
+
+\begin{thebibliography}{33}
+% BibTex style file: bmc-mathphys.bst (version 2.1), 2014-07-24
+\ifx \bisbn   \undefined \def \bisbn  #1{ISBN #1}\fi
+\ifx \binits  \undefined \def \binits#1{#1}\fi
+\ifx \bauthor  \undefined \def \bauthor#1{#1}\fi
+\ifx \batitle  \undefined \def \batitle#1{#1}\fi
+\ifx \bjtitle  \undefined \def \bjtitle#1{#1}\fi
+\ifx \bvolume  \undefined \def \bvolume#1{\textbf{#1}}\fi
+\ifx \byear  \undefined \def \byear#1{#1}\fi
+\ifx \bissue  \undefined \def \bissue#1{#1}\fi
+\ifx \bfpage  \undefined \def \bfpage#1{#1}\fi
+\ifx \blpage  \undefined \def \blpage #1{#1}\fi
+\ifx \burl  \undefined \def \burl#1{\textsf{#1}}\fi
+\ifx \doiurl  \undefined \def \doiurl#1{\textsf{#1}}\fi
+\ifx \betal  \undefined \def \betal{\textit{et al.}}\fi
+\ifx \binstitute  \undefined \def \binstitute#1{#1}\fi
+\ifx \binstitutionaled  \undefined \def \binstitutionaled#1{#1}\fi
+\ifx \bctitle  \undefined \def \bctitle#1{#1}\fi
+\ifx \beditor  \undefined \def \beditor#1{#1}\fi
+\ifx \bpublisher  \undefined \def \bpublisher#1{#1}\fi
+\ifx \bbtitle  \undefined \def \bbtitle#1{#1}\fi
+\ifx \bedition  \undefined \def \bedition#1{#1}\fi
+\ifx \bseriesno  \undefined \def \bseriesno#1{#1}\fi
+\ifx \blocation  \undefined \def \blocation#1{#1}\fi
+\ifx \bsertitle  \undefined \def \bsertitle#1{#1}\fi
+\ifx \bsnm \undefined \def \bsnm#1{#1}\fi
+\ifx \bsuffix \undefined \def \bsuffix#1{#1}\fi
+\ifx \bparticle \undefined \def \bparticle#1{#1}\fi
+\ifx \barticle \undefined \def \barticle#1{#1}\fi
+\ifx \bconfdate \undefined \def \bconfdate #1{#1}\fi
+\ifx \botherref \undefined \def \botherref #1{#1}\fi
+\ifx \url \undefined \def \url#1{\textsf{#1}}\fi
+\ifx \bchapter \undefined \def \bchapter#1{#1}\fi
+\ifx \bbook \undefined \def \bbook#1{#1}\fi
+\ifx \bcomment \undefined \def \bcomment#1{#1}\fi
+\ifx \oauthor \undefined \def \oauthor#1{#1}\fi
+\ifx \citeauthoryear \undefined \def \citeauthoryear#1{#1}\fi
+\ifx \endbibitem  \undefined \def \endbibitem {}\fi
+\ifx \bconflocation  \undefined \def \bconflocation#1{#1}\fi
+\ifx \arxivurl  \undefined \def \arxivurl#1{\textsf{#1}}\fi
+\csname PreBibitemsHook\endcsname
+
+%%% 1
+\bibitem{Riva2022}
+\begin{barticle}
+\bauthor{\bsnm{Riva}, \binits{S.}},
+\bauthor{\bsnm{Cazzaniga}, \binits{P.}},
+\bauthor{\bsnm{Nobile}, \binits{M.}},
+\bauthor{\bsnm{Spolaor}, \binits{S.}},
+\bauthor{\bsnm{Rundo}, \binits{L.}},
+\bauthor{\bsnm{Besozzi}, \binits{D.}},
+\bauthor{\bsnm{Tangherloni}, \binits{A.}}:
+\batitle{{SMGen}: A generator of synthetic models of biochemical reaction
+  networks}.
+\bjtitle{Symmetry}
+\bvolume{14},
+\bfpage{119}
+(\byear{2022}).
+doi:\doiurl{10.3390/sym14010119}
+\end{barticle}
+\endbibitem
+
+%%% 2
+\bibitem{Schaffter2011}
+\begin{barticle}
+\bauthor{\bsnm{Schaffter}, \binits{T.}},
+\bauthor{\bsnm{Marbach}, \binits{D.}},
+\bauthor{\bsnm{Floreano}, \binits{D.}}:
+\batitle{{GeneNetWeaver}: In silico benchmark generation and performance
+  profiling of network inference methods}.
+\bjtitle{Bioinformatics (Oxford, England)}
+\bvolume{27},
+\bfpage{2263}--\blpage{70}
+(\byear{2011}).
+doi:\doiurl{10.1093/bioinformatics/btr373}
+\end{barticle}
+\endbibitem
+
+%%% 3
+\bibitem{Alon2002}
+\begin{barticle}
+\bauthor{\bsnm{Shen-Orr}, \binits{S.}},
+\bauthor{\bsnm{Milo}, \binits{R.}},
+\bauthor{\bsnm{Mangan}, \binits{S.}},
+\bauthor{\bsnm{Alon}, \binits{U.}}:
+\batitle{Network motifs in the transcriptional regulation network of
+  {Escherichia} coli}.
+\bjtitle{Nature genetics}
+\bvolume{31},
+\bfpage{64}--\blpage{8}
+(\byear{2002}).
+doi:\doiurl{10.1038/ng881}
+\end{barticle}
+\endbibitem
+
+%%% 4
+\bibitem{Alon2007}
+\begin{barticle}
+\bauthor{\bsnm{Alon}, \binits{U.}}:
+\batitle{{Alon, U.: Network motifs}: theory and experimental approaches. nat.
+  rev. genet. 8, 450}.
+\bjtitle{Nature reviews. Genetics}
+\bvolume{8},
+\bfpage{450}--\blpage{61}
+(\byear{2007}).
+doi:\doiurl{10.1038/nrg2102}
+\end{barticle}
+\endbibitem
+
+%%% 5
+\bibitem{Ronen2002}
+\begin{barticle}
+\bauthor{\bsnm{Ronen}, \binits{M.}},
+\bauthor{\bsnm{Rosenberg}, \binits{R.}},
+\bauthor{\bsnm{Shraiman}, \binits{B.}},
+\bauthor{\bsnm{Alon}, \binits{U.}}:
+\batitle{Assigning numbers to the arrows: {Parameterizing} a gene regulation
+  network by using accurate expression kinetics}.
+\bjtitle{Proceedings of the National Academy of Sciences of the United States
+  of America}
+\bvolume{99},
+\bfpage{10555}--\blpage{60}
+(\byear{2002}).
+doi:\doiurl{10.1073/pnas.152046799}
+\end{barticle}
+\endbibitem
+
+%%% 6
+\bibitem{Loskot2019}
+\begin{botherref}
+\oauthor{\bsnm{Loskot}, \binits{P.}},
+\oauthor{\bsnm{Atitey}, \binits{K.}},
+\oauthor{\bsnm{Mihaylova}, \binits{L.}}:
+Comprehensive review of models and methods for inferences in bio-chemical
+  reaction networks.
+Frontiers in Genetics
+(2019)
+\end{botherref}
+\endbibitem
+
+%%% 7
+\bibitem{Christopoulos1998}
+\begin{barticle}
+\bauthor{\bsnm{Christopoulos}, \binits{A.}},
+\bauthor{\bsnm{Lanzafame}, \binits{A.}},
+\bauthor{\bsnm{Mitchelson}, \binits{F.}}:
+\batitle{Allosteric interactions at muscarinic cholinoceptors}.
+\bjtitle{Clinical and Experimental Pharmacology and Physiology}
+\bvolume{25}(\bissue{3-4}),
+\bfpage{185}--\blpage{194}
+(\byear{1998}).
+doi:\doiurl{10.1111/j.1440-1681.1998.t01-4-.x}.
+\arxivurl{https://onlinelibrary.wiley.com/doi/pdf/10.1111/j.1440-1681.1998.t01-4-.x}
+\end{barticle}
+\endbibitem
+
+%%% 8
+\bibitem{Nussinov2014}
+\begin{botherref}
+\oauthor{\bsnm{Nussinov}, \binits{R.}},
+\oauthor{\bsnm{Tsai}, \binits{C.J.}},
+\oauthor{\bsnm{Liu}, \binits{J.}}:
+Principles of allosteric interactions in cell signaling.
+Journal of the American Chemical Society
+\textbf{136}
+(2014).
+doi:\doiurl{10.1021/ja510028c}
+\end{botherref}
+\endbibitem
+
+%%% 9
+\bibitem{Liebermeister2010}
+\begin{barticle}
+\bauthor{\bsnm{Liebermeister}, \binits{W.}},
+\bauthor{\bsnm{Uhlendorf}, \binits{J.}},
+\bauthor{\bsnm{Klipp}, \binits{E.}}:
+\batitle{Modular rate laws for enzymatic reactions: {Thermodynamics},
+  elasticities and implementation}.
+\bjtitle{Bioinformatics (Oxford, England)}
+\bvolume{26},
+\bfpage{1528}--\blpage{34}
+(\byear{2010}).
+doi:\doiurl{10.1093/bioinformatics/btq141}
+\end{barticle}
+\endbibitem
+
+%%% 10
+\bibitem{Rohwer2007}
+\begin{bchapter}
+\bauthor{\bsnm{Rohwer}, \binits{J.}},
+\bauthor{\bsnm{Hanekom}, \binits{A.}},
+\bauthor{\bsnm{Hofmeyr}, \binits{J.-H.}}:
+\bctitle{A universal rate equation for systems biology},
+pp. \bfpage{175}--\blpage{187}
+(\byear{2007})
+\end{bchapter}
+\endbibitem
+
+%%% 11
+\bibitem{Liebermeister2006}
+\begin{barticle}
+\bauthor{\bsnm{Liebermeister}, \binits{W.}},
+\bauthor{\bsnm{Klipp}, \binits{E.}}:
+\batitle{Bringing metabolic networks to life: {Convenience} rate law and
+  thermodynamic constraints}.
+\bjtitle{Theoretical biology \& medical modelling}
+\bvolume{3},
+\bfpage{41}
+(\byear{2006}).
+doi:\doiurl{10.1186/1742-4682-3-41}
+\end{barticle}
+\endbibitem
+
+%%% 12
+\bibitem{Segel}
+\begin{barticle}
+\bauthor{\bsnm{Wagner}, \binits{M.}}:
+\batitle{Enzyme kinetics, behavior and analysis of rapid equilibrium and
+  steady-state enzyme systems ({Segel, Irwin H.})}.
+\bjtitle{Journal of Chemical Education}
+\bvolume{53}(\bissue{11}),
+\bfpage{472}
+(\byear{1976}).
+doi:\doiurl{10.1021/ed053pA472}.
+\arxivurl{https://doi.org/10.1021/ed053pA472}
+\end{barticle}
+\endbibitem
+
+%%% 13
+\bibitem{Bisswanger2000}
+\begin{bbook}
+\bauthor{\bsnm{Bisswanger}, \binits{H.}}:
+\bbtitle{Enzymkinetik: Theorie und Methoden}.
+\bpublisher{Wiley-Blackwell},
+\blocation{German}
+(\byear{2000})
+\end{bbook}
+\endbibitem
+
+%%% 14
+\bibitem{Cornish2004}
+\begin{bbook}
+\bauthor{\bsnm{Cornish-Bowden}, \binits{A.}}:
+\bbtitle{Fundamentals of Enzyme Kinetics}.
+\bpublisher{Portland Press Ltd.},
+\blocation{London}
+(\byear{2004})
+\end{bbook}
+\endbibitem
+
+%%% 15
+\bibitem{Snoep2005}
+\begin{barticle}
+\bauthor{\bsnm{Snoep}, \binits{J.}}:
+\batitle{The silicon cell initiative: Working towards a detailed kinetic
+  description at the cellular level}.
+\bjtitle{Current opinion in biotechnology}
+\bvolume{16},
+\bfpage{336}--\blpage{43}
+(\byear{2005}).
+doi:\doiurl{10.1016/j.copbio.2005.05.003}
+\end{barticle}
+\endbibitem
+
+%%% 16
+\bibitem{Bakker1997}
+\begin{barticle}
+\bauthor{\bsnm{Bakker}, \binits{B.}},
+\bauthor{\bsnm{Michels}, \binits{P.}},
+\bauthor{\bsnm{Opperdoes}, \binits{F.}},
+\bauthor{\bsnm{Westerhoff}, \binits{H.}}:
+\batitle{Glycolysis in bloodstream form {Trypanosoma} brucei can be understood
+  in terms of the kinetics of the {Glycolytic} enzymes}.
+\bjtitle{The Journal of biological chemistry}
+\bvolume{272},
+\bfpage{3207}--\blpage{15}
+(\byear{1997}).
+doi:\doiurl{10.1074/jbc.272.6.3207}
+\end{barticle}
+\endbibitem
+
+%%% 17
+\bibitem{Bakker2001}
+\begin{barticle}
+\bauthor{\bsnm{Helfert}, \binits{S.}},
+\bauthor{\bsnm{Est{\'e}vez}, \binits{A.M.}},
+\bauthor{\bsnm{Bakker}, \binits{B.}},
+\bauthor{\bsnm{Michels}, \binits{P.}},
+\bauthor{\bsnm{Clayton}, \binits{C.}}:
+\batitle{Roles of triosephosphate isomerase and aerobic metabolism in
+  {Trypanosoma} brucei.}
+\bjtitle{The Biochemical journal}
+\bvolume{357 Pt 1},
+\bfpage{117}--\blpage{25}
+(\byear{2001})
+\end{barticle}
+\endbibitem
+
+%%% 18
+\bibitem{Lam1972}
+\begin{barticle}
+\bauthor{\bsnm{Lam}, \binits{C.F.}},
+\bauthor{\bsnm{Priest}, \binits{D.G.}}:
+\batitle{{Enzyme Kinetics: Systematic Generation of Valid King-Altman
+  Patterns}}.
+\bjtitle{Biophysical Journal}
+\bvolume{12}(\bissue{3}),
+\bfpage{248}--\blpage{256}
+(\byear{1972}).
+doi:\doiurl{10.1016/S0006-3495(72)86084-3}
+\end{barticle}
+\endbibitem
+
+%%% 19
+\bibitem{Hoops2006}
+\begin{barticle}
+\bauthor{\bsnm{Hoops}, \binits{S.}},
+\bauthor{\bsnm{Sahle}, \binits{S.}},
+\bauthor{\bsnm{Gauges}, \binits{R.}},
+\bauthor{\bsnm{Lee}, \binits{C.}},
+\bauthor{\bsnm{Pahle}, \binits{J.}},
+\bauthor{\bsnm{Simus}, \binits{N.}},
+\bauthor{\bsnm{Singhal}, \binits{M.}},
+\bauthor{\bsnm{Xu}, \binits{L.}},
+\bauthor{\bsnm{Mendes}, \binits{P.}},
+\bauthor{\bsnm{Kummer}, \binits{U.}}:
+\batitle{{COPASI}—a complex pathway simulator}.
+\bjtitle{Bioinformatics (Oxford, England)}
+\bvolume{22},
+\bfpage{3067}--\blpage{74}
+(\byear{2007}).
+doi:\doiurl{10.1093/bioinformatics/btl485}
+\end{barticle}
+\endbibitem
+
+%%% 20
+\bibitem{Funahashi2007}
+\begin{barticle}
+\bauthor{\bsnm{Funahashi}, \binits{A.}},
+\bauthor{\bsnm{Jouraku}, \binits{A.}},
+\bauthor{\bsnm{Matsuoka}, \binits{Y.}},
+\bauthor{\bsnm{Kitano}, \binits{H.}}:
+\batitle{Integration of cell designer and {SABIO-RK}}.
+\bjtitle{In silico biology}
+\bvolume{7},
+\bfpage{81}--\blpage{90}
+(\byear{2007})
+\end{barticle}
+\endbibitem
+
+%%% 21
+\bibitem{Drager2015}
+\begin{barticle}
+\bauthor{\bsnm{Dräger}, \binits{A.}},
+\bauthor{\bsnm{Zielinski}, \binits{D.}},
+\bauthor{\bsnm{Keller}, \binits{R.}},
+\bauthor{\bsnm{Rall}, \binits{M.}},
+\bauthor{\bsnm{Eichner}, \binits{J.}},
+\bauthor{\bsnm{Palsson}, \binits{B.}},
+\bauthor{\bsnm{Zell}, \binits{A.}}:
+\batitle{{SBMLsqueezer} 2: {Context-sensitive} creation of kinetic equations in
+  biochemical networks}.
+\bjtitle{BMC systems biology}
+\bvolume{9},
+\bfpage{68}
+(\byear{2015}).
+doi:\doiurl{10.1186/s12918-015-0212-9}
+\end{barticle}
+\endbibitem
+
+%%% 22
+\bibitem{Keating2020}
+\begin{botherref}
+\oauthor{\bsnm{Keating}, \binits{S.}},
+\oauthor{\bsnm{Waltemath}, \binits{D.}},
+\oauthor{\bsnm{Helikar}, \binits{T.}},
+\oauthor{\bsnm{Hucka}, \binits{M.}},
+\oauthor{\bsnm{co-authors}, \binits{a.}}:
+{SBML} level 3: an extensible format for the exchange and reuse of biological
+  models
+(2020)
+\end{botherref}
+\endbibitem
+
+%%% 23
+\bibitem{Courtot2011}
+\begin{barticle}
+\bauthor{\bsnm{Courtot}, \binits{M.}},
+\bauthor{\bsnm{Juty}, \binits{N.}},
+\bauthor{\bsnm{Knüpfer}, \binits{C.}},
+\bauthor{\bsnm{Waltemath}, \binits{D.}},
+\bauthor{\bsnm{Zhukova}, \binits{A.}},
+\bauthor{\bsnm{Dräger}, \binits{A.}},
+\bauthor{\bsnm{Dumontier}, \binits{M.}},
+\bauthor{\bsnm{Finney}, \binits{A.}},
+\bauthor{\bsnm{Golebiewski}, \binits{M.}},
+\bauthor{\bsnm{Hastings}, \binits{J.}},
+\bauthor{\bsnm{Hoops}, \binits{S.}},
+\bauthor{\bsnm{Keating}, \binits{S.}},
+\bauthor{\bsnm{Kell}, \binits{D.}},
+\bauthor{\bsnm{Kerrien}, \binits{S.}},
+\bauthor{\bsnm{Lawson}, \binits{J.}},
+\bauthor{\bsnm{Lister}, \binits{A.}},
+\bauthor{\bsnm{Lu}, \binits{J.}},
+\bauthor{\bsnm{Machne}, \binits{R.}},
+\bauthor{\bsnm{Mendes}, \binits{P.}},
+\bauthor{\bsnm{Le~Novere}, \binits{N.}}:
+\batitle{Controlled vocabularies and semantics in systems biology}.
+\bjtitle{Molecular systems biology}
+\bvolume{7},
+\bfpage{543}
+(\byear{2011}).
+doi:\doiurl{10.1038/msb.2011.77}
+\end{barticle}
+\endbibitem
+
+%%% 24
+\bibitem{Drager2008}
+\begin{barticle}
+\bauthor{\bsnm{Dräger}, \binits{A.}},
+\bauthor{\bsnm{Hassis}, \binits{N.}},
+\bauthor{\bsnm{Supper}, \binits{J.}},
+\bauthor{\bsnm{Schroeder}, \binits{A.}},
+\bauthor{\bsnm{Zell}, \binits{A.}}:
+\batitle{{SBMLsqueezer}: A {CellDesigner} plug-in to generate kinetic rate
+  equations for biochemical networks}.
+\bjtitle{BMC systems biology}
+\bvolume{2},
+\bfpage{39}
+(\byear{2008}).
+doi:\doiurl{10.1186/1752-0509-2-39}
+\end{barticle}
+\endbibitem
+
+%%% 25
+\bibitem{Novere2006}
+\begin{barticle}
+\bauthor{\bsnm{Le~Novere}, \binits{N.}},
+\bauthor{\bsnm{Finney}, \binits{A.}},
+\bauthor{\bsnm{Hucka}, \binits{M.}},
+\bauthor{\bsnm{Bhalla}, \binits{U.}},
+\bauthor{\bsnm{Campagne}, \binits{F.}},
+\bauthor{\bsnm{Crampin}, \binits{E.}},
+\bauthor{\bsnm{Halstead}, \binits{M.}},
+\bauthor{\bsnm{Klipp}, \binits{E.}},
+\bauthor{\bsnm{Mendes}, \binits{P.}},
+\bauthor{\bsnm{Nielsen}, \binits{P.}},
+\bauthor{\bsnm{Sauro}, \binits{H.}},
+\bauthor{\bsnm{Shapiro}, \binits{B.}},
+\bauthor{\bsnm{Snoep}, \binits{J.}},
+\bauthor{\bsnm{Spence}, \binits{H.}},
+\bauthor{\bsnm{Wanner}, \binits{B.}}:
+\batitle{Minimum information requested in the annotation of biochemical models
+  ({MIRIAM})}.
+\bjtitle{Nature biotechnology}
+\bvolume{23},
+\bfpage{1509}--\blpage{15}
+(\byear{2006}).
+doi:\doiurl{10.1038/nbt1156}
+\end{barticle}
+\endbibitem
+
+%%% 26
+\bibitem{Wittig2011}
+\begin{barticle}
+\bauthor{\bsnm{Wittig}, \binits{U.}},
+\bauthor{\bsnm{Kania}, \binits{R.}},
+\bauthor{\bsnm{Golebiewski}, \binits{M.}},
+\bauthor{\bsnm{Rey}, \binits{M.}},
+\bauthor{\bsnm{Shi}, \binits{L.}},
+\bauthor{\bsnm{Jong}, \binits{L.}},
+\bauthor{\bsnm{Algaa}, \binits{E.}},
+\bauthor{\bsnm{Weidemann}, \binits{A.}},
+\bauthor{\bsnm{Sauer-Danzwith}, \binits{H.}},
+\bauthor{\bsnm{Mir}, \binits{S.}},
+\bauthor{\bsnm{Krebs}, \binits{O.}},
+\bauthor{\bsnm{Bittkowski}, \binits{M.}},
+\bauthor{\bsnm{Wetsch}, \binits{E.}},
+\bauthor{\bsnm{Rojas}, \binits{I.}},
+\bauthor{\bsnm{Müller}, \binits{W.}}:
+\batitle{{SABIO-RK} - database for biochemical reaction kinetics}.
+\bjtitle{Nucleic acids research}
+\bvolume{40},
+\bfpage{790}--\blpage{6}
+(\byear{2011}).
+doi:\doiurl{10.1093/nar/gkr1046}
+\end{barticle}
+\endbibitem
+
+%%% 27
+\bibitem{Jupp2015}
+\begin{bchapter}
+\bauthor{\bsnm{Jupp}, \binits{S.}},
+\bauthor{\bsnm{Burdett}, \binits{T.}},
+\bauthor{\bsnm{Leroy}, \binits{C.}},
+\bauthor{\bsnm{Parkinson}, \binits{H.E.}}:
+\bctitle{A new ontology lookup service at {EMBL-EBI}}.
+In: \bbtitle{SWAT4LS}
+(\byear{2015})
+\end{bchapter}
+\endbibitem
+
+%%% 28
+\bibitem{bornstein2008}
+\begin{barticle}
+\bauthor{\bsnm{Bornstein}, \binits{B.J.}},
+\bauthor{\bsnm{Keating}, \binits{S.M.}},
+\bauthor{\bsnm{Jouraku}, \binits{A.}},
+\bauthor{\bsnm{Hucka}, \binits{M.}}:
+\batitle{{LibSBML}: an {API} library for {SBML}}.
+\bjtitle{Bioinformatics}
+\bvolume{24}(\bissue{6}),
+\bfpage{880}--\blpage{881}
+(\byear{2008})
+\end{barticle}
+\endbibitem
+
+%%% 29
+\bibitem{Hucka2003}
+\begin{botherref}
+\oauthor{\bsnm{Hucka}, \binits{M.}},
+\oauthor{\bsnm{Finney}, \binits{A.}},
+\oauthor{\bsnm{Sauro}, \binits{H.M.}},
+\oauthor{\bsnm{Bolouri}, \binits{H.}}:
+{Systems Biology Markup Language} ({SBML}) {Level} 1: Structures and Facilities
+  for Basic Model Definitions.
+California Institute of Technology.
+Available from COMBINE at
+  http://identifiers.org/combine.specifications/sbml.level-1.version-2
+(2003).
+\url{http://identifiers.org/combine.specifications/sbml.level-1.version-2}
+\end{botherref}
+\endbibitem
+
+%%% 30
+\bibitem{Hucka2015}
+\begin{barticle}
+\bauthor{\bsnm{Hucka}, \binits{M.}},
+\bauthor{\bsnm{Bergmann}, \binits{F.T.}},
+\bauthor{\bsnm{Dr{\"a}ger}, \binits{A.}},
+\bauthor{\bsnm{Hoops}, \binits{S.}},
+\bauthor{\bsnm{Keating}, \binits{S.M.}},
+\bauthor{\bsnm{Le~Nov{\`e}re}, \binits{N.}},
+\bauthor{\bsnm{Myers}, \binits{C.J.}},
+\bauthor{\bsnm{Olivier}, \binits{B.G.}},
+\bauthor{\bsnm{Sahle}, \binits{S.}},
+\bauthor{\bsnm{Schaff}, \binits{J.C.}},
+\bauthor{\bsnm{Smith}, \binits{L.P.}},
+\bauthor{\bsnm{Waltemath}, \binits{D.}},
+\bauthor{\bsnm{Wilkinson}, \binits{D.J.}}:
+\batitle{{Systems Biology Markup Language} ({SBML}) {Level} 2 {Version} 5:
+  {Structures} and facilities for model definitions}.
+\bjtitle{Journal of Integrative Bioinformatics}
+\bvolume{12}(\bissue{2}),
+\bfpage{271}
+(\byear{2015}).
+doi:\doiurl{10.2390/biecoll-jib-2015-271}
+\end{barticle}
+\endbibitem
+
+%%% 31
+\bibitem{Hucka2019}
+\begin{barticle}
+\bauthor{\bsnm{Hucka}, \binits{M.}},
+\bauthor{\bsnm{Bergmann}, \binits{F.T.}},
+\bauthor{\bsnm{Chaouiya}, \binits{C.}},
+\bauthor{\bsnm{Dr{\"a}ger}, \binits{A.}},
+\bauthor{\bsnm{Hoops}, \binits{S.}},
+\bauthor{\bsnm{Keating}, \binits{S.M.}},
+\bauthor{\bsnm{K{\"o}nig}, \binits{M.}},
+\bauthor{\bsnm{Le~Nov{\`e}re}, \binits{N.}},
+\bauthor{\bsnm{Myers}, \binits{C.J.}},
+\bauthor{\bsnm{Olivier}, \binits{B.G.}},
+\bauthor{\bsnm{Sahle}, \binits{S.}},
+\bauthor{\bsnm{Schaff}, \binits{J.C.}},
+\bauthor{\bsnm{Sheriff}, \binits{R.}},
+\bauthor{\bsnm{Smith}, \binits{L.P.}},
+\bauthor{\bsnm{Waltemath}, \binits{D.}},
+\bauthor{\bsnm{Wilkinson}, \binits{D.J.}},
+\bauthor{\bsnm{Zhang}, \binits{F.}}:
+\batitle{The {Systems Biology Markup Language} ({SBML}): Language specification
+  for {Level} 3 {Version} 2 {Core} {Release} 2}.
+\bjtitle{Journal of Integrative Bioinformatics}
+\bvolume{16}(\bissue{2}),
+\bfpage{20190021}
+(\byear{2019}).
+doi:\doiurl{10.1515/jib-2019-0021}
+\end{barticle}
+\endbibitem
+
+%%% 32
+\bibitem{Golightly2005}
+\begin{barticle}
+\bauthor{\bsnm{Golightly}, \binits{A.}},
+\bauthor{\bsnm{Wilkinson}, \binits{D.}}:
+\batitle{Bayesian inference for stochastic kinetic models using a diffusion
+  approximation}.
+\bjtitle{Biometrics}
+\bvolume{61},
+\bfpage{781}--\blpage{8}
+(\byear{2005}).
+doi:\doiurl{10.1111/j.1541-0420.2005.00345.x}
+\end{barticle}
+\endbibitem
+
+%%% 33
+\bibitem{Galagali2015}
+\begin{barticle}
+\bauthor{\bsnm{Galagali}, \binits{N.}},
+\bauthor{\bsnm{Marzouk}, \binits{Y.}}:
+\batitle{Bayesian inference of chemical kinetic models from proposed
+  reactions}.
+\bjtitle{Chemical Engineering Science}
+\bvolume{123},
+\bfpage{170}--\blpage{190}
+(\byear{2015}).
+doi:\doiurl{10.1016/j.ces.2014.10.030}
+\end{barticle}
+\endbibitem
+
+\end{thebibliography}
+
+\newcommand{\BMCxmlcomment}[1]{}
+
+\BMCxmlcomment{
+
+<refgrp>
+
+<bibl id="B1">
+  <title><p>{SMGen}: A Generator of Synthetic Models of Biochemical Reaction
+  Networks</p></title>
+  <aug>
+    <au><snm>Riva</snm><fnm>S</fnm></au>
+    <au><snm>Cazzaniga</snm><fnm>P</fnm></au>
+    <au><snm>Nobile</snm><fnm>M</fnm></au>
+    <au><snm>Spolaor</snm><fnm>S</fnm></au>
+    <au><snm>Rundo</snm><fnm>L</fnm></au>
+    <au><snm>Besozzi</snm><fnm>D</fnm></au>
+    <au><snm>Tangherloni</snm><fnm>A</fnm></au>
+  </aug>
+  <source>Symmetry</source>
+  <pubdate>2022</pubdate>
+  <volume>14</volume>
+  <fpage>119</fpage>
+</bibl>
+
+<bibl id="B2">
+  <title><p>{GeneNetWeaver}: In silico benchmark generation and performance
+  profiling of network inference methods</p></title>
+  <aug>
+    <au><snm>Schaffter</snm><fnm>T</fnm></au>
+    <au><snm>Marbach</snm><fnm>D</fnm></au>
+    <au><snm>Floreano</snm><fnm>D</fnm></au>
+  </aug>
+  <source>Bioinformatics (Oxford, England)</source>
+  <pubdate>2011</pubdate>
+  <volume>27</volume>
+  <fpage>2263</fpage>
+  <lpage>70</lpage>
+</bibl>
+
+<bibl id="B3">
+  <title><p>Network motifs in the transcriptional regulation network of
+  {Escherichia} coli</p></title>
+  <aug>
+    <au><snm>Shen Orr</snm><fnm>S</fnm></au>
+    <au><snm>Milo</snm><fnm>R</fnm></au>
+    <au><snm>Mangan</snm><fnm>S</fnm></au>
+    <au><snm>Alon</snm><fnm>U</fnm></au>
+  </aug>
+  <source>Nature genetics</source>
+  <pubdate>2002</pubdate>
+  <volume>31</volume>
+  <fpage>64</fpage>
+  <lpage>8</lpage>
+</bibl>
+
+<bibl id="B4">
+  <title><p>{Alon, U.: Network motifs}: theory and experimental approaches.
+  Nat. Rev. Genet. 8, 450</p></title>
+  <aug>
+    <au><snm>Alon</snm><fnm>U</fnm></au>
+  </aug>
+  <source>Nature reviews. Genetics</source>
+  <pubdate>2007</pubdate>
+  <volume>8</volume>
+  <fpage>450</fpage>
+  <lpage>61</lpage>
+</bibl>
+
+<bibl id="B5">
+  <title><p>Assigning numbers to the arrows: {Parameterizing} a gene regulation
+  network by using accurate expression kinetics</p></title>
+  <aug>
+    <au><snm>Ronen</snm><fnm>M</fnm></au>
+    <au><snm>Rosenberg</snm><fnm>R</fnm></au>
+    <au><snm>Shraiman</snm><fnm>B</fnm></au>
+    <au><snm>Alon</snm><fnm>U</fnm></au>
+  </aug>
+  <source>Proceedings of the National Academy of Sciences of the United States
+  of America</source>
+  <pubdate>2002</pubdate>
+  <volume>99</volume>
+  <fpage>10555</fpage>
+  <lpage>60</lpage>
+</bibl>
+
+<bibl id="B6">
+  <title><p>Comprehensive review of models and methods for inferences in
+  bio-chemical reaction networks</p></title>
+  <aug>
+    <au><snm>Loskot</snm><fnm>P</fnm></au>
+    <au><snm>Atitey</snm><fnm>K</fnm></au>
+    <au><snm>Mihaylova</snm><fnm>L</fnm></au>
+  </aug>
+  <source>Frontiers in Genetics</source>
+  <pubdate>2019</pubdate>
+</bibl>
+
+<bibl id="B7">
+  <title><p>ALLOSTERIC INTERACTIONS AT MUSCARINIC CHOLINOCEPTORS</p></title>
+  <aug>
+    <au><snm>Christopoulos</snm><fnm>A</fnm></au>
+    <au><snm>Lanzafame</snm><fnm>A</fnm></au>
+    <au><snm>Mitchelson</snm><fnm>F</fnm></au>
+  </aug>
+  <source>Clinical and Experimental Pharmacology and Physiology</source>
+  <pubdate>1998</pubdate>
+  <volume>25</volume>
+  <issue>3-4</issue>
+  <fpage>185</fpage>
+  <lpage>194</lpage>
+  <url>https://onlinelibrary.wiley.com/doi/abs/10.1111/j.1440-1681.1998.t01-4-.x</url>
+</bibl>
+
+<bibl id="B8">
+  <title><p>Principles of Allosteric Interactions in Cell Signaling</p></title>
+  <aug>
+    <au><snm>Nussinov</snm><fnm>R</fnm></au>
+    <au><snm>Tsai</snm><fnm>CJ</fnm></au>
+    <au><snm>Liu</snm><fnm>J</fnm></au>
+  </aug>
+  <source>Journal of the American Chemical Society</source>
+  <pubdate>2014</pubdate>
+  <volume>136</volume>
+</bibl>
+
+<bibl id="B9">
+  <title><p>Modular rate laws for enzymatic reactions: {Thermodynamics},
+  elasticities and implementation</p></title>
+  <aug>
+    <au><snm>Liebermeister</snm><fnm>W</fnm></au>
+    <au><snm>Uhlendorf</snm><fnm>J</fnm></au>
+    <au><snm>Klipp</snm><fnm>E</fnm></au>
+  </aug>
+  <source>Bioinformatics (Oxford, England)</source>
+  <pubdate>2010</pubdate>
+  <volume>26</volume>
+  <fpage>1528</fpage>
+  <lpage>34</lpage>
+</bibl>
+
+<bibl id="B10">
+  <title><p>A universal rate equation for systems biology</p></title>
+  <aug>
+    <au><snm>Rohwer</snm><fnm>J</fnm></au>
+    <au><snm>Hanekom</snm><fnm>A</fnm></au>
+    <au><snm>Hofmeyr</snm><fnm>JH</fnm></au>
+  </aug>
+  <source>Proceed 2nd Intern ESCEC Symp</source>
+  <pubdate>2007</pubdate>
+  <fpage>175</fpage>
+  <lpage>187</lpage>
+</bibl>
+
+<bibl id="B11">
+  <title><p>Bringing metabolic networks to life: {Convenience} rate law and
+  thermodynamic constraints</p></title>
+  <aug>
+    <au><snm>Liebermeister</snm><fnm>W</fnm></au>
+    <au><snm>Klipp</snm><fnm>E</fnm></au>
+  </aug>
+  <source>Theoretical biology \& medical modelling</source>
+  <pubdate>2006</pubdate>
+  <volume>3</volume>
+  <fpage>41</fpage>
+</bibl>
+
+<bibl id="B12">
+  <title><p>Enzyme kinetics, behavior and analysis of rapid equilibrium and
+  steady-state enzyme systems ({Segel, Irwin H.})</p></title>
+  <aug>
+    <au><snm>Wagner</snm><fnm>M</fnm></au>
+  </aug>
+  <source>Journal of Chemical Education</source>
+  <pubdate>1976</pubdate>
+  <volume>53</volume>
+  <issue>11</issue>
+  <fpage>A472</fpage>
+  <url>https://doi.org/10.1021/ed053pA472</url>
+</bibl>
+
+<bibl id="B13">
+  <title><p>Enzymkinetik: Theorie und Methoden</p></title>
+  <aug>
+    <au><snm>Bisswanger</snm><fnm>H</fnm></au>
+  </aug>
+  <publisher>German: Wiley-Blackwell</publisher>
+  <pubdate>2000</pubdate>
+</bibl>
+
+<bibl id="B14">
+  <title><p>Fundamentals of Enzyme Kinetics</p></title>
+  <aug>
+    <au><snm>Cornish Bowden</snm><fnm>A</fnm></au>
+  </aug>
+  <publisher>London: Portland Press Ltd.</publisher>
+  <pubdate>2004</pubdate>
+</bibl>
+
+<bibl id="B15">
+  <title><p>The Silicon Cell initiative: Working towards a detailed kinetic
+  description at the cellular level</p></title>
+  <aug>
+    <au><snm>Snoep</snm><fnm>J</fnm></au>
+  </aug>
+  <source>Current opinion in biotechnology</source>
+  <pubdate>2005</pubdate>
+  <volume>16</volume>
+  <fpage>336</fpage>
+  <lpage>43</lpage>
+</bibl>
+
+<bibl id="B16">
+  <title><p>Glycolysis in Bloodstream Form {Trypanosoma} brucei Can Be
+  Understood in Terms of the Kinetics of the {Glycolytic} Enzymes</p></title>
+  <aug>
+    <au><snm>Bakker</snm><fnm>B</fnm></au>
+    <au><snm>Michels</snm><fnm>P</fnm></au>
+    <au><snm>Opperdoes</snm><fnm>F</fnm></au>
+    <au><snm>Westerhoff</snm><fnm>H</fnm></au>
+  </aug>
+  <source>The Journal of biological chemistry</source>
+  <pubdate>1997</pubdate>
+  <volume>272</volume>
+  <fpage>3207</fpage>
+  <lpage>15</lpage>
+</bibl>
+
+<bibl id="B17">
+  <title><p>Roles of triosephosphate isomerase and aerobic metabolism in
+  {Trypanosoma} brucei.</p></title>
+  <aug>
+    <au><snm>Helfert</snm><fnm>S</fnm></au>
+    <au><snm>Est{\'e}vez</snm><fnm>AM</fnm></au>
+    <au><snm>Bakker</snm><fnm>B</fnm></au>
+    <au><snm>Michels</snm><fnm>P</fnm></au>
+    <au><snm>Clayton</snm><fnm>C</fnm></au>
+  </aug>
+  <source>The Biochemical journal</source>
+  <pubdate>2001</pubdate>
+  <volume>357 Pt 1</volume>
+  <fpage>117</fpage>
+  <lpage>25</lpage>
+</bibl>
+
+<bibl id="B18">
+  <title><p>{Enzyme Kinetics: Systematic Generation of Valid King-Altman
+  Patterns}</p></title>
+  <aug>
+    <au><snm>Lam</snm><fnm>C.F.</fnm></au>
+    <au><snm>Priest</snm><fnm>D.G.</fnm></au>
+  </aug>
+  <source>Biophysical Journal</source>
+  <pubdate>1972</pubdate>
+  <volume>12</volume>
+  <issue>3</issue>
+  <fpage>248</fpage>
+  <lpage>256</lpage>
+  <url>https://www.sciencedirect.com/science/article/pii/S0006349572860843</url>
+</bibl>
+
+<bibl id="B19">
+  <title><p>{COPASI}—a complex pathway simulator</p></title>
+  <aug>
+    <au><snm>Hoops</snm><fnm>S</fnm></au>
+    <au><snm>Sahle</snm><fnm>S</fnm></au>
+    <au><snm>Gauges</snm><fnm>R</fnm></au>
+    <au><snm>Lee</snm><fnm>C</fnm></au>
+    <au><snm>Pahle</snm><fnm>J</fnm></au>
+    <au><snm>Simus</snm><fnm>N</fnm></au>
+    <au><snm>Singhal</snm><fnm>M</fnm></au>
+    <au><snm>Xu</snm><fnm>L</fnm></au>
+    <au><snm>Mendes</snm><fnm>P</fnm></au>
+    <au><snm>Kummer</snm><fnm>U</fnm></au>
+  </aug>
+  <source>Bioinformatics (Oxford, England)</source>
+  <pubdate>2007</pubdate>
+  <volume>22</volume>
+  <fpage>3067</fpage>
+  <lpage>74</lpage>
+</bibl>
+
+<bibl id="B20">
+  <title><p>Integration of cell designer and {SABIO-RK}</p></title>
+  <aug>
+    <au><snm>Funahashi</snm><fnm>A</fnm></au>
+    <au><snm>Jouraku</snm><fnm>A</fnm></au>
+    <au><snm>Matsuoka</snm><fnm>Y</fnm></au>
+    <au><snm>Kitano</snm><fnm>H</fnm></au>
+  </aug>
+  <source>In silico biology</source>
+  <pubdate>2007</pubdate>
+  <volume>7</volume>
+  <fpage>S81</fpage>
+  <lpage>90</lpage>
+</bibl>
+
+<bibl id="B21">
+  <title><p>{SBMLsqueezer} 2: {Context-sensitive} creation of kinetic equations
+  in biochemical networks</p></title>
+  <aug>
+    <au><snm>Dräger</snm><fnm>A</fnm></au>
+    <au><snm>Zielinski</snm><fnm>D</fnm></au>
+    <au><snm>Keller</snm><fnm>R</fnm></au>
+    <au><snm>Rall</snm><fnm>M</fnm></au>
+    <au><snm>Eichner</snm><fnm>J</fnm></au>
+    <au><snm>Palsson</snm><fnm>B</fnm></au>
+    <au><snm>Zell</snm><fnm>A</fnm></au>
+  </aug>
+  <source>BMC systems biology</source>
+  <pubdate>2015</pubdate>
+  <volume>9</volume>
+  <fpage>68</fpage>
+</bibl>
+
+<bibl id="B22">
+  <title><p>{SBML} Level 3: an extensible format for the exchange and reuse of
+  biological models</p></title>
+  <aug>
+    <au><snm>Keating</snm><fnm>S</fnm></au>
+    <au><snm>Waltemath</snm><fnm>D</fnm></au>
+    <au><snm>Helikar</snm><fnm>T</fnm></au>
+    <au><snm>Hucka</snm><fnm>M</fnm></au>
+    <au><snm>authors</snm><fnm>a</fnm></au>
+  </aug>
+  <pubdate>2020</pubdate>
+</bibl>
+
+<bibl id="B23">
+  <title><p>Controlled vocabularies and semantics in Systems
+  Biology</p></title>
+  <aug>
+    <au><snm>Courtot</snm><fnm>M</fnm></au>
+    <au><snm>Juty</snm><fnm>N</fnm></au>
+    <au><snm>Knüpfer</snm><fnm>C</fnm></au>
+    <au><snm>Waltemath</snm><fnm>D</fnm></au>
+    <au><snm>Zhukova</snm><fnm>A</fnm></au>
+    <au><snm>Dräger</snm><fnm>A</fnm></au>
+    <au><snm>Dumontier</snm><fnm>M</fnm></au>
+    <au><snm>Finney</snm><fnm>A</fnm></au>
+    <au><snm>Golebiewski</snm><fnm>M</fnm></au>
+    <au><snm>Hastings</snm><fnm>J</fnm></au>
+    <au><snm>Hoops</snm><fnm>S</fnm></au>
+    <au><snm>Keating</snm><fnm>S</fnm></au>
+    <au><snm>Kell</snm><fnm>D</fnm></au>
+    <au><snm>Kerrien</snm><fnm>S</fnm></au>
+    <au><snm>Lawson</snm><fnm>J</fnm></au>
+    <au><snm>Lister</snm><fnm>A</fnm></au>
+    <au><snm>Lu</snm><fnm>J</fnm></au>
+    <au><snm>Machne</snm><fnm>R</fnm></au>
+    <au><snm>Mendes</snm><fnm>P</fnm></au>
+    <au><snm>Le Novere</snm><fnm>N</fnm></au>
+  </aug>
+  <source>Molecular systems biology</source>
+  <pubdate>2011</pubdate>
+  <volume>7</volume>
+  <fpage>543</fpage>
+</bibl>
+
+<bibl id="B24">
+  <title><p>{SBMLsqueezer}: A {CellDesigner} plug-in to generate kinetic rate
+  equations for biochemical networks</p></title>
+  <aug>
+    <au><snm>Dräger</snm><fnm>A</fnm></au>
+    <au><snm>Hassis</snm><fnm>N</fnm></au>
+    <au><snm>Supper</snm><fnm>J</fnm></au>
+    <au><snm>Schroeder</snm><fnm>A</fnm></au>
+    <au><snm>Zell</snm><fnm>A</fnm></au>
+  </aug>
+  <source>BMC systems biology</source>
+  <pubdate>2008</pubdate>
+  <volume>2</volume>
+  <fpage>39</fpage>
+</bibl>
+
+<bibl id="B25">
+  <title><p>Minimum Information Requested In the Annotation of biochemical
+  Models ({MIRIAM})</p></title>
+  <aug>
+    <au><snm>Le Novere</snm><fnm>N</fnm></au>
+    <au><snm>Finney</snm><fnm>A</fnm></au>
+    <au><snm>Hucka</snm><fnm>M</fnm></au>
+    <au><snm>Bhalla</snm><fnm>U</fnm></au>
+    <au><snm>Campagne</snm><fnm>F</fnm></au>
+    <au><snm>Crampin</snm><fnm>E</fnm></au>
+    <au><snm>Halstead</snm><fnm>M</fnm></au>
+    <au><snm>Klipp</snm><fnm>E</fnm></au>
+    <au><snm>Mendes</snm><fnm>P</fnm></au>
+    <au><snm>Nielsen</snm><fnm>P</fnm></au>
+    <au><snm>Sauro</snm><fnm>H</fnm></au>
+    <au><snm>Shapiro</snm><fnm>B</fnm></au>
+    <au><snm>Snoep</snm><fnm>J</fnm></au>
+    <au><snm>Spence</snm><fnm>H</fnm></au>
+    <au><snm>Wanner</snm><fnm>B</fnm></au>
+  </aug>
+  <source>Nature biotechnology</source>
+  <pubdate>2006</pubdate>
+  <volume>23</volume>
+  <fpage>1509</fpage>
+  <lpage>15</lpage>
+</bibl>
+
+<bibl id="B26">
+  <title><p>{SABIO-RK} - Database for biochemical reaction kinetics</p></title>
+  <aug>
+    <au><snm>Wittig</snm><fnm>U</fnm></au>
+    <au><snm>Kania</snm><fnm>R</fnm></au>
+    <au><snm>Golebiewski</snm><fnm>M</fnm></au>
+    <au><snm>Rey</snm><fnm>M</fnm></au>
+    <au><snm>Shi</snm><fnm>L</fnm></au>
+    <au><snm>Jong</snm><fnm>L</fnm></au>
+    <au><snm>Algaa</snm><fnm>E</fnm></au>
+    <au><snm>Weidemann</snm><fnm>A</fnm></au>
+    <au><snm>Sauer Danzwith</snm><fnm>H</fnm></au>
+    <au><snm>Mir</snm><fnm>S</fnm></au>
+    <au><snm>Krebs</snm><fnm>O</fnm></au>
+    <au><snm>Bittkowski</snm><fnm>M</fnm></au>
+    <au><snm>Wetsch</snm><fnm>E</fnm></au>
+    <au><snm>Rojas</snm><fnm>I</fnm></au>
+    <au><snm>Müller</snm><fnm>W</fnm></au>
+  </aug>
+  <source>Nucleic acids research</source>
+  <pubdate>2011</pubdate>
+  <volume>40</volume>
+  <fpage>D790</fpage>
+  <lpage>6</lpage>
+</bibl>
+
+<bibl id="B27">
+  <title><p>A new Ontology Lookup Service at {EMBL-EBI}</p></title>
+  <aug>
+    <au><snm>Jupp</snm><fnm>S</fnm></au>
+    <au><snm>Burdett</snm><fnm>T</fnm></au>
+    <au><snm>Leroy</snm><fnm>C</fnm></au>
+    <au><snm>Parkinson</snm><fnm>HE</fnm></au>
+  </aug>
+  <source>SWAT4LS</source>
+  <pubdate>2015</pubdate>
+</bibl>
+
+<bibl id="B28">
+  <title><p>{LibSBML}: an {API} library for {SBML}</p></title>
+  <aug>
+    <au><snm>Bornstein</snm><fnm>BJ</fnm></au>
+    <au><snm>Keating</snm><fnm>SM</fnm></au>
+    <au><snm>Jouraku</snm><fnm>A</fnm></au>
+    <au><snm>Hucka</snm><fnm>M</fnm></au>
+  </aug>
+  <source>Bioinformatics</source>
+  <publisher>Oxford University Press</publisher>
+  <pubdate>2008</pubdate>
+  <volume>24</volume>
+  <issue>6</issue>
+  <fpage>880</fpage>
+  <lpage>-881</lpage>
+</bibl>
+
+<bibl id="B29">
+  <title><p>{Systems Biology Markup Language} ({SBML}) {Level} 1: Structures
+  and Facilities for Basic Model Definitions</p></title>
+  <aug>
+    <au><snm>Hucka</snm><fnm>M</fnm></au>
+    <au><snm>Finney</snm><fnm>A</fnm></au>
+    <au><snm>Sauro</snm><fnm>HM</fnm></au>
+    <au><snm>Bolouri</snm><fnm>H</fnm></au>
+  </aug>
+  <publisher>California Institute of Technology</publisher>
+  <pubdate>2003</pubdate>
+  <url>http://identifiers.org/combine.specifications/sbml.level-1.version-2</url>
+  <note>Available from COMBINE at
+  http://identifiers.org/combine.specifications/sbml.level-1.version-2</note>
+</bibl>
+
+<bibl id="B30">
+  <title><p>{Systems Biology Markup Language} ({SBML}) {Level} 2 {Version} 5:
+  {Structures} and Facilities for Model Definitions</p></title>
+  <aug>
+    <au><snm>Hucka</snm><fnm>M</fnm></au>
+    <au><snm>Bergmann</snm><fnm>FT</fnm></au>
+    <au><snm>Dr{\"a}ger</snm><fnm>A</fnm></au>
+    <au><snm>Hoops</snm><fnm>S</fnm></au>
+    <au><snm>Keating</snm><fnm>SM</fnm></au>
+    <au><snm>Le Nov{\`e}re</snm><fnm>N</fnm></au>
+    <au><snm>Myers</snm><fnm>CJ</fnm></au>
+    <au><snm>Olivier</snm><fnm>BG</fnm></au>
+    <au><snm>Sahle</snm><fnm>S</fnm></au>
+    <au><snm>Schaff</snm><fnm>JC</fnm></au>
+    <au><snm>Smith</snm><fnm>LP</fnm></au>
+    <au><snm>Waltemath</snm><fnm>D</fnm></au>
+    <au><snm>Wilkinson</snm><fnm>DJ</fnm></au>
+  </aug>
+  <source>Journal of Integrative Bioinformatics</source>
+  <pubdate>2015</pubdate>
+  <volume>12</volume>
+  <issue>2</issue>
+  <fpage>271</fpage>
+  <url>http://dx.doi.org/10.2390/biecoll-jib-2015-271</url>
+</bibl>
+
+<bibl id="B31">
+  <title><p>The {Systems Biology Markup Language} ({SBML}): Language
+  Specification for {Level} 3 {Version} 2 {Core} {Release} 2</p></title>
+  <aug>
+    <au><snm>Hucka</snm><fnm>M</fnm></au>
+    <au><snm>Bergmann</snm><fnm>FT</fnm></au>
+    <au><snm>Chaouiya</snm><fnm>C</fnm></au>
+    <au><snm>Dr{\"a}ger</snm><fnm>A</fnm></au>
+    <au><snm>Hoops</snm><fnm>S</fnm></au>
+    <au><snm>Keating</snm><fnm>SM</fnm></au>
+    <au><snm>K{\"o}nig</snm><fnm>M</fnm></au>
+    <au><snm>Le Nov{\`e}re</snm><fnm>N</fnm></au>
+    <au><snm>Myers</snm><fnm>CJ</fnm></au>
+    <au><snm>Olivier</snm><fnm>BG</fnm></au>
+    <au><snm>Sahle</snm><fnm>S</fnm></au>
+    <au><snm>Schaff</snm><fnm>JC</fnm></au>
+    <au><snm>Sheriff</snm><fnm>R</fnm></au>
+    <au><snm>Smith</snm><fnm>LP</fnm></au>
+    <au><snm>Waltemath</snm><fnm>D</fnm></au>
+    <au><snm>Wilkinson</snm><fnm>DJ</fnm></au>
+    <au><snm>Zhang</snm><fnm>F</fnm></au>
+  </aug>
+  <source>Journal of Integrative Bioinformatics</source>
+  <pubdate>2019</pubdate>
+  <volume>16</volume>
+  <issue>2</issue>
+  <fpage>20190021</fpage>
+  <url>https://www.degruyter.com/view/j/jib.ahead-of-print/jib-2019-0021/jib-2019-0021.xml</url>
+</bibl>
+
+<bibl id="B32">
+  <title><p>Bayesian Inference for Stochastic Kinetic Models Using a Diffusion
+  Approximation</p></title>
+  <aug>
+    <au><snm>Golightly</snm><fnm>A</fnm></au>
+    <au><snm>Wilkinson</snm><fnm>D</fnm></au>
+  </aug>
+  <source>Biometrics</source>
+  <pubdate>2005</pubdate>
+  <volume>61</volume>
+  <fpage>781</fpage>
+  <lpage>8</lpage>
+</bibl>
+
+<bibl id="B33">
+  <title><p>Bayesian inference of chemical kinetic models from proposed
+  reactions</p></title>
+  <aug>
+    <au><snm>Galagali</snm><fnm>N</fnm></au>
+    <au><snm>Marzouk</snm><fnm>Y</fnm></au>
+  </aug>
+  <source>Chemical Engineering Science</source>
+  <pubdate>2015</pubdate>
+  <volume>123</volume>
+  <fpage>170</fpage>
+  <lpage>190</lpage>
+</bibl>
+
+</refgrp>
+} % end of \BMCxmlcomment
