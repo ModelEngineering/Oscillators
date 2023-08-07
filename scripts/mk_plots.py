@@ -5,6 +5,7 @@ from src.Oscillators.solver import Solver
 import src.Oscillators.constants as cn
 
 import os
+import shutil
 
 SPECIES = ["x1", "x2", "both"]
 METRICS = ["feasibledev", "alphadev", "phidev", "prediction_error"]
@@ -34,3 +35,14 @@ for species in SPECIES:
 solver = Solver()
 solver.solve(is_check=False)
 solver.plotManyFits(is_plot=True, output_path=EVALUATE_MODEL_PLOT)
+
+# Create paper figure files
+def copyFile(src, figure_num):
+    dst = os.path.join(cn.PLOT_DIR, "Figure_%d.pdf" % figure_num)
+    shutil.copyfile(src, dst)
+#
+copyFile(EVALUATE_MODEL_PLOT, 3)
+copyFile(EVALUATION_PLOT_PATH_DCT[("alphadev", "x1")], 4)
+copyFile(EVALUATION_PLOT_PATH_DCT[("alphadev", "both")], 5)
+copyFile(EVALUATION_PLOT_PATH_DCT[("phidev", "both")], 6)
+copyFile(HISTOGRAM_PLOT_PATH_PAT % "both", 7)

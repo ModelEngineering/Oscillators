@@ -82,7 +82,7 @@ class Evaluator(object):
                     df = pd.DataFrame(result_dct)
                     df.to_csv(csv_path, index=False)
         return df
-    
+
     @classmethod
     def plotDesignErrors(cls, value_name, csv_path=cn.EVALUATION_CSV, is_plot=True,
                            plot_path=cn.EVALUATION_PLOT_PATH, title=None, vmin=0, vmax=1,
