@@ -3,6 +3,7 @@
 from src.Oscillators import k_d, t, theta, k2
 from src.Oscillators.constants import PARAM_DCT 
 from src.Oscillators import util
+import src.Oscillators.constants as cn
 from src.Oscillators.util import TIMES
 
 import os
@@ -94,6 +95,30 @@ class TestUtil(unittest.TestCase):
         expression = 2*theta*k2*k_d
         result = util.getSubstitutedExpression(expression, dct)
         self.assertTrue("sympy" in str(type(result)))
+
+    def testMakeUniformRandomParameterDct(self):
+        if IGNORE_TEST:
+            return
+        parameters = list(cn.INDEPENDENT_PARAMETERS)
+        result_dct = util.makeUniformRandomParameterDct(parameters=parameters, is_calculate_dependent_parameters=True)
+        self.assertTrue(isinstance(result_dct, dict))
+        trues = [isinstance(result_dct[k], float) for k in result_dct.keys()]
+        self.assertTrue(all(trues))
+        self.assertTrue(cn.C_K3 in result_dct.keys())
+        self.assertTrue(cn.C_K5 in result_dct.keys())
+        #
+        result_dct = util.makeUniformRandomParameterDct(parameters=parameters, is_calculate_dependent_parameters=False)
+        self.assertFalse(cn.C_K3 in result_dct.keys())
+        self.assertFalse(cn.C_K5 in result_dct.keys())
+
+    def testMakeNormalRandomParameterDct(self):
+        if IGNORE_TEST:
+            return
+        mean_dct = {k: 1 for k in cn.ALL_PARAMETERS}
+        result = util.makeNormalRandomParameterDct(cv=0.1, means=mean_dct)
+        self.assertTrue(isinstance(result, dict))
+        trues = [isinstance(result[k], float) for k in result.keys()]
+        self.assertTrue(all(trues))
 
 if __name__ == "__main__":
     unittest.main()

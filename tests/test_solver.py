@@ -3,7 +3,7 @@ from src.Oscillators import util
 from src.Oscillators import theta, k_d, t
 import src.Oscillators.constants as cn
 
-import lmfit
+import numpy as np
 import os
 import pandas as pd
 import sympy as sp
@@ -35,10 +35,31 @@ class TestOscillatorSolution(unittest.TestCase):
         self.assertEqual(self.soln.A_mat.shape, (2, 2))
 
     def testSolve(self):
-        #if IGNORE_TEST:
-        #    return
+        if IGNORE_TEST:
+            return
         self.soln.solve(is_check=False, is_simplify=False)
         self.assertEqual(self.soln.x_vec.shape, (2, 1))
+
+    def testSolve2(self):
+        if IGNORE_TEST:
+            return
+        old_soln = self.soln.deprecatedSolve(is_check=False, is_simplify=False)
+        new_soln = self.soln.solve(is_check=False, is_simplify=False)
+        for _ in range(10):
+            parameter_dct = util.makeRandomParameterDct(max_val=100, is_t=True)
+            symbol_dct = util.makeSymbolDct(old_soln, parameter_dct)
+            old_val = sp.N(old_soln.subs(symbol_dct))
+            new_val = sp.N(new_soln.subs(symbol_dct))
+            is_0 = np.isclose(float(old_val[0]), float(new_val[0]))
+            is_1 = np.isclose(float(old_val[1]), float(new_val[1]))
+            self.assertTrue(is_0 and is_1)
+
+    def testCalculateOscillationCharacteristics(self):
+        if IGNORE_TEST:
+            return
+        result = self.soln.calculateOscillationCharacteristics(is_check=False, is_simplify=False)
+        self.assertTrue(isinstance(result, dict))
+        self.assertEqual(len(result), 4)
 
     def testFindSinusoidCoefficients(self):
         if IGNORE_TEST:

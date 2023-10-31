@@ -1,4 +1,13 @@
-'''Constructs a closed form solution to the ODE for the Oscillator'''
+'''
+Constructs a closed form solution to the ODE for the Oscillator
+
+Usage
+    solver = Solver()
+    # Initialize state
+    solver.solve()
+    # Find values over time
+    df = solver.simulate()
+'''
 
 from src.Oscillators import c1, c2, t, \
       theta, k2, k4, k6, k_d, x1_0, x2_0, I
@@ -17,9 +26,12 @@ import matplotlib.pyplot as plt
 A = "a"
 B = "b"
 C = "c"
+THETA = "theta"
+ALPHA = "alpha"
+PHI = "phi"
+OMEGA = "omega"
 
 OscillatorCharacteristics = collections.namedtuple("OscillatorCharacteristics", "theta alpha phi omega")
-
 
 
 class Solver(object):
@@ -46,7 +58,7 @@ class Solver(object):
         self.x_vec = None # Solution structured as a sine with a phase shift
 
     @staticmethod
-    def calculateTheta(kk2, kkd):
+    def calculateTheta(kk2=k2, kkd=k_d):
         if "symbol" in str(type(kk2)):
             return sp.sqrt(kk2*kkd)
         else:
@@ -88,7 +100,7 @@ class Solver(object):
             )
         return get(0), get(1)
 
-    def solve(self, is_check=False, is_simplify=False):
+    def deprecatedSolve(self, is_check=False, is_simplify=False):
         """
         Constructs the time domain solution.
 
@@ -96,7 +108,8 @@ class Solver(object):
             is_check (bool, optional): check the saved solution. Defaults to False.
             is_simplify: simplify the final solution (time consuming)
         Returns:
-            sp.Matrix: matrix solution for the differential equation
+            sp.Matrix: matrix solution for the symbolic differential equations for x_1(t), x_2(t) in terms of:
+                theta = \sqrt{k2*k_d}, k2, k_d, k4, k6, x1_0, x2_0
         """
         # Calculate the homogeneous solution
         self.homogeneous_x_vec = self.fund_mat*sp.Matrix([[c1], [c2]])
@@ -117,6 +130,7 @@ class Solver(object):
         # Factor the solution into polynomials of sine and cosine
         self.factor_dcts = []
         factored_x_vec = []
+        # Structure the solution in terms of the amplitude (A) for cosine, amplitude (B) for sine, and offset (C)
         for xterm in self.raw_x_vec:
             dct = self._findSinusoidCoefficients(xterm)
             self.factor_dcts.append(dct)
@@ -128,6 +142,7 @@ class Solver(object):
         self.alphas = []
         self.phis = []
         self.omegas = []
+        # Find the amplitude, phase, and offset for each sinusoid
         for dct in self.factor_dcts:
             amplitude = sp.simplify(sp.sqrt(dct[A]**2 + dct[B]**2))
             phase = sp.simplify(sp.atan(dct[A]/dct[B]))
@@ -141,6 +156,88 @@ class Solver(object):
         if is_simplify:
             self.x_vec = sp.simplify(self.x_vec)
         return self.x_vec
+
+    def solve(self, **kwargs):
+        """
+        Constructs the time domain solution.
+
+        Args:
+            is_check (bool, optional): check the saved solution. Defaults to False.
+            is_simplify: simplify the final solution (time consuming)
+        Returns:
+            sp.Matrix: matrix solution for the symbolic differential equations for x_1(t), x_2(t) in terms of:
+                theta = \sqrt{k2*k_d}, k2, k_d, k4, k6, x1_0, x2_0
+        """
+        dct = self.calculateOscillationCharacteristics(**kwargs)
+        # Find the amplitude, phase, and offset for each sinusoid
+        x_terms = []
+        for idx in range(2):
+            x_term = dct[ALPHA][idx]*sp.sin(t*dct[THETA] + dct[PHI][idx]) + dct[OMEGA][idx]
+            x_terms.append(x_term)
+        self.x_vec = sp.Matrix(x_terms)
+        return self.x_vec
+    
+    def calculateOscillationCharacteristics(self, is_check=False, is_simplify=False):
+        """
+        Constructs symbolic solutions for the oscillation characteristics: frequency, amplitude_n, phase_n, offset_n
+        Populates state for self.alphas, self.phis, self.omegas
+
+        Args:
+            is_check (bool, optional): check the saved solution. Defaults to False.
+            is_simplify: simplify the final solution (time consuming)
+        Returns:
+            dict
+                "theta": symbolic expression for the frequency in terms of kd, k2
+                "alpha": tuple of symbolic expression for the amplitude of the nth sinusoid
+                "phi": tuple of symbolic expression for the phase of the nth sinusoid
+                "omega": tuple of symbolic expression for the offset
+        """
+        # Calculate the homogeneous solution
+        self.homogeneous_x_vec = self.fund_mat*sp.Matrix([[c1], [c2]])
+        xpp_1 = eval(xp_1)
+        xpp_2 = eval(xp_2)
+        self.particular_x_vec = sp.Matrix([[xpp_1], [xpp_2]])
+        if is_check:
+            # Calculate the particular solution
+            rhs = sp.simplify(self.fund_mat.inv()*self.u_vec)
+            rhs = sp.integrate(rhs, t)
+            xp = sp.simplify(self.fund_mat*rhs)
+            if not xp == self.particular_x_vec:
+                raise RuntimeError("Saved and calculated particular solutions do not match!")
+        # Solve for the constants in terms of the initial conditions
+        self.raw_x_vec = self.homogeneous_x_vec + self.particular_x_vec
+        cdct = sp.solve(self.raw_x_vec.subs(t, 0) - sp.Matrix([ [x1_0], [x2_0]]), [c1, c2])
+        self.raw_x_vec = self.raw_x_vec.subs(cdct)
+        # Factor the solution into polynomials of sine and cosine
+        self.factor_dcts = []
+        factored_x_vec = []
+        # Structure the solution in terms of the amplitude (A) for cosine, amplitude (B) for sine, and offset (C)
+        for xterm in self.raw_x_vec:
+            dct = self._findSinusoidCoefficients(xterm)
+            self.factor_dcts.append(dct)
+            factored_term = dct[A]*sp.cos(t*theta) + dct[B]*sp.sin(t*theta) + dct[C]
+            factored_x_vec.append(factored_term)
+        self.factored_x_vec = sp.Matrix(factored_x_vec)
+        # Create a solution in terms of only sine
+        output_dct = {THETA: self.calculateTheta()}
+        [output_dct.update({n: []}) for n in [ALPHA, PHI, OMEGA]]
+        # Find the amplitude, phase, and offset for each sinusoid
+        self.alphas = []
+        self.phis = []
+        self.omegas = []
+        for dct in self.factor_dcts:
+            amplitude = sp.simplify(sp.simplify(sp.sqrt(dct[A]**2 + dct[B]**2)))
+            output_dct[ALPHA].append(amplitude)
+            #
+            phase = sp.simplify(sp.atan(dct[A]/dct[B]))
+            phase = sp.simplify(sp.Piecewise((phase, dct[B] >= 0), (phase + sp.pi, dct[B] < 0)))
+            output_dct[PHI].append(phase)
+            self.alphas.append(amplitude)
+            self.phis.append(phase)
+            self.omegas.append(dct[C])
+            #
+            output_dct[OMEGA].append(sp.simplify(dct[C]))
+        return output_dct
 
     @staticmethod
     def _findSinusoidCoefficients(expression):

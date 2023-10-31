@@ -1,6 +1,7 @@
 from src.Oscillators.constants import PARAM_DCT
 from src.Oscillators.model import MODEL
 from src.Oscillators import t, theta
+import src.Oscillators.constants as cn
 
 import tellurium as te
 import sympy as sp
@@ -9,7 +10,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import control
-import lmfit
 
 
 def makeTimes(start_time=0, end_time=5.0, point_density=20):
@@ -267,4 +267,140 @@ def makePolynomialCoefficients(expression, term):
     dct = {}
     for key in range(len(rv.keys())):
         dct[key] = rv[tt**(key)]
+    return dct
+
+def makeRandomParameterDct(min_val=0.1, max_val=1, cv=1, means=1, is_t=False, is_uniform=True):
+    """
+    Make a consistent set of parameter values.
+
+    Args:
+        min_val: float
+        max_val: float
+        cv: float (coefficient of variation)
+        means: float/dict (mean of the parameter values)
+            key: str (parameter name)
+            value: float (parameter mean)
+        is_t: bool (include the time parameter)
+        is_uniform: bool (use a uniform distribution)
+
+    Returns:
+        dict
+            key: str (parameter name)
+            value: float (parameter value)
+    """
+    PARAMETERS = [cn.C_K1, cn.C_K2, cn.C_K3, cn.C_K4, cn.C_K_D,
+           cn.C_K5, cn.C_K6, cn.C_X1_0, cn.C_X2_0, cn.C_THETA, "t"]
+    if isinstance(means, float):
+        mean_dct = {p: means for p in PARAMETERS}
+    else:
+        mean_dct = means
+    def get(name):
+        # Returns a random value for the named parameter
+        if is_uniform:
+            return np.random.uniform(min_val, max_val)
+        else:
+            return np.random.normal(mean_dct[name], cv*mean_dct[name])
+    #
+    k1 = get("k1")
+    k2 = get("k2")
+    k3 = k1 + k2
+    k4 = get("k3")
+    k_d = get("k4")
+    k5 = k3 + k_d
+    k6 = get("k6")
+    x1_0 = get("x1_0")
+    x2_0 = get("k2_0")
+    theta = np.sqrt(k2*k_d)
+    dct = {cn.C_K1: k1, cn.C_K2: k2, cn.C_K3: k3, cn.C_K4: k4, cn.C_K_D: k_d,
+           cn.C_K5: k5, cn.C_K6: k6, cn.C_X1_0: x1_0, cn.C_X2_0: x2_0, cn.C_THETA: theta}
+    if is_t:
+        dct["t"] = get("t")
+    return dct
+
+def makeUniformRandomParameterDct(min_val=0.1, max_val=1, parameters=cn.ALL_PARAMETERS, is_calculate_dependent_parameters=True):
+    """
+    Make a consistent set of parameter values for values that are uniformly distributed.
+
+    Args:
+        min_val: float
+        max_val: float
+        parameters: list-str
+        is_calculate_dependent_parameters: bool (calculate the dependent parameters)
+
+    Returns:
+        dict (parameter value dictionary)
+            key: str (parameter name)
+            value: float (parameter value)
+    """
+    def get(name):
+        # Returns a random value for the named parameter
+            return np.random.uniform(min_val, max_val)
+    return _assignRandomParameterValues(get, parameters=parameters,
+                                        is_calculate_dependent_parameters=is_calculate_dependent_parameters)
+
+def makeNormalRandomParameterDct(cv=1, means=1, parameters=cn.ALL_PARAMETERS, is_calculate_dependent_parameters=True):
+    """
+    Make a consistent set of parameter values for values that are normally distributed.
+
+    Args:
+        cv: float (coefficient of variation)
+        means: float/dict (mean of the parameter values)
+            key: str (parameter name)
+            value: float (parameter mean)
+        parameters: list of parameters for which values are assigned
+        is_calculate_dependent_parameters: bool (calculate the dependent parameters)
+
+    Returns:
+        dict (parameter value dictionary)
+            key: str (parameter name)
+            value: float (parameter value)
+    """
+    if isinstance(means, float):
+        mean_dct = {p: means for p in cn.INDEPENDENT_PARAMETERS}
+    else:
+        mean_dct = means
+    def get(name):
+        if not name in mean_dct.keys():
+            raise ValueError("Parameter not found: {}".format(name))
+        return np.random.normal(mean_dct[name], cv*mean_dct[name])
+    #
+    return _assignRandomParameterValues(get, parameters=parameters,
+                                        is_calculate_dependent_parameters=is_calculate_dependent_parameters)
+
+def _assignRandomParameterValues(assignment_function, parameters=cn.ALL_PARAMETERS,
+                                 is_calculate_dependent_parameters=True):
+    """
+    Assigns parameter values based on a random value assignment function.
+
+    Args:
+        assignment_function: function
+            positional arguments: str (name of parameter)
+            returns: float
+        is_t: bool (include the time parameter)
+        parameters: list of parameters for which values are assigned
+        is_calculate_dependent_parameters: bool (calculate the dependent parameters)
+
+    Returns:
+        dict (parameter value dictionary)
+            key: str (parameter name)
+            value: float (parameter value)
+    """
+    dct = {}
+    dct[cn.C_K1] = assignment_function(cn.C_K1)
+    dct[cn.C_K2] = assignment_function(cn.C_K2)
+    if cn.C_K3 in parameters:
+        dct[cn.C_K3] = assignment_function(cn.C_K3)
+    if is_calculate_dependent_parameters:
+        dct[cn.C_K3] = dct[cn.C_K1] + dct[cn.C_K2]
+    dct[cn.C_K4]= assignment_function(cn.C_K4)
+    dct[cn.C_K_D]= assignment_function(cn.C_K_D)
+    if cn.C_K5 in parameters:
+        dct[cn.C_K5] = assignment_function(cn.C_K5)
+    if is_calculate_dependent_parameters:
+        dct[cn.C_K5] = dct[cn.C_K3] + dct[cn.C_K_D]
+    dct[cn.C_K6] = assignment_function(cn.C_K6)
+    dct[cn.C_X1_0] = assignment_function(cn.C_X1_0)
+    dct[cn.C_X2_0] = assignment_function(cn.C_X2_0)
+    dct[cn.C_THETA] = np.sqrt(dct[cn.C_K2]*dct[cn.C_K_D])
+    dct[cn.C_T] = assignment_function(cn.C_T)
     return dct
