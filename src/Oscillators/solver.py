@@ -26,10 +26,6 @@ import matplotlib.pyplot as plt
 A = "a"
 B = "b"
 C = "c"
-THETA = "theta"
-ALPHA = "alpha"
-PHI = "phi"
-OMEGA = "omega"
 
 OscillatorCharacteristics = collections.namedtuple("OscillatorCharacteristics", "theta alpha phi omega")
 
@@ -168,11 +164,15 @@ class Solver(object):
             sp.Matrix: matrix solution for the symbolic differential equations for x_1(t), x_2(t) in terms of:
                 theta = \sqrt{k2*k_d}, k2, k_d, k4, k6, x1_0, x2_0
         """
-        dct = self.calculateOscillationCharacteristics(**kwargs)
+        df = self.calculateOscillationCharacteristics(**kwargs)
         # Find the amplitude, phase, and offset for each sinusoid
         x_terms = []
-        for idx in range(2):
-            x_term = dct[ALPHA][idx]*sp.sin(t*dct[THETA] + dct[PHI][idx]) + dct[OMEGA][idx]
+        for idx in [cn.C_X1, cn.C_X2]:
+            alpha = df.loc[idx, cn.C_ALPHA]
+            theta = df.loc[idx, cn.C_THETA]
+            phi = df.loc[idx, cn.C_PHI]
+            omega = df.loc[idx, cn.C_OMEGA]
+            x_term = alpha*sp.sin(t*theta + phi) + omega
             x_terms.append(x_term)
         self.x_vec = sp.Matrix(x_terms)
         return self.x_vec
@@ -186,11 +186,9 @@ class Solver(object):
             is_check (bool, optional): check the saved solution. Defaults to False.
             is_simplify: simplify the final solution (time consuming)
         Returns:
-            dict
-                "theta": symbolic expression for the frequency in terms of kd, k2
-                "alpha": tuple of symbolic expression for the amplitude of the nth sinusoid
-                "phi": tuple of symbolic expression for the phase of the nth sinusoid
-                "omega": tuple of symbolic expression for the offset
+            Dataframe
+                Columns: theta, alpha, phi, omega
+                Index: C_X1, C_X2
         """
         # Calculate the homogeneous solution
         self.homogeneous_x_vec = self.fund_mat*sp.Matrix([[c1], [c2]])
@@ -219,25 +217,27 @@ class Solver(object):
             factored_x_vec.append(factored_term)
         self.factored_x_vec = sp.Matrix(factored_x_vec)
         # Create a solution in terms of only sine
-        output_dct = {THETA: self.calculateTheta()}
-        [output_dct.update({n: []}) for n in [ALPHA, PHI, OMEGA]]
+        output_dct = {cn.C_THETA: self.calculateTheta()}
+        output_dct = {cn.C_THETA: [output_dct[cn.C_THETA], output_dct[cn.C_THETA]]}
+        [output_dct.update({n: []}) for n in [cn.C_ALPHA, cn.C_PHI, cn.C_OMEGA]]
         # Find the amplitude, phase, and offset for each sinusoid
         self.alphas = []
         self.phis = []
         self.omegas = []
         for dct in self.factor_dcts:
             amplitude = sp.simplify(sp.simplify(sp.sqrt(dct[A]**2 + dct[B]**2)))
-            output_dct[ALPHA].append(amplitude)
+            output_dct[cn.C_ALPHA].append(amplitude)
             #
             phase = sp.simplify(sp.atan(dct[A]/dct[B]))
             phase = sp.simplify(sp.Piecewise((phase, dct[B] >= 0), (phase + sp.pi, dct[B] < 0)))
-            output_dct[PHI].append(phase)
+            output_dct[cn.C_PHI].append(phase)
             self.alphas.append(amplitude)
             self.phis.append(phase)
             self.omegas.append(dct[C])
             #
-            output_dct[OMEGA].append(sp.simplify(dct[C]))
-        return output_dct
+            output_dct[cn.C_OMEGA].append(sp.simplify(dct[C]))
+        df = pd.DataFrame(output_dct, index=[cn.C_X1, cn.C_X2])
+        return df
 
     @staticmethod
     def _findSinusoidCoefficients(expression):

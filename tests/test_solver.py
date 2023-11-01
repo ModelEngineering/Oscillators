@@ -57,9 +57,10 @@ class TestOscillatorSolution(unittest.TestCase):
     def testCalculateOscillationCharacteristics(self):
         if IGNORE_TEST:
             return
-        result = self.soln.calculateOscillationCharacteristics(is_check=False, is_simplify=False)
-        self.assertTrue(isinstance(result, dict))
-        self.assertEqual(len(result), 4)
+        result_df = self.soln.calculateOscillationCharacteristics(is_check=False, is_simplify=False)
+        self.assertTrue(isinstance(result_df, pd.DataFrame))
+        self.assertEqual(len(result_df), 2)
+        self.assertEqual(len(result_df.columns), 4)
 
     def testFindSinusoidCoefficients(self):
         if IGNORE_TEST:
