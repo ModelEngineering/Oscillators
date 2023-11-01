@@ -1,0 +1,2 @@
+1. Adjust the point density for frequency so get better fits.
+3. Investigate why poor accuracy with phase. Try non-pi phase, 1, 2, 4, 5
