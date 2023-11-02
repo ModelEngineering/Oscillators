@@ -17,7 +17,7 @@ NUM_SAMPLE = 1000
 SENSITIVITY_DATA_DIR = os.path.join("%s", "sensitivity_data")
 DEVIATION_DIR = os.path.join(SENSITIVITY_DATA_DIR, "%s")
 MEAN_PATH = os.path.join(DEVIATION_DIR, "mean.csv")
-STD_PATH = os.path.join(DEVIATION_DIR, "mean.csv")
+STD_PATH = os.path.join(DEVIATION_DIR, "std.csv")
 OTHER_PATH = os.path.join(DEVIATION_DIR, "other.csv") 
 
 
@@ -43,7 +43,7 @@ class SensitivityAnalyzer(object):
         Solver.calculateDependentParameters(self.baseline_parameter_dct)
         self.solver = Solver()
         self.solver.solve()
-        self.oc_df, self.baseline_oc_df = self.makeOscillationCharacteristicsDF()
+        self.oc_expression_df, self.baseline_oc_value_df = self.makeOscillationCharacteristicsDF()
 
     def makeOscillationCharacteristicsDF(self):
         """
@@ -75,7 +75,7 @@ class SensitivityAnalyzer(object):
     
     def _depreacatedGetRandomValues(self, x_term, parameter_name, cv, num_sample):
         """Returns a random value of the parameter"""
-        std = self.baseline_oc_df.loc[parameter_name, x_term]*cv
+        std = self.baseline_oc_value_df.loc[parameter_name, x_term]*cv
         result = np.random.normal(self.baseline_parameter_df.loc[parameter_name, x_term], std, num_sample)
         return result
     
@@ -157,7 +157,7 @@ class SensitivityAnalyzer(object):
                     continue
                 for oc in cn.OSCILLATION_CHARACTERISTICS:
                     # Calculate the oscillation characteristic
-                    sample_value = float(sp.N(self.oc_df.loc[oc, x_term].subs(symbol_dct)))
+                    sample_value = float(sp.N(self.oc_expression_df.loc[oc, x_term].subs(symbol_dct)))
                     oc_sample_dct[x_term][oc].append(sample_value)
         # Calculate instances of negative concentrations, which are infeasible
         negative_arr = np.repeat(0, num_sample)
@@ -171,7 +171,7 @@ class SensitivityAnalyzer(object):
         std_dct = self._initializeTwoLevelDct()
         for x_term in X_TERMS:
             for oc in cn.OSCILLATION_CHARACTERISTICS:
-                baseline_value = self.baseline_oc_df.loc[oc, x_term]
+                baseline_value = self.baseline_oc_value_df.loc[oc, x_term]
                 abs_error_arr = np.abs((np.array(oc_sample_dct[x_term][oc]) - baseline_value)/baseline_value)
                 mean_dct[x_term][oc] = np.mean(abs_error_arr)
                 std_dct[x_term][oc] = np.std(abs_error_arr)
@@ -189,26 +189,38 @@ class SensitivityAnalyzer(object):
         Args:
             frac_deviations (_type_): _description_
             num_sample (_type_, optional): _description_. Defaults to NUM_SAMPLE.
+
+        Notes
+            Retrive data with index using:  pd.read_csv(path_dir[MEAN], index_col=0)
         """
+        MEAN = "mean"
+        STD = "std"
+        OTHER = "other"
         cur_dir = SENSITIVITY_DATA_DIR % data_dir
-        import pdb; pdb.set_trace()
         if not os.path.isdir(cur_dir):
             os.mkdir(cur_dir)
         for frac in frac_deviations:
-            path_dir = {"mean": MEAN_PATH % (data_dir, str(frac)),
-                        "std": STD_PATH % (data_dir, str(frac)),
-                        "other": OTHER_PATH % (data_dir, str(frac))
+            sub_dir = os.path.join(cur_dir, str(frac))
+            if not os.path.isdir(sub_dir):
+                 os.mkdir(sub_dir)
+            path_dir = {MEAN: MEAN_PATH % (data_dir, str(frac)),
+                        STD: STD_PATH % (data_dir, str(frac)),
+                        OTHER: OTHER_PATH % (data_dir, str(frac))
                         }
-            import pdb; pdb.set_trace()
-            if not os.path.isdir(deviation_dir):
-                os.mkdir(deviation_dir)
-            mean_path = MEAN_PATH % frac
-            std_path = STD_PATH % frac
-            other_path = OTHER_PATH % frac
             statistics = self.makeErrorStatistics(frac_deviation=frac, num_sample=num_sample)
-            statistics.mean_df.to_csv(mean_path)
-            statistics.std_df.to_csv(std_path)
+            statistics.mean_df.to_csv(path_dir[MEAN])
+            statistics.std_df.to_csv(path_dir[STD])
             other_df = pd.DataFrame({cn.C_NONOSCILLATING: [statistics.frac_nonoscillating],
                                      cn.C_INFEASIBLE: [statistics.frac_infeasible],
                                      cn.C_SAMPLE_SIZE: [statistics.sample_size]})
-            other_df.to_csv(other_path)
+            other_ser = pd.Series([statistics.frac_nonoscillating,
+                                     statistics.frac_infeasible,
+                                     statistics.sample_size], index=[cn.C_NONOSCILLATING,
+                                                                     cn.C_INFEASIBLE,
+                                                                     cn.C_SAMPLE_SIZE])
+            other_ser.to_csv(path_dir[OTHER])
+
+
+if __name__ == "__main__":
+    analyzer = SensitivityAnalyzer()
+    analyzer.makeData(frac_deviations=[0.1, 0.2, 0.5], num_sample=200)

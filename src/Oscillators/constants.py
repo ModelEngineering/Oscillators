@@ -61,3 +61,8 @@ PLOT_DIR = os.path.join(PROJECT_DIR, "plots")
 EVALUATION_CSV = os.path.join(DATA_DIR, "evaluation_data.csv")
 EVALUATION_PLOT_PATH = os.path.join(PLOT_DIR, "evaluation_plot.pdf")
 HISTOGRAM_PLOT_PATH = os.path.join(PLOT_DIR, "histogram_plot.pdf")
+
+# Data fields
+C_NONOSCILLATING = "nonoscillating"
+C_INFEASIBLE = "infeasible"
+C_SAMPLE_SIZE = "sample_size"

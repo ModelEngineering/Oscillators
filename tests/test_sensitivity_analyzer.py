@@ -4,12 +4,11 @@ from src.Oscillators import sensitivity_analyzer as sa
 
 import numpy as np
 import os
-import pandas as pda
+import pandas as pd
 import shutil
-import sympy as sp
 import unittest
 
-IGNORE_TEST = True
+IGNORE_TEST = False
 IS_PLOT = False
 ANALYZER = SensitivityAnalyzer()  # Used for debugging individual tests
 TEST_DIR = os.path.dirname(os.path.abspath(__file__)) # This directory
@@ -27,6 +26,9 @@ class TestSensitivityAnalyzer(unittest.TestCase):
         self.remove()
 
     def remove(self):
+        if IGNORE_TEST:
+            # Keep data if debugging
+            return
         temp_dir = sa.SENSITIVITY_DATA_DIR % TEST_DIR
         if os.path.isdir(temp_dir):
             shutil.rmtree(temp_dir)
@@ -35,7 +37,7 @@ class TestSensitivityAnalyzer(unittest.TestCase):
         if IGNORE_TEST:
             return
         self.assertTrue(isinstance(self.analyzer.baseline_oc_value_df, pd.DataFrame))
-        self.assertTrue(isinstance(self.analyzer.baseline_oc_value_df.loc[cn.C_ALPHA, cn.C_X1], float))
+        self.assertTrue(self.analyzer.oc_expression_df.loc[cn.C_ALPHA, cn.C_X1] is not None)
 
     def testGetRandomValues(self):
         if IGNORE_TEST:
@@ -60,8 +62,8 @@ class TestSensitivityAnalyzer(unittest.TestCase):
             return
         dct = self.analyzer._makeRandomParameterDct()
         self.assertTrue(isinstance(dct, dict))
-        self.assertTrue(isinstance(dct[cn.C_X1], dict))
-        self.assertTrue(isinstance(dct[cn.C_X1][cn.C_THETA], np.ndarray))
+        self.assertTrue(isinstance(dct, dict))
+        self.assertTrue(isinstance(dct[cn.C_K1], np.ndarray))
 
     def testMakeDataFrameFromTwoLevelDct(self):
         if IGNORE_TEST:
@@ -86,9 +88,7 @@ class TestSensitivityAnalyzer(unittest.TestCase):
         #if IGNORE_TEST:
         #    return
         self.analyzer.makeData(frac_deviations=[0.1, 0.5], num_sample=10, data_dir=TEST_DIR)
-        import pdb; pdb.set_trace()
 
 
 if __name__ == "__main__":
     unittest.main()
-
