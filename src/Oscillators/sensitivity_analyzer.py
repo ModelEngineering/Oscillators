@@ -19,6 +19,7 @@ DEVIATION_DIR = os.path.join(SENSITIVITY_DATA_DIR, "%s")
 MEAN_PATH = os.path.join(DEVIATION_DIR, "mean.csv")
 STD_PATH = os.path.join(DEVIATION_DIR, "std.csv")
 OTHER_PATH = os.path.join(DEVIATION_DIR, "other.csv") 
+FRACTIONAL_DEVIATIONS = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]
 
 
 ErrorStatistic = collections.namedtuple("ErrorStatistic",
@@ -182,6 +183,29 @@ class SensitivityAnalyzer(object):
         return ErrorStatistic(mean_df=mean_df, std_df=std_df, frac_nonoscillating=num_negative/num_sample,
                               frac_infeasible=frac_infeasible, sample_size=num_sample)
     
+    def _getDataPath(self, path_type, frac_deviation, data_dir):
+        """
+        Returns the path to the data file.
+
+        Args:
+            path_type: str
+            frac_deviation: float
+            data_dir: str
+
+        Returns:
+            str
+        """
+        MEAN = "mean"
+        STD = "std"
+        OTHER = "other"
+        PATH_DIR = {MEAN: MEAN_PATH % (data_dir, str(frac_deviation)),
+                        STD: STD_PATH % (data_dir, str(frac_deviation)),
+                        OTHER: OTHER_PATH % (data_dir, str(frac_deviation))
+                        }
+        if path_type not in PATH_DIR.keys():
+            raise ValueError("Invalid path_type: %s" % path_type)
+        return PATH_DIR[path_type]
+    
     def makeData(self, frac_deviations, num_sample=NUM_SAMPLE, data_dir=cn.DATA_DIR):
         """
         Creates the data needed for plotting.
@@ -208,19 +232,16 @@ class SensitivityAnalyzer(object):
                         OTHER: OTHER_PATH % (data_dir, str(frac))
                         }
             statistics = self.makeErrorStatistics(frac_deviation=frac, num_sample=num_sample)
-            statistics.mean_df.to_csv(path_dir[MEAN])
-            statistics.std_df.to_csv(path_dir[STD])
-            other_df = pd.DataFrame({cn.C_NONOSCILLATING: [statistics.frac_nonoscillating],
-                                     cn.C_INFEASIBLE: [statistics.frac_infeasible],
-                                     cn.C_SAMPLE_SIZE: [statistics.sample_size]})
+            statistics.mean_df.to_csv(self._getDataPath(MEAN, frac, data_dir))
+            statistics.std_df.to_csv(self._getDataPath(STD, frac, data_dir))
             other_ser = pd.Series([statistics.frac_nonoscillating,
                                      statistics.frac_infeasible,
                                      statistics.sample_size], index=[cn.C_NONOSCILLATING,
                                                                      cn.C_INFEASIBLE,
                                                                      cn.C_SAMPLE_SIZE])
-            other_ser.to_csv(path_dir[OTHER])
+            other_ser.to_csv(self._getDataPath(OTHER, frac, data_dir))
 
 
 if __name__ == "__main__":
     analyzer = SensitivityAnalyzer()
-    analyzer.makeData(frac_deviations=[0.1, 0.2, 0.5], num_sample=200)
+    analyzer.makeData(frac_deviations=FRACTIONAL_DEVIATIONS, num_sample=1000)
