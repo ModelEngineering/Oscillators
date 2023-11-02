@@ -69,11 +69,24 @@ class Solver(object):
             dct (dict): key: str, value: float
         """
         dct[cn.C_K1] = cn.K1_VALUE
-        dct[cn.C_K3] = dct[cn.C_K1] + dct[cn.C_K2]
-        dct[cn.C_K5] = dct[cn.C_K3] + dct[cn.C_K_D]
-        dct[cn.C_THETA] = np.sqrt(dct[cn.C_K2]*dct[cn.C_K_D])
         dct[cn.C_S1] = dct[cn.C_X1_0]
         dct[cn.C_S2] = dct[cn.C_X2_0]
+        Solver.calculateK3K5KDTHETA(dct)
+
+    @staticmethod
+    def calculateK3K5KDTHETA(dct):
+        """
+        Calculates k3, k5, k_D, theta.
+
+        Args:
+            dct (dict): key: str, value: float
+        """
+        dct[cn.C_K3] = dct[cn.C_K1] + dct[cn.C_K2]
+        if cn.C_K_D in dct.keys():
+            dct[cn.C_K5] = dct[cn.C_K3] + dct[cn.C_K_D]
+        else:
+            dct[cn.C_K_D] = dct[cn.C_K5] - dct[cn.C_K3]
+        dct[cn.C_THETA] = np.sqrt(dct[cn.C_K2]*dct[cn.C_K_D])
 
     def getOscillatorCharacteristics(self, dct=None):
         """Returns a substituted value.
