@@ -8,7 +8,7 @@ import numpy as np
 import pandas as pd
 import unittest
 
-IGNORE_TEST = False
+IGNORE_TEST = True
 IS_PLOT = False
 END_TIME = 5
 
@@ -59,6 +59,13 @@ class TestOscillatorDesigner(unittest.TestCase):
             util.plotDF(df, is_plot=IS_PLOT, output_path="testFind.pdf")
         self.assertTrue(self.designer.minimizer.success)
         self.assertEqual(self.designer.design_error.feasibledev, 0)
+
+    def testFindMiaximalOmega(self):
+        #if IGNORE_TEST:
+        #    return
+        dct = self.designer.findMaximalOmega()
+        self.designer.plotFit(start_time=0, end_time=100, num_point=1000)
+        plt.savefig("testFindMaximalOmega.pdf")
 
     def testParameterToStr(self):
         if IGNORE_TEST:

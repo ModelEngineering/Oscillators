@@ -2,8 +2,8 @@
 Finds parameters of the network that give desired oscillating characteristics to S1 and
 both S1 and S2 are feasible trajectories (non-negative concentrations).
 
-BUGS
-1. Poor fits for phi > pi/2
+TO DO:
+1. Design for large omega but no other constraint.
 """
 
 import src.Oscillators.constants as cn
@@ -25,13 +25,14 @@ MAX_RESIDUAL = 1e6
 MAX_FEASIBLEDEV = 1
 SOLVER = Solver()
 SOLVER.solve()
+DEFAULT_DCT = {cn.C_X1_0: 1, cn.C_X2_0: 2}
 
 
 class Designer(object):
 
     LESS_THAN_ZERO_MULTIPLIER = 2
 
-    def __init__(self, theta=1, alpha=1, phi=0, omega=1, end_time=10, is_x1=True):
+    def __init__(self, theta=1, alpha=1, phi=0, omega=1, min_omega_other=0, is_x1=True):
         """
         Args:
             theta: float (frequency in radians)
@@ -39,12 +40,14 @@ class Designer(object):
             phi: float (phase of the sinusoids)
             omega: float (offset of the sinusoids)
             num_point (int, optional): (number of points in a sinusoid series). Defaults to 100.
+            min_omega_other: float (minimum omega value for the other sinusoid)
             is_x1: bool (True if the fit is for x1, False if the fit is for x2)
         """
         self.theta = theta
         self.alpha = alpha
         self.phi = phi
         self.omega = omega
+        self.min_omega_other = min_omega_other
         period = 2*np.pi/theta
         num_cycle = 10 
         self.end_time = num_cycle*period
@@ -108,6 +111,39 @@ class Designer(object):
         #
         return self.minimizer
 
+    # FIXME: This neveer worked well 
+    def findMaximalOmega(self, num_tries=5):
+        """
+        Finds parameters of the reaction network that yield the desired Oscillator characeristics.
+
+        Args:
+            num_tries: number of iterations
+        Returns:
+            lmfit.Parameters
+        """
+        Result = collections.namedtuple("Result", ["params", "ssq", "minimizer", "initialized"])
+        #
+        best_result = Result(params=dict(self.params), ssq=INITIAL_SSQ, minimizer=None, initialized=False)
+        dct = {"k2": 0.1, "k_d": 0.1, "k4": 0.1, "k6": 0.1}
+        self._setParameters(dct)
+        #
+        for _ in range(num_tries):
+            self.ssq = INITIAL_SSQ
+            parameters = lmfit.Parameters()
+            parameters.add("k2", value=self._initial_value, min=MIN_VALUE, max=MAX_VALUE)
+            parameters.add("k4", value=self._initial_value, min=MIN_VALUE, max=MAX_VALUE)
+            parameters.add("k6", value=self._initial_value, min=MIN_VALUE, max=MAX_VALUE)
+            minimizer = lmfit.minimize(self.calculateMaximalOmegaResiduals, parameters, method="leastsq")
+            if minimizer.success:
+                if (not best_result.initialized) or (self.ssq < best_result.ssq):
+                    best_result = Result(params=dict(self.params), ssq=self.ssq, minimizer=minimizer, initialized=True)
+        self._setParameters(best_result.params)
+        for name, value in DEFAULT_DCT.items():
+            if not name in self.params.keys():
+                self.params[name] = value
+        #
+        return self.params
+
     def _calculatePhaseOffset(self, params, is_x1):
         """
         Calculates the phase offset for the sinusoid.
@@ -145,11 +181,16 @@ class Designer(object):
         Returns:
             float*7 (k2, k4, k6, x1_0, x2_0, theta, k_d) 
         """
+        def get(name):
+            if name in params.keys():
+                return params[name].value
+            return DEFAULT_DCT[name]
+        #
         k2 = params[cn.C_K2].value
         k4 = params[cn.C_K4].value
         k6 = params[cn.C_K6].value
-        x1_0 = params[cn.C_X1_0].value
-        x2_0 = params[cn.C_X2_0].value
+        x1_0 = get(cn.C_X1_0)
+        x2_0 = get(cn.C_X2_0)
         theta = self.theta
         k_d = self._calculateKd(k2)
         return k2, k4, k6, x1_0, x2_0, theta, k_d
@@ -203,7 +244,8 @@ class Designer(object):
         name_dct = {cn.C_K2: k2, cn.C_K_D: k_d, cn.C_K4: k4, cn.C_K6: k6, cn.C_X1_0: x1_0, cn.C_X2_0: x2_0}
         # Calculate residuals
         residual_arr = self.xfit_ref - self.xfit
-        xother_residuals = -1*(np.sign(xother)-1)*xother*self.LESS_THAN_ZERO_MULTIPLIER/2
+        xother_residuals = -1*(np.sign(xother-self.min_omega_other)-1)*xother*self.LESS_THAN_ZERO_MULTIPLIER/2
+        #xother_residuals = -1*(np.sign(xother)-1)*xother*self.LESS_THAN_ZERO_MULTIPLIER/2
         residual_arr = np.concatenate([residual_arr, xother_residuals])
         # Updates the parameters
         ssq = np.sqrt(sum(residual_arr**2))
@@ -214,6 +256,41 @@ class Designer(object):
         if np.isnan(residual_arr).any():
             residual_arr = np.nan_to_num(residual_arr, nan=MAX_RESIDUAL)
         return residual_arr
+
+    def calculateMaximalOmegaResiduals(self, params):
+        """
+        Calculates the results for the parameters where the concern is maximizing the minimal omega.
+
+        Args:
+            params: lmfit.Parameters 
+                k2, k4 k6, x1_0, x2_0
+        """
+        k2, k4, k6, _, _, theta, k_d = self._getVariables(params)
+        def calcResidual(omega):
+            sign = np.sign(omega)
+            residual = sign*np.sign(max(omega, 1e-3))
+            if residual < 0:
+                omega *= self.LESS_THAN_ZERO_MULTIPLIER
+            else:
+                residual = 1/omega
+            return residual
+        ####
+        # x1
+        ####
+        numr_omega = -k2**2*k4 + k2**2*k6 - k2*k4*k_d + k6*theta**2
+        denom = theta**2*(k2 + k_d)
+        omega1 = numr_omega/denom
+        residual1 = calcResidual(omega1)
+        ####
+        # x2
+        ####
+        denom = theta**2
+        omega2 = (k2*k4 - k2*k6 + k4*k_d)/denom
+        residual2 = calcResidual(omega2)
+        #
+        residuals = np.repeat(residual1, 5)
+        residuals = np.concatenate([residuals, np.repeat(residual2, 5)])
+        return residuals
     
     def _setParameters(self, dct):
         """Sets values of the parameters
@@ -230,15 +307,21 @@ class Designer(object):
         if self.k_d is not None:
             self.k5 = self.k3 + self.k_d
         self.k6 = dct["k6"]
-        self.x1_0 = dct["x1_0"]
-        self.x2_0 = dct["x2_0"]
+        if not "x1_0" in dct.keys():
+            self.x1_0 = 1
+        else:
+            self.x1_0 = dct["x1_0"]
+        if not "x2_0" in dct.keys():
+            self.x2_0 = 2
+        else:
+            self.x2_0 = dct["x2_0"]
 
     @property 
     def params(self):
         return {"k1": self.k1, "k2": self.k2, "k3": self.k3, "k4": self.k4, "k5": self.k5, "k6": self.k6,
                 "S1": self.x1_0, "S2": self.x2_0, "x1_0": self.x1_0, "x2_0": self.x2_0, "k_d": self.k_d, "theta": self.theta}
 
-    def simulate(self, **kwargs):
+    def simulate(self, start_time=0, end_time=5, num_point=50):
         """
         Does a roadrunner simulation of the reaction network found.
 
@@ -250,7 +333,7 @@ class Designer(object):
         if self.k2 is None:
             self.find()
         #
-        df = util.simulateRR(param_dct=self.params, num_point=self.num_point, end_time=self.end_time, **kwargs)
+        df = util.simulateRR(param_dct=self.params, start_time=start_time, num_point=num_point, end_time=end_time)
         return df
     
     def _parameterToStr(self, parameter_name, num_digits=4):
@@ -258,7 +341,7 @@ class Designer(object):
         return eval(expr)
     
     def plotFit(self, ax=None, is_plot=True, output_path=None, xlabel="time", title=None,
-                 is_legend=True, is_xaxis=True):
+                 is_legend=True, is_xaxis=True, **kwargs):
         """
         Plots the fit on the desired result.
 
@@ -274,7 +357,7 @@ class Designer(object):
             titles = [self._parameterToStr(n) for n in ["theta", "alpha", "phi", "omega"]]
             title = ", ".join(titles)
         ax.set_title(title, fontsize=10)
-        df = self.simulate()
+        df = self.simulate(**kwargs)
         if self.is_x1:
             fit_label = "simulated S1"
             other_label = "simulated S2"

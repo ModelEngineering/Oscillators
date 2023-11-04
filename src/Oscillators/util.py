@@ -139,7 +139,7 @@ def simulateExpressionVector(vec, dct, end_time=round(TIMES[-1]), times=None, co
     plotDF(df, **kwargs)
     return df
 
-def simulateRR(param_dct={}, end_time=5, num_point=None, **kwargs):
+def simulateRR(param_dct={}, end_time=5, num_point=None, start_time=0, **kwargs):
     """
     Simulates the model with parameter updates as indicated.
 
@@ -158,7 +158,7 @@ def simulateRR(param_dct={}, end_time=5, num_point=None, **kwargs):
             rr[key] = value
     if num_point is None:
         num_point = int(10*end_time)
-    data = rr.simulate(0, end_time, num_point)
+    data = rr.simulate(start_time, end_time, num_point)
     dct = {n: data[n] for n in data.colnames}
     df = pd.DataFrame(dct)
     df = df.set_index("time")

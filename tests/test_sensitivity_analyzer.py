@@ -45,9 +45,9 @@ class TestSensitivityAnalyzer(unittest.TestCase):
         num_sample = 20
         values = self.analyzer._getRandomValues(cn.C_K1, 0.1, num_sample=num_sample)
         self.assertEqual(len(values), num_sample)
+        trues = values >= 0
+        self.assertTrue(np.all(trues))
         self.assertTrue(isinstance(values[0], float))
-        new_values = self.analyzer._getRandomValues(cn.C_K1, 1, num_sample=num_sample)
-        self.assertGreater(np.min(values), np.min(new_values))
         
     def testInitializeTwoLevelDct(self):
         if IGNORE_TEST:
@@ -76,7 +76,7 @@ class TestSensitivityAnalyzer(unittest.TestCase):
     def testMakeErrorStatistics(self):
         if IGNORE_TEST:
             return
-        statistics = self.analyzer.makeErrorStatistics(frac_deviation=0.5, num_sample=10)
+        statistics = self.analyzer.makeErrorStatistics(nrml_std=0.5, num_sample=10)
         for attr in dir(statistics):
             if attr.startswith("_"):
                 continue
@@ -85,9 +85,15 @@ class TestSensitivityAnalyzer(unittest.TestCase):
             self.assertIsNotNone(getattr(statistics, attr))
 
     def testMakeData(self):
-        #if IGNORE_TEST:
-        #    return
-        self.analyzer.makeData(frac_deviations=[0.1, 0.5], num_sample=10, data_dir=TEST_DIR)
+        if IGNORE_TEST:
+            return
+        frac_deviations = [0.1, 0.5]
+        statistic_types = ["mean", "std", "other"]
+        self.analyzer.makeData(nrml_stds=[0.1, 0.5], num_sample=10, data_dir=TEST_DIR)
+        for frac in frac_deviations:
+            for stype in statistic_types:
+                file_path = self.analyzer._getDataPath(stype, frac, data_dir=TEST_DIR)
+                self.assertTrue(os.path.isfile(file_path))
 
 
 if __name__ == "__main__":

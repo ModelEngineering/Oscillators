@@ -19,7 +19,8 @@ DEVIATION_DIR = os.path.join(SENSITIVITY_DATA_DIR, "%s")
 MEAN_PATH = os.path.join(DEVIATION_DIR, "mean.csv")
 STD_PATH = os.path.join(DEVIATION_DIR, "std.csv")
 OTHER_PATH = os.path.join(DEVIATION_DIR, "other.csv") 
-FRACTIONAL_DEVIATIONS = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]
+FRACTIONAL_DEVIATIONS = [0.01, 0.03, 0.05, 0.07, 0.09, 0.1]
+FRACTIONAL_DEVIATIONS.extend([0.11, 0.13, 0.15, 0.17, 0.19, 0.2])
 
 
 ErrorStatistic = collections.namedtuple("ErrorStatistic",
@@ -79,11 +80,20 @@ class SensitivityAnalyzer(object):
         std = self.baseline_oc_value_df.loc[parameter_name, x_term]*cv
         result = np.random.normal(self.baseline_parameter_df.loc[parameter_name, x_term], std, num_sample)
         return result
-    
-    def _getRandomValues(self, parameter_name, frac_deviation, num_sample):
+
+    def _futureGetRandomValues(self, parameter_name, nrml_std, num_sample):
+        """Returns a random value of the parameter. Truncates at 0."""
+        mean = self.baseline_parameter_dct[parameter_name]
+        samples = np.random.normal(mean, mean*nrml_std, 10*num_sample)   #Over sample
+        samples = samples[samples >= 0]
+        if len(samples) < num_sample:
+            raise ValueError("Insufficient samples")
+        return samples[:num_sample]/np.sqrt(num_sample)
+
+    def _getRandomValues(self, parameter_name, nrml_std, num_sample):
         """Returns a random value of the parameter"""
-        lower = self.baseline_parameter_dct[parameter_name]*(1 - frac_deviation)
-        upper = self.baseline_parameter_dct[parameter_name]*(1 + frac_deviation)
+        lower = self.baseline_parameter_dct[parameter_name]*(1 - nrml_std)
+        upper = self.baseline_parameter_dct[parameter_name]*(1 + nrml_std)
         result = np.random.uniform(lower, upper, num_sample)
         return result
 
@@ -115,12 +125,12 @@ class SensitivityAnalyzer(object):
         df = pd.DataFrame(new_dct, index=X_TERMS)
         return df.T
     
-    def _makeRandomParameterDct(self, frac_deviation=1, num_sample=1000):
+    def _makeRandomParameterDct(self, nrml_std=0.1, num_sample=1000):
         """
         Creates random sample of parameter values sampling from a mean adjusted distribution.
 
         Args:
-            frac_deviation: float (fractional deviation from the baseline value)
+            nrml_std: float (normalized standard deviation, coefficient of variation)
             num_sample: int (number of samples to generate)
 
         Returns:
@@ -128,14 +138,14 @@ class SensitivityAnalyzer(object):
                 key: str (parameter name)
                 value: np.ndarray (random sample of parameter values)
         """
-        return {p: self._getRandomValues(p, frac_deviation, num_sample) for p in PARAMETERS}
+        return {p: self._getRandomValues(p, nrml_std, num_sample=num_sample) for p in PARAMETERS}
 
-    def makeErrorStatistics(self, frac_deviation=1, num_sample=NUM_SAMPLE):
+    def makeErrorStatistics(self, nrml_std=0.1, num_sample=NUM_SAMPLE):
         """
         Calculates the average absolute error of each OC for the coefficient of variation.
 
         Args:
-            frac_deviation: float (fractional deviation from the baseline value)
+            nrml_std: float (normalized standard deviation, coefficient of variation)
         Returns:
             ErrorStatistic
                 mean_df - mean absolute error for each OC
@@ -143,7 +153,7 @@ class SensitivityAnalyzer(object):
                 num_negative - number of infeasible solutions
                 num_nonoscillating - number of non-oscillating solutions
         """
-        parameter_sample_dct = self._makeRandomParameterDct(frac_deviation=frac_deviation, num_sample=num_sample)
+        parameter_sample_dct = self._makeRandomParameterDct(nrml_std=nrml_std, num_sample=num_sample)
         # Obtain samples of oscillation characteristics from the sampled parameter values
         oc_sample_dct = self._initializeTwoLevelDct()
         num_nonoscillating = 0
@@ -180,15 +190,15 @@ class SensitivityAnalyzer(object):
         mean_df = self._makeDataFrameFromTwoLevelDct(mean_dct)
         std_df = self._makeDataFrameFromTwoLevelDct(std_dct)
         frac_infeasible = (num_nonoscillating + num_negative)/num_sample
-        return ErrorStatistic(mean_df=mean_df, std_df=std_df, frac_nonoscillating=num_negative/num_sample,
+        return ErrorStatistic(mean_df=mean_df, std_df=std_df, frac_nonoscillating=num_nonoscillating/num_sample,
                               frac_infeasible=frac_infeasible, sample_size=num_sample)
     
-    def _getDataPath(self, path_type, frac_deviation, data_dir):
+    def _getDataPath(self, statistic, frac_deviation, data_dir):
         """
         Returns the path to the data file.
 
         Args:
-            path_type: str
+            statistic: str
             frac_deviation: float
             data_dir: str
 
@@ -202,17 +212,34 @@ class SensitivityAnalyzer(object):
                         STD: STD_PATH % (data_dir, str(frac_deviation)),
                         OTHER: OTHER_PATH % (data_dir, str(frac_deviation))
                         }
-        if path_type not in PATH_DIR.keys():
-            raise ValueError("Invalid path_type: %s" % path_type)
-        return PATH_DIR[path_type]
+        if statistic not in PATH_DIR.keys():
+            raise ValueError("Invalid path_type: %s" % statistic)
+        return PATH_DIR[statistic]
+
+    def getSensitivityData(self, statistic, frac_deviation, data_dir):
+        """
+        Returns the path to the data file.
+
+        Args:
+            path_type: str
+            frac_deviation: float
+            data_dir: str
+
+        Returns:
+            DataFrame or Series
+        """
+        path = self._getDataPath(statistic, frac_deviation, data_dir)
+        return pd.read_csv(path, index_col=0)
     
-    def makeData(self, frac_deviations, num_sample=NUM_SAMPLE, data_dir=cn.DATA_DIR):
+    def makeData(self, nrml_stds, num_sample=NUM_SAMPLE, data_dir=cn.DATA_DIR, is_overwrite=False, is_report=True):
         """
         Creates the data needed for plotting.
 
         Args:
-            frac_deviations (_type_): _description_
-            num_sample (_type_, optional): _description_. Defaults to NUM_SAMPLE.
+            nrml_stds: list-float (normal standard deviation -- coefficient of variation)
+            num_sample: int (number of samples to generate)
+            is_overwrite: bool (True to overwrite existing data)
+            is_report: bool (True to report progress)
 
         Notes
             Retrive data with index using:  pd.read_csv(path_dir[MEAN], index_col=0)
@@ -223,25 +250,25 @@ class SensitivityAnalyzer(object):
         cur_dir = SENSITIVITY_DATA_DIR % data_dir
         if not os.path.isdir(cur_dir):
             os.mkdir(cur_dir)
-        for frac in frac_deviations:
-            sub_dir = os.path.join(cur_dir, str(frac))
+        for nrml_std in nrml_stds:
+            sub_dir = os.path.join(cur_dir, str(nrml_std))
             if not os.path.isdir(sub_dir):
                  os.mkdir(sub_dir)
-            path_dir = {MEAN: MEAN_PATH % (data_dir, str(frac)),
-                        STD: STD_PATH % (data_dir, str(frac)),
-                        OTHER: OTHER_PATH % (data_dir, str(frac))
-                        }
-            statistics = self.makeErrorStatistics(frac_deviation=frac, num_sample=num_sample)
-            statistics.mean_df.to_csv(self._getDataPath(MEAN, frac, data_dir))
-            statistics.std_df.to_csv(self._getDataPath(STD, frac, data_dir))
+            elif not is_overwrite:
+                print("** Skipping %s" % str(nrml_std))
+                continue
+            print("** Processing %s" % str(nrml_std))
+            statistics = self.makeErrorStatistics(nrml_std=nrml_std, num_sample=num_sample)
+            statistics.mean_df.to_csv(self._getDataPath(MEAN, nrml_std, data_dir))
+            statistics.std_df.to_csv(self._getDataPath(STD, nrml_std, data_dir))
             other_ser = pd.Series([statistics.frac_nonoscillating,
                                      statistics.frac_infeasible,
                                      statistics.sample_size], index=[cn.C_NONOSCILLATING,
                                                                      cn.C_INFEASIBLE,
                                                                      cn.C_SAMPLE_SIZE])
-            other_ser.to_csv(self._getDataPath(OTHER, frac, data_dir))
+            other_ser.to_csv(self._getDataPath(OTHER, nrml_std, data_dir))
 
 
 if __name__ == "__main__":
     analyzer = SensitivityAnalyzer()
-    analyzer.makeData(frac_deviations=FRACTIONAL_DEVIATIONS, num_sample=1000)
+    analyzer.makeData(nrml_stds=FRACTIONAL_DEVIATIONS, num_sample=1000)
