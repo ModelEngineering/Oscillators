@@ -81,16 +81,16 @@ class SensitivityAnalyzer(object):
         result = np.random.normal(self.baseline_parameter_df.loc[parameter_name, x_term], std, num_sample)
         return result
 
-    def _futureGetRandomValues(self, parameter_name, nrml_std, num_sample):
+    def _getRandomValues(self, parameter_name, nrml_std, num_sample):
         """Returns a random value of the parameter. Truncates at 0."""
         mean = self.baseline_parameter_dct[parameter_name]
         samples = np.random.normal(mean, mean*nrml_std, 10*num_sample)   #Over sample
         samples = samples[samples >= 0]
         if len(samples) < num_sample:
             raise ValueError("Insufficient samples")
-        return samples[:num_sample]/np.sqrt(num_sample)
+        return samples[:num_sample]
 
-    def _getRandomValues(self, parameter_name, nrml_std, num_sample):
+    def _futureGetRandomValues(self, parameter_name, nrml_std, num_sample):
         """Returns a random value of the parameter"""
         lower = self.baseline_parameter_dct[parameter_name]*(1 - nrml_std)
         upper = self.baseline_parameter_dct[parameter_name]*(1 + nrml_std)
@@ -149,9 +149,10 @@ class SensitivityAnalyzer(object):
         Returns:
             ErrorStatistic
                 mean_df - mean absolute error for each OC
-                std_df - std of absolute error for each OC
+                std_df - std of absolute error for each OC (not std of the mean)
                 num_negative - number of infeasible solutions
                 num_nonoscillating - number of non-oscillating solutions
+                sample_size - number of samples
         """
         parameter_sample_dct = self._makeRandomParameterDct(nrml_std=nrml_std, num_sample=num_sample)
         # Obtain samples of oscillation characteristics from the sampled parameter values
@@ -183,7 +184,12 @@ class SensitivityAnalyzer(object):
         for x_term in X_TERMS:
             for oc in cn.OSCILLATION_CHARACTERISTICS:
                 baseline_value = self.baseline_oc_value_df.loc[oc, x_term]
-                abs_error_arr = np.abs((np.array(oc_sample_dct[x_term][oc]) - baseline_value)/baseline_value)
+                # Phase error is in units of radians
+                if oc == cn.C_PHI:
+                    divisor = 1
+                else:
+                    divisor = baseline_value
+                abs_error_arr = np.abs((np.array(oc_sample_dct[x_term][oc]) - baseline_value)/divisor)
                 mean_dct[x_term][oc] = np.mean(abs_error_arr)
                 std_dct[x_term][oc] = np.std(abs_error_arr)
         # Construct the result
