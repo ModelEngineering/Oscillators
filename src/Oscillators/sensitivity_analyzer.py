@@ -19,8 +19,8 @@ DEVIATION_DIR = os.path.join(SENSITIVITY_DATA_DIR, "%s")
 MEAN_PATH = os.path.join(DEVIATION_DIR, "mean.csv")
 STD_PATH = os.path.join(DEVIATION_DIR, "std.csv")
 OTHER_PATH = os.path.join(DEVIATION_DIR, "other.csv") 
-FRACTIONAL_DEVIATIONS = [0.01, 0.03, 0.05, 0.07, 0.09, 0.1]
-FRACTIONAL_DEVIATIONS.extend([0.11, 0.13, 0.15, 0.17, 0.19, 0.2])
+NRML_STDS = [0.01, 0.03, 0.05, 0.07, 0.09, 0.1]
+NRML_STDS.extend([0.11, 0.13, 0.15, 0.17, 0.19, 0.2])
 
 
 ErrorStatistic = collections.namedtuple("ErrorStatistic",
@@ -198,8 +198,9 @@ class SensitivityAnalyzer(object):
         frac_infeasible = (num_nonoscillating + num_negative)/num_sample
         return ErrorStatistic(mean_df=mean_df, std_df=std_df, frac_nonoscillating=num_nonoscillating/num_sample,
                               frac_infeasible=frac_infeasible, sample_size=num_sample)
-    
-    def _getDataPath(self, statistic, frac_deviation, data_dir):
+
+    @staticmethod 
+    def _getDataPath(statistic, frac_deviation, data_dir):
         """
         Returns the path to the data file.
 
@@ -222,19 +223,20 @@ class SensitivityAnalyzer(object):
             raise ValueError("Invalid path_type: %s" % statistic)
         return PATH_DIR[statistic]
 
-    def getSensitivityData(self, statistic, frac_deviation, data_dir):
+    @classmethod
+    def getSensitivityData(cls, statistic, nrml_std, data_dir):
         """
         Returns the path to the data file.
 
         Args:
-            path_type: str
-            frac_deviation: float
+            statistic: str (mean, std, other)
+            nrml_std: float
             data_dir: str
 
         Returns:
             DataFrame or Series
         """
-        path = self._getDataPath(statistic, frac_deviation, data_dir)
+        path = cls._getDataPath(statistic, nrml_std, data_dir)
         return pd.read_csv(path, index_col=0)
     
     def makeData(self, nrml_stds, num_sample=NUM_SAMPLE, data_dir=cn.DATA_DIR, is_overwrite=False, is_report=True):
@@ -274,7 +276,43 @@ class SensitivityAnalyzer(object):
                                                                      cn.C_SAMPLE_SIZE])
             other_ser.to_csv(self._getDataPath(OTHER, nrml_std, data_dir))
 
+    @classmethod
+    def getMetrics(cls):
+        """
+        Returns:
+            dict: str (cn.METRICS)
+            value: pd.DataFrame
+                index: float (normalized standard deviation)
+                columns: str (mean, std)
+                values: float
+        """
+        result_dct = {n: {cn.C_MEAN: [], cn.C_STD: []} for n in cn.METRICS}
+        others = [cn.C_NONOSCILLATING, cn.C_INFEASIBLE, cn.C_SAMPLE_SIZE]
+        for nrml_std in NRML_STDS:
+            mean_df = cls.getSensitivityData(cn.C_MEAN, nrml_std, cn.DATA_DIR)
+            std_df = cls.getSensitivityData(cn.C_STD, nrml_std, cn.DATA_DIR)
+            other_df = cls.getSensitivityData(cn.C_OTHER, nrml_std, cn.DATA_DIR)
+            # Add the statistics
+            for metric in cn.METRICS:
+                if metric in others:
+                    result_dct[metric][cn.C_MEAN].append(other_df.loc[metric, '0'])
+                    result_dct[metric][cn.C_STD].append(0)
+                else:
+                    if metric != cn.C_THETA:
+                        column = "x%s" % metric[-1]
+                        idx = metric[:-1]
+                    else:
+                        column = "x1"
+                        idx = metric
+                    result_dct[metric][cn.C_MEAN].append(mean_df.loc[idx, column])
+                    result_dct[metric][cn.C_STD].append(std_df.loc[idx, column])
+        # Convert to DataFrame
+        for metric in cn.METRICS:
+            result_dct[metric] = pd.DataFrame(result_dct[metric], index=NRML_STDS, columns=[cn.C_MEAN, cn.C_STD])
+        #
+        return result_dct
+
 
 if __name__ == "__main__":
     analyzer = SensitivityAnalyzer()
-    analyzer.makeData(nrml_stds=FRACTIONAL_DEVIATIONS, num_sample=1000)
+    analyzer.makeData(nrml_stds=NRML_STDS, num_sample=1000)

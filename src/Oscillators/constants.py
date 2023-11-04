@@ -62,7 +62,17 @@ EVALUATION_CSV = os.path.join(DATA_DIR, "evaluation_data.csv")
 EVALUATION_PLOT_PATH = os.path.join(PLOT_DIR, "evaluation_plot.pdf")
 HISTOGRAM_PLOT_PATH = os.path.join(PLOT_DIR, "histogram_plot.pdf")
 
-# Data fields
+# Metrics
+C_ALPHA1 = "alpha1"
+C_ALPHA2 = "alpha2"
+C_PHI1 = "phi1"
+C_PHI2 = "phi2"
+C_OMEGA1 = "omega1"
+C_OMEGA2 = "omega2"
 C_NONOSCILLATING = "nonoscillating"
 C_INFEASIBLE = "infeasible"
 C_SAMPLE_SIZE = "sample_size"
+METRICS = [C_ALPHA1, C_ALPHA2, C_PHI1, C_PHI2, C_OMEGA1, C_OMEGA2, C_NONOSCILLATING, C_INFEASIBLE, C_SAMPLE_SIZE, C_THETA]
+C_MEAN = "mean"
+C_STD = "std"
+C_OTHER = "other"
