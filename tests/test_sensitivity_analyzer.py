@@ -8,7 +8,7 @@ import pandas as pd
 import shutil
 import unittest
 
-IGNORE_TEST = True
+IGNORE_TEST = False
 IS_PLOT = False
 ANALYZER = SensitivityAnalyzer()  # Used for debugging individual tests
 TEST_DIR = os.path.dirname(os.path.abspath(__file__)) # This directory
@@ -96,8 +96,8 @@ class TestSensitivityAnalyzer(unittest.TestCase):
                 self.assertTrue(os.path.isfile(file_path))
 
     def testGetMetric(self):
-        #if IGNORE_TEST:
-        #    return
+        if IGNORE_TEST:
+            return
         metric_dct = self.analyzer.getMetrics()
         trues = [k in cn.METRICS for k in metric_dct.keys()]
         self.assertTrue(np.all(trues))
