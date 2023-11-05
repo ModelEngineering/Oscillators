@@ -2,14 +2,15 @@ import src.Oscillators.constants as cn
 from src.Oscillators.sensitivity_analyzer import SensitivityAnalyzer
 from src.Oscillators import sensitivity_analyzer as sa
 
+import matplotlib.pyplot as plt
 import numpy as np
 import os
 import pandas as pd
 import shutil
 import unittest
 
-IGNORE_TEST = False
-IS_PLOT = False
+IGNORE_TEST = True
+IS_PLOT = True
 ANALYZER = SensitivityAnalyzer()  # Used for debugging individual tests
 TEST_DIR = os.path.dirname(os.path.abspath(__file__)) # This directory
 
@@ -104,6 +105,20 @@ class TestSensitivityAnalyzer(unittest.TestCase):
         for k, df in metric_dct.items():
             self.assertTrue(isinstance(df, pd.DataFrame))
             self.assertTrue(set(df.columns) == set([cn.C_MEAN, cn.C_STD]))
+    
+    def testPlotMetric(self):
+        if IGNORE_TEST:
+            return
+        metric_dct = self.analyzer.getMetrics()
+        self.analyzer._plotMetric(cn.C_ALPHA1, metric_dct[cn.C_ALPHA1], is_plot=IS_PLOT)
+        plt.savefig("testPlotMetric.pdf")
+
+    def testPlotMetrics(self):
+        #if IGNORE_TEST:
+        #    return
+        self.analyzer.plotMetrics(is_plot=IS_PLOT)
+        plt.savefig("testPlotMetrics.pdf")
+
 
 
 if __name__ == "__main__":

@@ -5,6 +5,7 @@ from src.Oscillators import util
 from src.Oscillators.solver import Solver
 
 import collections
+import matplotlib.pyplot as plt
 import numpy as np
 import os
 import pandas as pd
@@ -12,7 +13,7 @@ import sympy as sp
 
 X_TERMS = [cn.C_X1, cn.C_X2]
 PARAMETERS = [p for p in cn.ALL_PARAMETERS if not p in [cn.C_T, cn.C_X1, cn.C_X2]]
-NUM_SAMPLE = 1000
+NUM_SAMPLE = 400
 
 SENSITIVITY_DATA_DIR = os.path.join("%s", "sensitivity_data")
 DEVIATION_DIR = os.path.join(SENSITIVITY_DATA_DIR, "%s")
@@ -305,14 +306,75 @@ class SensitivityAnalyzer(object):
                         column = "x1"
                         idx = metric
                     result_dct[metric][cn.C_MEAN].append(mean_df.loc[idx, column])
-                    result_dct[metric][cn.C_STD].append(std_df.loc[idx, column])
+                    result_dct[metric][cn.C_STD].append(std_df.loc[idx, column]/np.sqrt(NUM_SAMPLE))
         # Convert to DataFrame
         for metric in cn.METRICS:
             result_dct[metric] = pd.DataFrame(result_dct[metric], index=NRML_STDS, columns=[cn.C_MEAN, cn.C_STD])
         #
         return result_dct
+    
+    def _plotMetric(self, metric, metric_df, ax=None, is_plot=True):
+        """
+        Plots a single metric.
+
+        Args:
+            metric: str (one of cn.METRICS)
+            metric:df: pd.DataFrame
+            ax: plt.Axes
+        """
+        text_dct = {cn.C_ALPHA1: r"$\alpha_1$", cn.C_PHI1: r"$\phi_1$", cn.C_OMEGA1: r"$\omega_1$",
+                    cn.C_THETA: r"$\theta$", cn.C_ALPHA2: r"$\alpha_2$", cn.C_PHI2: r"$\phi_2$",}
+        if ax is None:
+            _, ax = plt.subplots(1)
+        plot_df = metric_df.copy()
+        plot_df[cn.C_STD] = 2*plot_df[cn.C_STD]
+        plot_df.plot(ax=ax, y=cn.C_MEAN, yerr=cn.C_STD, marker="o")
+        ax.set_xlabel("relative standard deviation")
+        x_pos = NRML_STDS[4]
+        y_pos = 0.9
+        ax.set_ylim([0, 1])
+        if metric in text_dct.keys():
+            text = text_dct[metric]
+        else:
+            text = metric
+        ax.text(x_pos, y_pos, text, fontsize=16)
+        ax.set_ylabel("abs fraction error")
+        ax.legend([])
+        if is_plot:
+            plt.show()
+
+    # FIXME: (a) y axis label inside of yaxis; (b) greek letters for titles
+    def plotMetrics(self, is_plot=True):
+        """
+        Plots the metrics.
+
+        Args:
+            is_plot: bool
+        """
+        metric_dct = self.getMetrics()
+        nrow = 2
+        ncol = 4
+        irow = 0
+        icol = 0
+        _, axes = plt.subplots(nrow, ncol, figsize=(15, 15))
+        metrics = [cn.C_INFEASIBLE, 'alpha1', 'phi1', 'omega1', 'theta', 'alpha2', 'phi2', 'omega2']
+        for metric in metrics:
+            ax = axes[irow, icol]
+            self._plotMetric(metric, metric_dct[metric], ax=ax, is_plot=False)
+            if icol > 0:
+                ax.set_ylabel("")
+            if irow < nrow - 1:
+                ax.set_xlabel("")
+            icol += 1
+            if icol >= ncol:
+                icol = 0
+                irow += 1
+        if is_plot:
+            plt.show()
+        else:
+            plt.close()
 
 
 if __name__ == "__main__":
     analyzer = SensitivityAnalyzer()
-    analyzer.makeData(nrml_stds=NRML_STDS, num_sample=1000)
+    analyzer.makeData(nrml_stds=NRML_STDS, num_sample=NUM_SAMPLE)
