@@ -296,8 +296,13 @@ class SensitivityAnalyzer(object):
             # Add the statistics
             for metric in cn.METRICS:
                 if metric in others:
-                    result_dct[metric][cn.C_MEAN].append(other_df.loc[metric, '0'])
-                    result_dct[metric][cn.C_STD].append(0)
+                    value = other_df.loc[metric, '0']
+                    if metric in [cn.C_NONOSCILLATING, cn.C_INFEASIBLE]:
+                        std = np.sqrt(value*(1-value))/np.sqrt(NUM_SAMPLE)
+                    else:
+                        std = 0
+                    result_dct[metric][cn.C_MEAN].append(value)
+                    result_dct[metric][cn.C_STD].append(std)
                 else:
                     if metric != cn.C_THETA:
                         column = "x%s" % metric[-1]
@@ -322,23 +327,41 @@ class SensitivityAnalyzer(object):
             metric:df: pd.DataFrame
             ax: plt.Axes
         """
-        text_dct = {cn.C_ALPHA1: r"$\alpha_1$", cn.C_PHI1: r"$\phi_1$", cn.C_OMEGA1: r"$\omega_1$",
-                    cn.C_THETA: r"$\theta$", cn.C_ALPHA2: r"$\alpha_2$", cn.C_PHI2: r"$\phi_2$",}
+        AXIS_FONT_SIZE = 14
+        TICKLABEL_FONT_SIZE = 14
+        TITLE_FONT_SIZE = 18
+        LABEL1 = "|relative error|"
+        LABEL2 = "|radians|"
+        LABEL3 = "probability"
+        title_dct = {cn.C_ALPHA1: r"$\alpha_1$", cn.C_PHI1: r"$\phi_1$", cn.C_OMEGA1: r"$\omega_1$",
+                    cn.C_THETA: r"$\theta$", cn.C_ALPHA2: r"$\alpha_2$", cn.C_PHI2: r"$\phi_2$", cn.C_OMEGA2: r"$\omega_2$"}
+        ylabel_dct = {cn.C_ALPHA1: LABEL1, cn.C_PHI1: LABEL2, cn.C_OMEGA1: LABEL1,
+                    cn.C_ALPHA2: LABEL1, cn.C_PHI2: LABEL2, cn.C_OMEGA2: LABEL1,
+                    cn.C_THETA: LABEL1, cn.C_INFEASIBLE: LABEL3, cn.C_NONOSCILLATING: LABEL3}
         if ax is None:
             _, ax = plt.subplots(1)
         plot_df = metric_df.copy()
+        if metric == cn.C_INFEASIBLE:
+            plot_df[cn.C_MEAN] = 1 - metric_df[cn.C_MEAN]
         plot_df[cn.C_STD] = 2*plot_df[cn.C_STD]
         plot_df.plot(ax=ax, y=cn.C_MEAN, yerr=cn.C_STD, marker="o")
-        ax.set_xlabel("relative standard deviation")
         x_pos = NRML_STDS[4]
         y_pos = 0.9
-        ax.set_ylim([0, 1])
-        if metric in text_dct.keys():
-            text = text_dct[metric]
+        if metric in title_dct.keys():
+            text = title_dct[metric]
         else:
-            text = metric
-        ax.text(x_pos, y_pos, text, fontsize=16)
-        ax.set_ylabel("abs fraction error")
+            if metric == cn.C_INFEASIBLE:
+              text = "feasibility"
+            else:
+              text = metric
+        ax.text(x_pos, y_pos, text, fontsize=TITLE_FONT_SIZE)
+        ax.text(NRML_STDS[0], 0.6, ylabel_dct[metric], fontsize=AXIS_FONT_SIZE, rotation=90)
+        xlabels = ax.get_xticklabels()
+        ax.set_xticklabels(xlabels, fontsize=TICKLABEL_FONT_SIZE, rotation=-30)
+        ax.set_xlabel("nrml std", fontsize=AXIS_FONT_SIZE)
+        ax.set_ylim([0, 1])
+        ylabels = ax.get_yticklabels()
+        ax.set_yticklabels(ylabels, fontsize=TICKLABEL_FONT_SIZE)
         ax.legend([])
         if is_plot:
             plt.show()
@@ -361,8 +384,6 @@ class SensitivityAnalyzer(object):
         for metric in metrics:
             ax = axes[irow, icol]
             self._plotMetric(metric, metric_dct[metric], ax=ax, is_plot=False)
-            if icol > 0:
-                ax.set_ylabel("")
             if irow < nrow - 1:
                 ax.set_xlabel("")
             icol += 1

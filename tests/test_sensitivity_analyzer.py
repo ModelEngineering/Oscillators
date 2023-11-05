@@ -9,8 +9,8 @@ import pandas as pd
 import shutil
 import unittest
 
-IGNORE_TEST = True
-IS_PLOT = True
+IGNORE_TEST = False
+IS_PLOT = False
 ANALYZER = SensitivityAnalyzer()  # Used for debugging individual tests
 TEST_DIR = os.path.dirname(os.path.abspath(__file__)) # This directory
 
@@ -110,14 +110,17 @@ class TestSensitivityAnalyzer(unittest.TestCase):
         if IGNORE_TEST:
             return
         metric_dct = self.analyzer.getMetrics()
-        self.analyzer._plotMetric(cn.C_ALPHA1, metric_dct[cn.C_ALPHA1], is_plot=IS_PLOT)
+        #self.analyzer._plotMetric(cn.C_ALPHA1, metric_dct[cn.C_ALPHA1], is_plot=IS_PLOT)
+        self.analyzer._plotMetric(cn.C_INFEASIBLE, metric_dct[cn.C_INFEASIBLE], is_plot=IS_PLOT)
         plt.savefig("testPlotMetric.pdf")
 
     def testPlotMetrics(self):
-        #if IGNORE_TEST:
-        #    return
-        self.analyzer.plotMetrics(is_plot=IS_PLOT)
-        plt.savefig("testPlotMetrics.pdf")
+        if IGNORE_TEST:
+            return
+        analyzer = SensitivityAnalyzer()
+        analyzer.plotMetrics(is_plot=IS_PLOT)
+        if IS_PLOT:
+            plt.savefig("testPlotMetrics.pdf")
 
 
 

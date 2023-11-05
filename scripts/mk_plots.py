@@ -3,7 +3,9 @@
 from src.Oscillators.evaluator import Evaluator
 from src.Oscillators.solver import Solver
 import src.Oscillators.constants as cn
+from src.Oscillators.sensitivity_analyzer import SensitivityAnalyzer
 
+import matplotlib.pyplot as plt
 import os
 import shutil
 
@@ -46,3 +48,10 @@ copyFile(EVALUATION_PLOT_PATH_DCT[("alphadev", "x1")], 4)
 copyFile(EVALUATION_PLOT_PATH_DCT[("alphadev", "both")], 5)
 copyFile(EVALUATION_PLOT_PATH_DCT[("phidev", "both")], 6)
 copyFile(HISTOGRAM_PLOT_PATH_PAT % "both", 7)
+
+# Sensitivity Analysis
+analyzer = SensitivityAnalyzer()
+analyzer.plotMetrics()
+plot_path = os.path.join(cn.PLOT_DIR, "sensitivity_analysis.pdf")
+plt.savefig(os.path.join(plot_path))
+copyFile(plot_path, 8)
