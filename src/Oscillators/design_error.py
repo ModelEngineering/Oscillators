@@ -17,7 +17,7 @@ class DesignError(object):
         self.designer = designer
         self.solver = SOLVER
         if designer.k2 is None:
-            designer.find()
+            designer.parameterizeOscillator()
         # Outputs
         self.feasibledev = None
         self.alphadev = None

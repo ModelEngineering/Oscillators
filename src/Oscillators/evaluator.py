@@ -27,7 +27,7 @@ class Evaluator(object):
         self.designer = designer
         self.solver = SOLVER
         if designer.k2 is None:
-            designer.find()
+            designer.parameterizeOscillator()
 
     @classmethod
     def makeData(cls, thetas=[0.1, 0.5, 1.0, 5.0, 10.0, 20.0, 50.0, 100.0],
@@ -62,7 +62,7 @@ class Evaluator(object):
             for alpha in alphas:
                 for phi in phis:
                     designer = Designer.design(theta=theta, alpha=alpha, phi=phi, omega=alpha, **kwargs)
-                    designer.find()
+                    designer.parameterizeOscillator()
                     for name in local_names:
                         stmt = "result_dct['%s'].append(%s)" % (name, name)
                         exec(stmt)

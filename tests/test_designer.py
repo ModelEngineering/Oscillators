@@ -46,7 +46,7 @@ class TestOscillatorDesigner(unittest.TestCase):
     def testFind(self):
         if IGNORE_TEST:
             return
-        _ = self.designer.find()
+        _ = self.designer.parameterizeOscillator()
         if IS_PLOT:
             df = self.designer.simulate(is_plot=False)
             df["ref_xfit"] = self.designer.xfit_ref
@@ -78,7 +78,7 @@ class TestOscillatorDesigner(unittest.TestCase):
             return
         designer = Designer(theta=2*np.pi, alpha=20, phi=-1,
                                 omega=20)
-        designer.find()
+        designer.parameterizeOscillator()
         designer.plotFit(output_path="testPlotFit.pdf", is_plot=IS_PLOT)
 
     def testPlotManyFits(self):
@@ -92,7 +92,7 @@ class TestOscillatorDesigner(unittest.TestCase):
             return
         def make(**kwargs):
             designer = Designer.design(**kwargs)
-            designer.find()
+            designer.parameterizeOscillator()
             return designer.design_error
         #
         design_error_x1 = make(is_x1=True)

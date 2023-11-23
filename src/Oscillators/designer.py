@@ -77,7 +77,7 @@ class Designer(object):
     def _initial_value(self):
         return np.random.uniform(MIN_VALUE, MAX_VALUE)
 
-    def find(self, num_tries=5):
+    def parameterizeOscillator(self, num_tries=5):
         """
         Finds parameters of the reaction network that yield the desired Oscillator characeristics.
         """
@@ -331,7 +331,7 @@ class Designer(object):
             pd.DataFrame
         """
         if self.k2 is None:
-            self.find()
+            self.parameterizeOscillator()
         #
         df = util.simulateRR(param_dct=self.params, start_time=start_time, num_point=num_point, end_time=end_time)
         return df
@@ -349,7 +349,7 @@ class Designer(object):
             kwargs: dict (arguments to plot options)
         """
         if self.k2 is None:
-            self.find()
+            self.parameterizeOscillator()
         #
         if ax is None:
             _, ax = plt.subplots()
@@ -409,7 +409,7 @@ class Designer(object):
         for idx in range(length):
             designer = Designer(theta=thetas[idx], alpha=alphas[idx],
                                  phi=phis[idx], omega=omegas[idx])
-            designer.find()
+            designer.parameterizeOscillator()
             if irow == nrow - 1:
                 is_xaxis = True
             else:
@@ -442,7 +442,7 @@ class Designer(object):
         """
         def makeDesign(**designKwargs):
             designer = Designer(**designKwargs)
-            designer.find()
+            designer.parameterizeOscillator()
             return designer
         #
         if is_both:

@@ -318,7 +318,7 @@ class SensitivityAnalyzer(object):
         #
         return result_dct
     
-    def _plotMetric(self, metric, metric_df, ax=None, is_plot=True):
+    def _plotMetric(self, metric, metric_df, ax=None, title_prefix="", is_plot=True):
         """
         Plots a single metric.
 
@@ -326,6 +326,7 @@ class SensitivityAnalyzer(object):
             metric: str (one of cn.METRICS)
             metric:df: pd.DataFrame
             ax: plt.Axes
+            title_prefix: str
         """
         AXIS_FONT_SIZE = 14
         TICKLABEL_FONT_SIZE = 14
@@ -345,8 +346,8 @@ class SensitivityAnalyzer(object):
             plot_df[cn.C_MEAN] = 1 - metric_df[cn.C_MEAN]
         plot_df[cn.C_STD] = 2*plot_df[cn.C_STD]
         plot_df.plot(ax=ax, y=cn.C_MEAN, yerr=cn.C_STD, marker="o")
-        x_pos = NRML_STDS[4]
-        y_pos = 0.9
+        x_pos = NRML_STDS[2]
+        y_pos = 0.95
         if metric in title_dct.keys():
             text = title_dct[metric]
         else:
@@ -354,6 +355,7 @@ class SensitivityAnalyzer(object):
               text = "feasibility"
             else:
               text = metric
+        text = "(" + title_prefix + ") " + text 
         ax.text(x_pos, y_pos, text, fontsize=TITLE_FONT_SIZE)
         ax.text(NRML_STDS[0], 0.6, ylabel_dct[metric], fontsize=AXIS_FONT_SIZE, rotation=90)
         xlabels = ax.get_xticklabels()
@@ -374,6 +376,7 @@ class SensitivityAnalyzer(object):
         Args:
             is_plot: bool
         """
+        title_prefixes = ["a", "b", "c", "d", "e", "f", "g", "h"]
         metric_dct = self.getMetrics()
         nrow = 2
         ncol = 4
@@ -381,9 +384,9 @@ class SensitivityAnalyzer(object):
         icol = 0
         _, axes = plt.subplots(nrow, ncol, figsize=(15, 15))
         metrics = [cn.C_INFEASIBLE, 'alpha1', 'phi1', 'omega1', 'theta', 'alpha2', 'phi2', 'omega2']
-        for metric in metrics:
+        for idx, metric in enumerate(metrics):
             ax = axes[irow, icol]
-            self._plotMetric(metric, metric_dct[metric], ax=ax, is_plot=False)
+            self._plotMetric(metric, metric_dct[metric], ax=ax, title_prefix=title_prefixes[idx], is_plot=False)
             if irow < nrow - 1:
                 ax.set_xlabel("")
             icol += 1
